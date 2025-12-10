@@ -1,0 +1,54 @@
+<div class="form-wrapper">
+  <h2>Add New Student</h2>
+
+  <form [formGroup]="studentForm" (ngSubmit)="onSubmit()" class="student-form">
+    <div class="form-row">
+      <label>First Name</label>
+      <input
+        type="text"
+        formControlName="first_name"
+        placeholder="Enter first name"
+      />
+    </div>
+
+    <div class="form-row">
+      <label>Last Name</label>
+      <input
+        type="text"
+        formControlName="last_name"
+        placeholder="Enter last name"
+      />
+    </div>
+
+    <div class="form-row">
+      <label>Email</label>
+      <input
+        type="email"
+        formControlName="email"
+        placeholder="Enter email"
+      />
+    </div>
+
+    <div class="form-row">
+      <label>Password</label>
+      <input
+        type="password"
+        formControlName="password"
+        placeholder="Enter password"
+      />
+    </div>
+
+    <div class="form-row">
+      <label>Phone No</label>
+      <input
+        type="text"
+        formControlName="phone_no"
+        placeholder="Enter phone number"
+      />
+    </div>
+
+    <button type="submit" [disabled]="studentForm.invalid">Add Student</button>
+  </form>
+
+  <p class="success-msg" *ngIf="message">{{ message }}</p>
+</div>

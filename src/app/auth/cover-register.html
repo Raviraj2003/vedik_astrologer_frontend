@@ -125,70 +125,114 @@
               Enter your email and password to register
             </p>
           </div>
-          <form
-            class="space-y-5 dark:text-white"
-            (submit)="router.navigate(['/'])"
-          >
-            <div>
-              <label for="Name">Name</label>
-              <div class="relative text-white-dark">
-                <input
-                  id="Name"
-                  type="text"
-                  placeholder="Enter Name"
-                  class="form-input ps-10 placeholder:text-white-dark"
-                />
-                <span class="absolute start-4 top-1/2 -translate-y-1/2">
-                  <icon-user [fill]="true" />
-                </span>
-              </div>
-            </div>
-            <div>
-              <label for="Email">Email</label>
-              <div class="relative text-white-dark">
-                <input
-                  id="Email"
-                  type="email"
-                  placeholder="Enter Email"
-                  class="form-input ps-10 placeholder:text-white-dark"
-                />
-                <span class="absolute start-4 top-1/2 -translate-y-1/2">
-                  <icon-mail [fill]="true" />
-                </span>
-              </div>
-            </div>
-            <div>
-              <label for="Password">Password</label>
-              <div class="relative text-white-dark">
-                <input
-                  id="Password"
-                  type="password"
-                  placeholder="Enter Password"
-                  class="form-input ps-10 placeholder:text-white-dark"
-                />
-                <span class="absolute start-4 top-1/2 -translate-y-1/2">
-                  <icon-lock-dots [fill]="true" />
-                </span>
-              </div>
-            </div>
-            <div>
-              <label class="flex cursor-pointer items-center">
-                <input
-                  type="checkbox"
-                  class="form-checkbox bg-white dark:bg-black"
-                />
-                <span class="text-white-dark"
-                  >Subscribe to weekly newsletter</span
-                >
-              </label>
-            </div>
-            <button
-              type="submit"
-              class="btn btn-gradient !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]"
-            >
-              Sign Up
-            </button>
-          </form>
+         <form
+    class="space-y-5 dark:text-white"
+    (ngSubmit)="onSubmit()"
+    #regForm="ngForm"
+>
+    <!-- First Name -->
+    <div>
+        <label for="FirstName">First Name</label>
+        <div class="relative text-white-dark">
+            <input
+                id="FirstName"
+                type="text"
+                placeholder="Enter First Name"
+                class="form-input ps-10 placeholder:text-white-dark"
+                [(ngModel)]="formData.first_name"
+                name="first_name"
+                required
+            />
+            <span class="absolute start-4 top-1/2 -translate-y-1/2">
+                <icon-user [fill]="true" />
+            </span>
+        </div>
+    </div>
+
+    <!-- Last Name -->
+    <div>
+        <label for="LastName">Last Name</label>
+        <div class="relative text-white-dark">
+            <input
+                id="LastName"
+                type="text"
+                placeholder="Enter Last Name"
+                class="form-input ps-10 placeholder:text-white-dark"
+                [(ngModel)]="formData.last_name"
+                name="last_name"
+                required
+            />
+            <span class="absolute start-4 top-1/2 -translate-y-1/2">
+                <icon-user [fill]="true" />
+            </span>
+        </div>
+    </div>
+
+    <!-- Email -->
+    <div>
+        <label for="Email">Email</label>
+        <div class="relative text-white-dark">
+            <input
+                id="Email"
+                type="email"
+                placeholder="Enter Email"
+                class="form-input ps-10 placeholder:text-white-dark"
+                [(ngModel)]="formData.email"
+                name="email"
+                required
+            />
+            <span class="absolute start-4 top-1/2 -translate-y-1/2">
+                <icon-mail [fill]="true" />
+            </span>
+        </div>
+    </div>
+
+    <!-- Phone -->
+    <div>
+        <label for="Phone">Phone Number</label>
+        <div class="relative text-white-dark">
+            <input
+                id="Phone"
+                type="text"
+                placeholder="Enter Phone Number"
+                class="form-input ps-10 placeholder:text-white-dark"
+                [(ngModel)]="formData.phone_no"
+                name="phone_no"
+                required
+            />
+            <span class="absolute start-4 top-1/2 -translate-y-1/2">
+                <icon-phone />
+            </span>
+        </div>
+    </div>
+
+    <!-- Password -->
+    <div>
+        <label for="Password">Password</label>
+        <div class="relative text-white-dark">
+            <input
+                id="Password"
+                type="password"
+                placeholder="Enter Password"
+                class="form-input ps-10 placeholder:text-white-dark"
+                [(ngModel)]="formData.password"
+                name="password"
+                required
+            />
+            <span class="absolute start-4 top-1/2 -translate-y-1/2">
+                <icon-lock-dots [fill]="true" />
+            </span>
+        </div>
+    </div>
+
+    <button
+        type="submit"
+        class="btn btn-gradient !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]"
+    >
+        Sign Up
+    </button>
+</form>
+
 
           <div class="relative my-7 text-center md:mb-9">
             <span

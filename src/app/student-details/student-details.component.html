@@ -1,0 +1,32 @@
+<div class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-md mt-10">
+  <h2 class="text-2xl font-bold mb-4 text-center">Update Student Details</h2>
+
+  <form [formGroup]="studentForm" (ngSubmit)="onSubmit()">
+    <div class="mb-4">
+      <label class="block mb-1 font-medium">Batch Name</label>
+      <input type="text" formControlName="batch_name" class="w-full border p-2 rounded" />
+    </div>
+
+    <div class="mb-4">
+      <label class="block mb-1 font-medium">Fees</label>
+      <input type="number" formControlName="fees" class="w-full border p-2 rounded" />
+    </div>
+
+    <div class="mb-4">
+      <label class="block mb-1 font-medium">Certificate / Marksheet Code</label>
+      <input type="text" formControlName="certificate_marksheet_code" class="w-full border p-2 rounded" />
+    </div>
+
+    <div class="mb-4">
+      <label class="block mb-1 font-medium">Marks Obtained (%)</label>
+      <input type="number" formControlName="marks_obtained" class="w-full border p-2 rounded" />
+    </div>
+
+    <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">
+      Update Details
+    </button>
+
+    <p *ngIf="successMessage" class="text-green-600 mt-3 text-center">{{ successMessage }}</p>
+    <p *ngIf="errorMessage" class="text-red-600 mt-3 text-center">{{ errorMessage }}</p>
+  </form>
+</div>
