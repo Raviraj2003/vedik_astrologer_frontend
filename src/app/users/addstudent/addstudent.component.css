@@ -1,0 +1,84 @@
+/* Wrapper */
+.form-wrapper {
+  max-width: 600px;
+  margin: 60px auto;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 40px 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Heading */
+.form-wrapper h2 {
+  text-align: center;
+  color: #2a4d8f;
+  margin-bottom: 25px;
+  letter-spacing: 0.5px;
+}
+
+/* Form */
+.student-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Each field */
+.form-row {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Labels */
+.form-row label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+/* Inputs */
+.form-row input {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-row input:focus {
+  border-color: #2a4d8f;
+  box-shadow: 0 0 6px rgba(42, 77, 143, 0.3);
+}
+
+/* Button */
+button {
+  background-color: #2a4d8f;
+  color: #fff;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+  background-color: #1e3c73;
+  transform: translateY(-2px);
+}
+
+button:disabled {
+  background-color: #b5b5b5;
+  cursor: not-allowed;
+}
+
+/* Success message */
+.success-msg {
+  text-align: center;
+  color: green;
+  margin-top: 15px;
+  font-weight: 600;
+}

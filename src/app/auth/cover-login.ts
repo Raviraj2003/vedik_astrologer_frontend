@@ -34,28 +34,46 @@ export class CoverLoginComponent {
     });
   }
 
-  login() {
-    const body = {
-      email: this.email,
-      password: this.password,
-    };
+ login() {
+  const body = {
+    email: this.email,
+    password: this.password,
+  };
 
-    this.api.login(body).subscribe({
-      next: (res: any) => {
-        console.log("Login success:", res);
+  this.api.login(body).subscribe({
+    next: (res: any) => {
+      console.log("Login success:", res);
 
-        if (res.token) {
-          localStorage.setItem("token", res.token);
+      if (res.success && res.data) {
+        const { token, role } = res.data;
+
+        // ✅ Save token & user data
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(res.data));
+
+        // ✅ Normalize role to uppercase for safety
+        const userRole = role?.toUpperCase();
+
+        // ✅ Redirect based on role
+        if (userRole === 'ADM') {
+          this.router.navigate(['/dashboard']);
+        } else if (userRole === 'STD') {
+          this.router.navigate(['/student-dashboard']);
+        } else {
+          alert('Unknown role. Please contact support.');
+          this.router.navigate(['/login']);
         }
-
-         this.router.navigate(['/Dashboard']);
-      },
-      error: (err) => {
-        console.error("Login failed:", err);
-        alert("Invalid email or password");
+      } else {
+        alert(res.message || "Login failed. Please try again.");
       }
-    });
-  }
+    },
+    error: (err) => {
+      console.error("Login failed:", err);
+      alert("Invalid email or password");
+    }
+  });
+}
+
 
   changeLanguage(item: any) {
     this.translate.use(item.code);
