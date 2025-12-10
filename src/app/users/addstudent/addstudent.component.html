@@ -1,0 +1,34 @@
+<div class="container mt-4">
+  <h2>Add New Student</h2>
+
+  <form [formGroup]="studentForm" (ngSubmit)="onSubmit()">
+    <div>
+      <label>First Name</label>
+      <input formControlName="first_name" placeholder="Enter first name" />
+    </div>
+
+    <div>
+      <label>Last Name</label>
+      <input formControlName="last_name" placeholder="Enter last name" />
+    </div>
+
+    <div>
+      <label>Email</label>
+      <input formControlName="email" type="email" placeholder="Enter email" />
+    </div>
+
+    <div>
+      <label>Password</label>
+      <input formControlName="password" type="password" placeholder="Enter password" />
+    </div>
+
+    <div>
+      <label>Phone No</label>
+      <input formControlName="phone_no" placeholder="Enter phone number" />
+    </div>
+
+    <button type="submit" [disabled]="studentForm.invalid">Add Student</button>
+  </form>
+
+  <p style="color: green">{{ message }}</p>
+</div>

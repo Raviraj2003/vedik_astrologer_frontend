@@ -15,6 +15,7 @@ import { CoverPasswordResetComponent } from './cover-password-reset';
 import { CoverRegisterComponent } from './cover-register';
 
 const routes: Routes = [
+     { path: '', redirectTo: 'auth/cover-login', pathMatch: 'full' },
     { path: 'auth/boxed-lockscreen', component: BoxedLockscreenComponent, data: { title: 'Boxed Lockscreen' } },
     {
         path: 'auth/boxed-password-reset',

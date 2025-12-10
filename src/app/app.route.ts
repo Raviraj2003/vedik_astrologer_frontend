@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
 
 // dashboard
-import { IndexComponent } from './index';
+import { DashboardComponent } from './Dashboard';
 import { AnalyticsComponent } from './analytics';
 import { FinanceComponent } from './finance';
 import { CryptoComponent } from './crypto';
-
+import { AddstudentComponent } from './users/addstudent/addstudent.component';
 // widgets
 import { WidgetsComponent } from './widgets';
 
@@ -32,13 +32,22 @@ import { FaqComponent } from './pages/faq';
 export const routes: Routes = [
     {
         path: '',
+        component: AuthLayout,
+        children: [
+            { path: '', loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule) },
+        ],
+    },
+
+    {
+        path: '',
         component: AppLayout,
         children: [
             // dashboard
-            { path: '', component: IndexComponent, data: { title: 'Sales Admin' } },
+            { path: 'Dashboard', component: DashboardComponent, data: { title: 'Sales Admin' } },
             { path: 'analytics', component: AnalyticsComponent, data: { title: 'Analytics Admin' } },
             { path: 'finance', component: FinanceComponent, data: { title: 'Finance Admin' } },
             { path: 'crypto', component: CryptoComponent, data: { title: 'Crypto Admin' } },
+            { path: 'add-student', component: AddstudentComponent, data: { title: 'Add Student' } },
 
             // widgets
             { path: 'widgets', component: WidgetsComponent, data: { title: 'Widgets' } },

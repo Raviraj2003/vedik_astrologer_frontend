@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpBackend, HttpClient, HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import { ReactiveFormsModule } from '@angular/forms';
 
 //Routes
 import { routes } from './app.route';
@@ -27,10 +28,11 @@ export function HttpLoaderFactory(httpHandler: HttpBackend): TranslateHttpLoader
 }
 
 // dashboard
-import { IndexComponent } from './index';
+import { DashboardComponent } from './Dashboard';
 import { AnalyticsComponent } from './analytics';
 import { FinanceComponent } from './finance';
 import { CryptoComponent } from './crypto';
+
 
 // widgets
 import { WidgetsComponent } from './widgets';
@@ -64,6 +66,7 @@ import { ThemeCustomizerComponent } from './layouts/theme-customizer';
     imports: [
         RouterModule.forRoot(routes, { scrollPositionRestoration: 'enabled' }),
         BrowserModule,
+        ReactiveFormsModule,
         BrowserAnimationsModule,
         CommonModule,
         FormsModule,
@@ -87,7 +90,7 @@ import { ThemeCustomizerComponent } from './layouts/theme-customizer';
         TablesComponent,
         FontIconsComponent,
         ChartsComponent,
-        IndexComponent,
+        DashboardComponent,
         AnalyticsComponent,
         FinanceComponent,
         CryptoComponent,

@@ -26,9 +26,9 @@
                             <div class="flex items-center">
                                 <icon-menu-dashboard class="shrink-0 group-hover:!text-primary" />
 
-                                <span class="text-black dark:text-[#506690] dark:group-hover:text-white-dark ltr:pl-3 rtl:pr-3">
+                               <a routerLink="/Dashboard" routerLinkActive="active" (click)="toggleMobileMenu()"><span class="text-black dark:text-[#506690] dark:group-hover:text-white-dark ltr:pl-3 rtl:pr-3">
                                     {{ 'dashboard' | translate }}
-                                </span>
+                                </span> </a> 
                             </div>
                             <div [ngClass]="{ 'rtl:rotate-90 -rotate-90': !activeDropdown.includes('dashboard') }">
                                 <icon-caret-down />
@@ -37,9 +37,7 @@
                         <div [@slideDownUp]="!activeDropdown.includes('dashboard')" class="accordion-content">
                             <ul class="sub-menu text-gray-500">
                                 <li>
-                                    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="toggleMobileMenu()"
-                                        >{{ 'sales' | translate }}</a
-                                    >
+                                    <a routerLink="/add-student" routerLinkActive="active" (click)="toggleMobileMenu()">{{ 'add-student' | translate }}</a>
                                 </li>
                                 <li>
                                     <a routerLink="/analytics" routerLinkActive="active" (click)="toggleMobileMenu()">{{ 'analytics' | translate }}</a>
@@ -50,6 +48,7 @@
                                 <li>
                                     <a routerLink="/crypto" routerLinkActive="active" (click)="toggleMobileMenu()">{{ 'crypto' | translate }}</a>
                                 </li>
+                              
                             </ul>
                         </div>
                     </li>

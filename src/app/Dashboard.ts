@@ -3,10 +3,10 @@ import { Store } from '@ngrx/store';
 import { toggleAnimation } from 'src/app/shared/animations';
 
 @Component({
-    templateUrl: './index.html',
+    templateUrl: './Dashboard.html',
     animations: [toggleAnimation],
 })
-export class IndexComponent {
+export class DashboardComponent {
     store: any;
     revenueChart: any;
     salesByCategory: any;

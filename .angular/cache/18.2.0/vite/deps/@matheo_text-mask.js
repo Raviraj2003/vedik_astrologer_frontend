@@ -1,9 +1,9 @@
+import "./chunk-7AFCKYR5.js";
+import "./chunk-GUXEIMF7.js";
 import {
   COMPOSITION_BUFFER_MODE,
   NG_VALUE_ACCESSOR
 } from "./chunk-3VF27ZPB.js";
-import "./chunk-7AFCKYR5.js";
-import "./chunk-GUXEIMF7.js";
 import {
   getDOM
 } from "./chunk-OACGOX5T.js";
