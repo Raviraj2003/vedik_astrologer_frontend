@@ -47,32 +47,6 @@
             </div>
         </div>
 
-        <script>
-            var params = {};
-            window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (str, key, value) {
-                params[key] = value;
-            });
-
-            if (params.theme) {
-                localStorage.setItem('theme', params.theme);
-            }
-            if (params.direction) {
-                localStorage.setItem('rtlClass', params.direction);
-            }
-            if (params.menu) {
-                localStorage.setItem('menu', params.menu);
-            }
-            if (params.layout) {
-                localStorage.setItem('layout', params.layout);
-            }
-            if (params.semidark) {
-                localStorage.setItem('semidark', params.semidark);
-            }
-            if (params.navbar) {
-                localStorage.setItem('navbar', params.navbar);
-            }
-
-            window.location.href = 'https://angular.vristo.sbthemes.com/';
-        </script>
+       
     </body>
 </html>

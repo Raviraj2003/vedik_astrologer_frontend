@@ -1,0 +1,263 @@
+<div
+  class="flex justify-center items-start p-10 bg-gray-50 dark:bg-gray-900 min-h-screen transition-all duration-300"
+>
+  <div
+    class="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-8 w-full max-w-5xl transition-all duration-300"
+  >
+    <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6">
+      Appointment Form
+    </h2>
+
+    <form [formGroup]="appointmentForm" class="space-y-6">
+      <!-- Row 1: Name / Email -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium">Name</label>
+          <input
+            type="text"
+            formControlName="name"
+            class="mt-1 w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Email</label>
+          <input
+            type="email"
+            formControlName="email"
+            class="mt-1 w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+      </div>
+
+      <!-- Row 2: Mobile / Gender -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium">Mobile Number</label>
+          <input
+            type="text"
+            maxlength="10"
+            formControlName="mobile_number"
+            class="mt-1 w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Gender</label>
+          <div class="flex gap-4 mt-2">
+            <label>
+              <input type="radio" formControlName="gender" value="Male" /> Male
+            </label>
+            <label>
+              <input type="radio" formControlName="gender" value="Female" />
+              Female
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3: Marital Status -->
+      <div>
+        <label class="block text-sm font-medium">Marital Status</label>
+        <div class="flex flex-wrap gap-4 mt-2">
+          <label>
+            <input type="radio" formControlName="marital_status" value="Unmarried" />
+            Unmarried
+          </label>
+          <label>
+            <input type="radio" formControlName="marital_status" value="Married" />
+            Married
+          </label>
+          <label>
+            <input type="radio" formControlName="marital_status" value="Divorced" />
+            Divorced
+          </label>
+          <label>
+            <input type="radio" formControlName="marital_status" value="Widow/Widower" />
+            Widow/Widower
+          </label>
+        </div>
+      </div>
+
+      <!-- Row 4: Twins / Appointment Type -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium">Are you one of the twins?</label>
+          <div class="flex gap-4 mt-2">
+            <label>
+              <input type="radio" formControlName="is_twins" [value]="true" /> Yes
+            </label>
+            <label>
+              <input type="radio" formControlName="is_twins" [value]="false" /> No
+            </label>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Appointment Type</label>
+          <div class="flex gap-4 mt-2">
+            <label>
+              <input
+                type="radio"
+                formControlName="appointment_type"
+                value="Online"
+              />
+              Online
+            </label>
+            <label>
+              <input
+                type="radio"
+                formControlName="appointment_type"
+                value="Offline"
+              />
+              Offline
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 5: DOB / TOB -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium">Date of Birth</label>
+          <input
+            type="date"
+            formControlName="date_of_birth"
+            class="mt-1 w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Time of Birth</label>
+          <input
+            type="time"
+            formControlName="time_of_birth"
+            class="mt-1 w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+      </div>
+
+      <!-- Row 6: Country / State / City -->
+      <div class="grid grid-cols-3 gap-4">
+        <div>
+          <label class="block text-sm font-medium">Country</label>
+          <input
+            type="text"
+            formControlName="country"
+            class="mt-1 w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium">State</label>
+          <input
+            type="text"
+            formControlName="state"
+            class="mt-1 w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium">City</label>
+          <input
+            type="text"
+            formControlName="city"
+            class="mt-1 w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+      </div>
+
+      <!-- Row 7: Subjects -->
+      <div>
+        <label class="block text-sm font-medium">Subjects</label>
+        <div class="grid grid-cols-4 gap-2 mt-2 text-sm">
+          <label *ngFor="let subj of ['Education','Marriage','Love Life','Business','Job','Child Birth','Divorce','Health','Property','Finance','Legal Case','Others']">
+            <input type="checkbox" (change)="toggleSubject(subj, $event)" />
+            {{ subj }}
+          </label>
+        </div>
+      </div>
+
+      <!-- Row 8: Source -->
+      <div>
+        <label class="block text-sm font-medium">Source</label>
+        <div class="flex flex-wrap gap-4 mt-2">
+          <label><input type="radio" formControlName="source" value="Instagram" /> Instagram</label>
+          <label><input type="radio" formControlName="source" value="Facebook" /> Facebook</label>
+          <label><input type="radio" formControlName="source" value="Google" /> Google</label>
+          <label><input type="radio" formControlName="source" value="Friend" /> Friend</label>
+        </div>
+      </div>
+
+      <!-- Row 9: Appointment Conducted -->
+      <div>
+        <label class="block text-sm font-medium">Appointment Conducted</label>
+        <div class="flex gap-4 mt-2">
+          <label><input type="radio" formControlName="is_appointment_conducted" [value]="true" /> Yes</label>
+          <label><input type="radio" formControlName="is_appointment_conducted" [value]="false" /> No</label>
+        </div>
+      </div>
+
+      <!-- Row 10: First or Repeat -->
+      <div>
+        <label class="block text-sm font-medium">पहिल्यांदा किंवा पुन्हा तपासणी आहे का?</label>
+        <div class="flex gap-4 mt-2">
+          <label><input type="radio" formControlName="appointment_status" value="First Time" /> First Time (पहिल्यांदा)</label>
+          <label><input type="radio" formControlName="appointment_status" value="Repeat" /> Repeat (पुन्हा तपासणी)</label>
+        </div>
+      </div>
+
+      <!-- Row 11: Transaction ID / Appointment Date -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium">Transaction ID</label>
+          <input
+            type="text"
+            formControlName="transaction_id"
+            class="mt-1 w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Appointment Date</label>
+          <input
+            type="date"
+            formControlName="appointment_date"
+            (change)="onDateChange($event)"
+            class="mt-1 w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+      </div>
+
+      <!-- Row 12: Slots -->
+      <div>
+        <label class="block text-sm font-medium">Slots</label>
+        <select
+          formControlName="slot_time"
+          class="mt-1 w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+        >
+          <option value="">Select Slot</option>
+          <option
+            *ngFor="let slot of slots"
+            [value]="slot.slot_time"
+            [disabled]="slot.is_booked"
+            [ngClass]="{
+              'text-gray-400': slot.is_booked,
+              'text-black dark:text-white': !slot.is_booked
+            }"
+          >
+            {{ formatTime(slot.slot_time) }}
+            <span *ngIf="slot.is_booked"> (Booked)</span>
+          </option>
+        </select>
+        <p *ngIf="slots.length === 0" class="text-sm text-red-500 mt-1">
+          No available slots for this date.
+        </p>
+      </div>
+
+      <!-- Submit -->
+      <div class="flex justify-end pt-4">
+        <button
+          type="button"
+          (click)="submitForm()"
+          class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400"
+        >
+          Submit
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

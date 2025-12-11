@@ -1,11 +1,13 @@
 ﻿<div *ngIf="role === 'ADM'">
 <div [ngClass]="{ 'dark text-white-dark': store.semidark }">
     <nav class="sidebar fixed bottom-0 top-0 z-50 h-full min-h-screen w-[260px] shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] transition-all duration-300">
-        <div class="h-full bg-white dark:bg-[#0e1726]">
+        <div class="sidebar fixed bottom-0 top-0 z-50 h-full min-h-screen w-[260px]
+  shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] transition-all duration-300 
+  bg-[url('/assets/images/r/sidebar.png')] bg-cover bg-center bg-no-repeat relative">
             <div class="flex items-center justify-between px-4 py-3">
                 <a routerLink="/" class="main-logo flex shrink-0 items-center">
-                    <img class="ml-[5px] w-8 flex-none" src="/assets/images/logo.svg" alt="" />
-                    <span class="align-middle text-2xl font-semibold dark:text-white-light lg:inline ltr:ml-1.5 rtl:mr-1.5">VRISTO</span>
+                    <!-- <img class="ml-[5px] w-8 flex-none" src="/assets/images/logo.svg" alt="" /> -->
+                    <span class="align-middle text-2xl font-semibold dark:text-white-light lg:inline ltr:ml-1.5 rtl:mr-1.5">Vedik Astrologer</span>
                 </a>
                 <a
                     href="javascript:;"
@@ -53,6 +55,63 @@
                             </ul>
                         </div>
                     </li>
+                    <li class="accordion menu nav-item">
+                        <button
+                            type="button"
+                            class="nav-link group w-full"
+                            [ngClass]="{ active: activeDropdown.includes('shedules') }"
+                            (click)="toggleAccordion('shedules')"
+                        >
+                            <div class="flex items-center">
+                                 <icon-menu-notes class="shrink-0 group-hover:!text-primary" />
+
+                               <a routerLink="/shedules" routerLinkActive="active" (click)="toggleMobileMenu()"><span class="text-black dark:text-[#506690] dark:group-hover:text-white-dark ltr:pl-3 rtl:pr-3">
+                                    {{ 'Shedules Master' | translate }}
+                                </span> </a> 
+                            </div>
+                            <div [ngClass]="{ 'rtl:rotate-90 -rotate-90': !activeDropdown.includes('shedules') }">
+                                <icon-caret-down />
+                            </div>
+                        </button>
+                        <div [@slideDownUp]="!activeDropdown.includes('shedules')" class="accordion-content">
+                            <ul class="sub-menu text-gray-500">
+                                <li>
+                                    <a routerLink="/shedules" routerLinkActive="active" (click)="toggleMobileMenu()">{{ 'add-Slots' | translate }}</a>
+                                </li>
+                                
+                              
+                            </ul>
+                        </div>
+                    </li>
+                     <li class="accordion menu nav-item">
+                        <button
+                            type="button"
+                            class="nav-link group w-full"
+                            [ngClass]="{ active: activeDropdown.includes('add-appointment') }"
+                            (click)="toggleAccordion('add-appointment')"
+                        >
+                            <div class="flex items-center">
+                                 <icon-menu-notes class="shrink-0 group-hover:!text-primary" />
+
+                              <span class="text-black dark:text-[#506690] dark:group-hover:text-white-dark ltr:pl-3 rtl:pr-3">
+                                    {{ 'Appointment' | translate }}
+                                </span>  
+                            </div>
+                            <div [ngClass]="{ 'rtl:rotate-90 -rotate-90': !activeDropdown.includes('add-appointment') }">
+                                <icon-caret-down />
+                            </div>
+                        </button>
+                        <div [@slideDownUp]="!activeDropdown.includes('add-appointment')" class="accordion-content">
+                            <ul class="sub-menu text-gray-500">
+                                <li>
+                                    <a routerLink="/add-appointment" routerLinkActive="active" (click)="toggleMobileMenu()">{{ 'Add-Appointment' | translate }}</a>
+                                </li>
+                                
+                              
+                            </ul>
+                        </div>
+                    </li>
+
 
                     <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
                         <icon-minus class="hidden h-5 w-4 flex-none" />
