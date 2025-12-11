@@ -63,6 +63,30 @@ saveSchedules(data: any): Observable<any> {
     return this.http.get(url, { headers: this.getHeaders() });
   }
 
+  // 🟦 ADD APPOINTMENT
+addAppointment(data: any): Observable<any> {
+  const url = `${this.baseUrl}/appointments/add`;
+  return this.http.post(url, data, { headers: this.getHeaders() });
+}
+
+// 🟧 GET SLOTS BY DATE
+getSlotsByDate(date: string): Observable<any> {
+  const url = `${this.baseUrl}/slots/getSlotsBySpecificDate`;
+  return this.http.post(
+    url,
+    { slot_date: date },
+    { headers: this.getHeaders() }
+  );
+}
+
+// 🟦 Get Slot Interval (Fixed)
+getSlotInterval(slot_interval: number): Observable<any> {
+  const url = `${this.baseUrl}/slots/getSlotInterval?slot_interval=${slot_interval}`;
+  return this.http.get(url, { headers: this.getHeaders() });
+}
+
+
+
   // ✅ Helpers
   saveToken(token: string) {
     localStorage.setItem('token', token);
