@@ -8,6 +8,9 @@ import { CryptoComponent } from './crypto';
 import { AddstudentComponent } from './users/addstudent/addstudent.component';
 import { StudentDashboardComponent } from './student-dashboard/student-dashboard.component';
 import { StudentDetailsComponent } from './student-details/student-details.component';
+import { AddAppointmentComponent } from './add-appointment/add-appointment.component';
+
+
 // widgets
 import { WidgetsComponent } from './widgets';
 
@@ -30,6 +33,8 @@ import { AuthLayout } from './layouts/auth-layout';
 // pages
 import { KnowledgeBaseComponent } from './pages/knowledge-base';
 import { FaqComponent } from './pages/faq';
+import { ShedulesComponent } from './shedules/shedules.component';
+import { title } from 'process';
 
 export const routes: Routes = [
     {
@@ -52,6 +57,8 @@ export const routes: Routes = [
             { path: 'add-student', component: AddstudentComponent, data: { title: 'Add Student' } },
             {path: 'student-dashboard', component: StudentDashboardComponent, data: { title: 'Student Dashboard' }},
             {path: 'student-details', component: StudentDetailsComponent, data: { title: 'Student Details' }},
+            {path: 'shedules', component: ShedulesComponent, data: {title: 'shedules'}},
+            {path: 'add-appointment', component: AddAppointmentComponent, data: { title: 'Add Appointment' }},
             
 
             // widgets

@@ -1,0 +1,177 @@
+<div class="flex justify-center items-start p-10 bg-gray-50 dark:bg-gray-900 min-h-screen transition-all duration-300">
+  <div class="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-8 w-full max-w-5xl transition-all duration-300">
+    <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6">
+      Appointment Form 
+    </h2>
+
+    <form class="space-y-6">
+      <!-- Row 1: Name / Email -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+          <input type="text" class="mt-1 w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+          <input type="email" class="mt-1 w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2" />
+        </div>
+      </div>
+
+      <!-- Row 2: Mobile / Gender -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Mobile Number</label>
+          <input type="text" maxlength="10" class="mt-1 w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Gender</label>
+          <div class="flex items-center gap-4 mt-2">
+            <label><input type="radio" name="gender" class="mr-1" /> Male</label>
+            <label><input type="radio" name="gender" class="mr-1" /> Female</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3: Marital Status -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Marital Status</label>
+        <div class="flex flex-wrap gap-4 mt-2">
+          <label><input type="radio" name="status" /> Unmarried</label>
+          <label><input type="radio" name="status" /> Married</label>
+          <label><input type="radio" name="status" /> Divorced</label>
+          <label><input type="radio" name="status" /> Widow/Widower</label>
+        </div>
+      </div>
+
+      <!-- Row 4: Twins / Appointment Type -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Are you one of the twins?</label>
+          <div class="flex gap-4 mt-2">
+            <label><input type="radio" name="twins" /> Yes</label>
+            <label><input type="radio" name="twins" /> No</label>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Appointment Type</label>
+          <div class="flex gap-4 mt-2">
+            <label><input type="radio" name="apptype" /> Online</label>
+            <label><input type="radio" name="apptype" /> Offline</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 5: DOB / TOB -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date of Birth</label>
+          <input type="date" class="mt-1 w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Time of Birth</label>
+          <input type="time" class="mt-1 w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2" />
+        </div>
+      </div>
+
+      <!-- Row 6: Country / State / City -->
+      <div class="grid grid-cols-3 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Country</label>
+          <select class="mt-1 w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2">
+            <option>India</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">State</label>
+          <select class="mt-1 w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2">
+            <option>Maharashtra</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">City</label>
+          <select class="mt-1 w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2">
+            <option>Choose...</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Row 7: Subjects -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Subjects</label>
+        <div class="grid grid-cols-4 gap-2 mt-2 text-sm">
+          <label><input type="checkbox" /> Education</label>
+          <label><input type="checkbox" /> Marriage</label>
+          <label><input type="checkbox" /> Love Life</label>
+          <label><input type="checkbox" /> Business</label>
+          <label><input type="checkbox" /> Job</label>
+          <label><input type="checkbox" /> Child Birth</label>
+          <label><input type="checkbox" /> Divorce</label>
+          <label><input type="checkbox" /> Health</label>
+          <label><input type="checkbox" /> Property</label>
+          <label><input type="checkbox" /> Finance</label>
+          <label><input type="checkbox" /> Legal Case</label>
+          <label><input type="checkbox" /> Others</label>
+        </div>
+      </div>
+
+      <!-- Row 8: Source -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Source</label>
+        <div class="flex flex-wrap gap-4 mt-2">
+          <label><input type="radio" name="source" /> Instagram</label>
+          <label><input type="radio" name="source" /> Facebook</label>
+          <label><input type="radio" name="source" /> Google</label>
+          <label><input type="radio" name="source" /> Friend</label>
+        </div>
+      </div>
+
+      <!-- Row 9: Appointment Conducted -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Appointment Conducted</label>
+        <div class="flex gap-4 mt-2">
+          <label><input type="radio" name="conducted" /> Yes</label>
+          <label><input type="radio" name="conducted" /> No</label>
+        </div>
+      </div>
+
+      <!-- Row 10: First or Repeat -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">पहिल्यांदा किंवा पुन्हा तपासणी आहे का?</label>
+        <div class="flex gap-4 mt-2">
+          <label><input type="radio" name="visit" /> First Time (पहिल्यांदा)</label>
+          <label><input type="radio" name="visit" /> Repeat (पुन्हा तपासणी)</label>
+        </div>
+      </div>
+
+      <!-- Row 11: Transaction ID / Appointment Date -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Transaction ID</label>
+          <input type="text" class="mt-1 w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Appointment Date</label>
+          <input type="date" class="mt-1 w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2" />
+        </div>
+      </div>
+
+      <!-- Row 12: Slots -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Slots</label>
+        <select class="mt-1 w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white p-2">
+          <option>Select Slot</option>
+          <option>10:00 AM - 10:30 AM</option>
+          <option>10:30 AM - 11:00 AM</option>
+          <option>11:00 AM - 11:30 AM</option>
+        </select>
+      </div>
+
+      <!-- Submit -->
+      <div class="flex justify-end pt-4">
+        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400">
+          Submit
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
