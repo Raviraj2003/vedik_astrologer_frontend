@@ -9,6 +9,9 @@ import { AddstudentComponent } from './users/addstudent/addstudent.component';
 import { StudentDashboardComponent } from './student-dashboard/student-dashboard.component';
 import { StudentDetailsComponent } from './student-details/student-details.component';
 import { AddAppointmentComponent } from './add-appointment/add-appointment.component';
+import { AddMediaComponent } from './add-media.component';
+import { CloseslotsComponent } from './closeslots';
+import { AddServicesComponent } from './add-services';
 
 
 // widgets
@@ -59,6 +62,11 @@ export const routes: Routes = [
             {path: 'student-details', component: StudentDetailsComponent, data: { title: 'Student Details' }},
             {path: 'shedules', component: ShedulesComponent, data: {title: 'shedules'}},
             {path: 'add-appointment', component: AddAppointmentComponent, data: { title: 'Add Appointment' }},
+            {path: 'add-media', component: AddMediaComponent, data: { title: 'Add Media' }},
+            {path: 'close-slots', component: CloseslotsComponent, data: { title: 'Close Slots' }},
+            {path: 'add-services', component: AddServicesComponent, data: { title: 'Add Services' }},
+
+                       
             
 
             // widgets

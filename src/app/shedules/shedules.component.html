@@ -1,124 +1,114 @@
-<div>
-  <!-- Breadcrumb -->
-  <ul class="mb-6 flex space-x-2 rtl:space-x-reverse text-sm">
-    <li><a href="javascript:;" class="text-primary hover:underline">Dashboard</a></li>
-    <li class="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2 text-gray-600 dark:text-gray-400">
-      <span>Schedules</span>
-    </li>
-  </ul>
+<div class="p-8 bg-slate-50 dark:bg-[#020617] min-h-screen">
+  <nav class="mb-8">
+    <ol class="flex items-center space-x-2 text-sm font-medium">
+      <li><a href="javascript:;" class="text-indigo-600 hover:text-indigo-800 transition-colors">Dashboard</a></li>
+      <li class="flex items-center space-x-2 text-slate-400">
+        <span>/</span>
+        <span class="text-slate-900 dark:text-white font-bold">Schedules</span>
+      </li>
+    </ol>
+  </nav>
 
-  <div class="grid grid-cols-1 gap-6">
-    <div class="panel rounded-lg p-4 sm:p-6 bg-white dark:bg-[#0f172a] text-primary dark:text-white-light shadow-sm">
+  <div class="max-w-7xl mx-auto">
+    
+    <div class="bg-gradient-to-r from-indigo-600 to-violet-700 rounded-t-2xl p-8 shadow-lg">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+        <div>
+          <h1 class="text-2xl font-extrabold text-white tracking-tight">Working Hours</h1>
+          <p class="text-indigo-100 text-sm mt-1">Configure your weekly availability and slot logic.</p>
+        </div>
 
-      <!-- Header Controls -->
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h5 class="text-lg font-semibold dark:text-white">Working Hours</h5>
-
-        <div class="flex flex-wrap items-center gap-4">
-          <!-- From Date -->
-          <div>
-            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300">From Date</label>
-            <input
-              type="date"
-              [(ngModel)]="fromDate"
-              class="mt-1 w-40 rounded-md border border-gray-300 bg-transparent p-2 text-sm dark:border-gray-600 dark:text-gray-100"
-            />
+        <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 grid grid-cols-2 md:grid-cols-4 gap-4 border border-white/20">
+          <div class="flex flex-col gap-1.5">
+            <label class="text-[10px] uppercase font-bold text-indigo-200 px-1">From Date</label>
+            <input type="date" [(ngModel)]="fromDate" class="bg-white/20 border-0 rounded-lg text-white text-sm px-3 py-2 focus:ring-2 focus:ring-white/50 outline-none placeholder-white/50" />
           </div>
-
-          <!-- To Date -->
-          <div>
-            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300">To Date</label>
-            <input
-              type="date"
-              [(ngModel)]="toDate"
-              class="mt-1 w-40 rounded-md border border-gray-300 bg-transparent p-2 text-sm dark:border-gray-600 dark:text-gray-100"
-            />
+          <div class="flex flex-col gap-1.5">
+            <label class="text-[10px] uppercase font-bold text-indigo-200 px-1">To Date</label>
+            <input type="date" [(ngModel)]="toDate" class="bg-white/20 border-0 rounded-lg text-white text-sm px-3 py-2 focus:ring-2 focus:ring-white/50 outline-none" />
           </div>
-
-          <!-- Default Duration -->
-          <div>
-            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300">Default Duration (min)</label>
-            <input
-              type="number"
-              [(ngModel)]="slotDuration"
-              (change)="updateAllSlots()"
-              min="5"
-              step="5"
-              class="mt-1 w-28 rounded-md border border-gray-300 bg-transparent p-2 text-sm dark:border-gray-600 dark:text-gray-100"
-            />
+          <div class="flex flex-col gap-1.5">
+            <label class="text-[10px] uppercase font-bold text-indigo-200 px-1">Duration</label>
+            <input type="number" [(ngModel)]="slotDuration" (change)="updateAllSlots()" class="bg-white/20 border-0 rounded-lg text-white text-sm px-3 py-2 focus:ring-2 focus:ring-white/50 outline-none" />
           </div>
-
-          <!-- Buffer -->
-          <div>
-            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300">Buffer (min)</label>
-            <input
-              type="number"
-              [(ngModel)]="bufferTime"
-              (change)="updateAllSlots()"
-              min="0"
-              step="5"
-              class="mt-1 w-28 rounded-md border border-gray-300 bg-transparent p-2 text-sm dark:border-gray-600 dark:text-gray-100"
-            />
+          <div class="flex flex-col gap-1.5">
+            <label class="text-[10px] uppercase font-bold text-indigo-200 px-1">Buffer</label>
+            <input type="number" [(ngModel)]="bufferTime" (change)="updateAllSlots()" class="bg-white/20 border-0 rounded-lg text-white text-sm px-3 py-2 focus:ring-2 focus:ring-white/50 outline-none" />
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Table -->
-      <div class="overflow-x-auto mt-6">
-        <table class="min-w-full border-collapse text-sm">
-          <thead class="bg-gray-100 dark:bg-[#1e293b]">
-            <tr class="text-left text-gray-700 dark:text-gray-300">
-              <th class="p-3">Day</th>
-              <th class="p-3">Start</th>
-              <th class="p-3">End</th>
-              <th class="p-3">Duration</th>
-              <th class="p-3">Slots</th>
-              <th class="p-3 text-center">Actions</th>
-            </tr>
-          </thead>
+    <div class="bg-white dark:bg-[#0f172a] rounded-b-2xl shadow-xl border-x border-b border-slate-200 dark:border-slate-800 overflow-hidden">
+      <table class="w-full text-left">
+        <thead>
+          <tr class="bg-slate-100 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
+            <th class="px-8 py-5 text-xs font-bold uppercase tracking-widest text-slate-500">Day of Week</th>
+            <th class="px-8 py-5 text-xs font-bold uppercase tracking-widest text-slate-500">Start Time</th>
+            <th class="px-8 py-5 text-xs font-bold uppercase tracking-widest text-slate-500">End Time</th>
+            <th class="px-8 py-5 text-xs font-bold uppercase tracking-widest text-slate-500">Generated Slots</th>
+            <th class="px-8 py-5 text-xs font-bold uppercase tracking-widest text-center text-slate-500">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+          <tr *ngFor="let day of workingHours; let i = index; let odd = odd" 
+              [ngClass]="{'bg-slate-50/50 dark:bg-slate-900/20': odd}"
+              class="hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-colors">
+            
+            <td class="px-8 py-5">
+               <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">
+                 {{ day.day }}
+               </span>
+            </td>
+            
+            <td class="px-8 py-5">
+              <input type="time" [(ngModel)]="day.startTime" (change)="updateSlots(day)" 
+                     class="rounded-xl border-slate-200 bg-white dark:bg-slate-800 dark:border-slate-700 text-sm focus:ring-2 focus:ring-indigo-500/20 outline-none px-4 py-2 shadow-sm" />
+            </td>
+            
+            <td class="px-8 py-5">
+              <input type="time" [(ngModel)]="day.endTime" (change)="updateSlots(day)" 
+                     class="rounded-xl border-slate-200 bg-white dark:bg-slate-800 dark:border-slate-700 text-sm focus:ring-2 focus:ring-indigo-500/20 outline-none px-4 py-2 shadow-sm" />
+            </td>
 
-          <tbody>
-            <tr *ngFor="let day of workingHours; let i = index" class="border-b border-gray-100 dark:border-gray-700">
-              <td class="p-3 font-semibold text-gray-800 dark:text-gray-200">{{ day.day }}</td>
-              <td class="p-3"><input type="time" [(ngModel)]="day.startTime" (change)="updateSlots(day)" class="w-28 border p-2 rounded-md dark:border-gray-600" /></td>
-              <td class="p-3"><input type="time" [(ngModel)]="day.endTime" (change)="updateSlots(day)" class="w-28 border p-2 rounded-md dark:border-gray-600" /></td>
+            <td class="px-8 py-5">
+              <div class="flex flex-wrap gap-2 max-w-sm">
+                <span *ngFor="let slot of day.slots" 
+                      class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800/50">
+                  {{ slot }}
+                </span>
+                <span *ngIf="day.slots.length === 0 && day.startTime && day.endTime" class="text-xs text-rose-500 font-semibold flex items-center bg-rose-50 px-3 py-1 rounded-lg border border-rose-100">
+                  ⚠️ No slots
+                </span>
+              </div>
+            </td>
 
-              <!-- Individual Duration -->
-              <td class="p-3">
-                <input
-                  type="number"
-                  [(ngModel)]="day.slotInterval"
-                  (change)="updateSlots(day)"
-                  min="5"
-                  step="5"
-                  class="w-20 border p-2 rounded-md dark:border-gray-600"
-                />
-              </td>
+            <td class="px-8 py-5 text-center">
+              <div class="flex items-center justify-center space-x-4">
+                <button (click)="copyFromPrevious(i)" 
+                        class="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-100 rounded-xl transition-all active:scale-90">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
+                </button>
+                <button (click)="clearDay(i)" 
+                        class="p-2.5 text-slate-400 hover:text-rose-600 hover:bg-rose-100 rounded-xl transition-all active:scale-90">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-              <td class="p-3">
-                <div class="flex flex-wrap gap-2">
-                  <span *ngFor="let slot of day.slots" class="rounded-lg bg-primary/90 px-3 py-1 text-xs text-white dark:bg-primary/70">{{ slot }}</span>
-                  <span *ngIf="day.slots.length === 0 && day.startTime && day.endTime" class="text-xs italic text-red-400">⚠️ No slots</span>
-                </div>
-              </td>
-
-              <td class="p-3 text-center">
-                <button (click)="clearDay(i)" class="mx-1 text-red-500 hover:scale-110 transition-transform">🗑️</button>
-                <button (click)="copyFromPrevious(i)" class="mx-1 text-primary hover:scale-110 transition-transform">📋</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Footer -->
-      <div class="mt-6 flex flex-col sm:flex-row justify-center gap-4">
-        <button (click)="saveSchedule()" class="rounded-full bg-green-500 px-6 py-2 font-semibold text-white shadow hover:bg-green-600">
-          💾 Save
-        </button>
-        <button (click)="cancel()" class="rounded-full bg-sky-500 px-6 py-2 font-semibold text-white shadow hover:bg-sky-600">
-          ✖ Cancel
-        </button>
+      <div class="bg-slate-50 dark:bg-slate-900/50 px-8 py-6 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+        <p class="text-xs text-slate-400 font-medium italic">* Changes are not saved until you click the Save button.</p>
+        <div class="flex space-x-4">
+          <button (click)="cancel()" class="px-6 py-2.5 text-sm font-bold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-colors">
+            Discard
+          </button>
+          <button (click)="saveSchedule()" class="px-10 py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white text-sm font-black rounded-xl shadow-lg shadow-indigo-200 dark:shadow-none transition-all transform hover:-translate-y-1">
+            Apply Schedule
+          </button>
+        </div>
       </div>
     </div>
   </div>

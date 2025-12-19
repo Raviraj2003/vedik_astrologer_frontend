@@ -1,4 +1,3 @@
-// api.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -7,12 +6,16 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ApiService {
-  private baseUrl = 'http://192.168.1.54:5000/api';
+  private baseUrl = 'http://192.168.1.8:5000/api';
 
   constructor(private http: HttpClient) {}
 
-  // 🔒 Attach token for secure endpoints
-  private getHeaders(): HttpHeaders {
+  // ======================================
+  // 🔒 HEADERS
+  // ======================================
+
+  // For JSON-based APIs
+  private getJsonHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
     return new HttpHeaders({
       'Content-Type': 'application/json',
@@ -20,75 +23,212 @@ export class ApiService {
     });
   }
 
-  // 🟢 LOGIN
+  // For FILE UPLOAD APIs (IMPORTANT)
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders({
+      Authorization: token ? `Bearer ${token}` : '',
+    });
+  }
+
+  // ======================================
+  // 🔐 AUTH
+  // ======================================
+
   login(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/auth/login`, data);
   }
 
-  // 🟢 REGISTER
   register(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/auth/register`, data);
   }
 
-  // ⭐ CREATE STUDENT
+  // ======================================
+  // 🎓 STUDENT
+  // ======================================
+
   createStudent(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/student/createstudent`, data, {
-      headers: this.getHeaders(),
-    });
+    return this.http.post(
+      `${this.baseUrl}/student/createstudent`,
+      data,
+      { headers: this.getJsonHeaders() }
+    );
   }
 
-  // 🟣 UPDATE STUDENT
   updateStudentDetails(data: any): Observable<any> {
-    const url = `${this.baseUrl}/student/updatestudentdetails`;
-    const headers = this.getHeaders();
-    console.log('api token used:', headers.get('Authorization'));
-    return this.http.post(url, data, { headers });
+    return this.http.post(
+      `${this.baseUrl}/student/updatestudentdetails`,
+      data,
+      { headers: this.getJsonHeaders() }
+    );
   }
 
-  // 🟩 SAVE SCHEDULES (your new one)
-  // 🟩 SAVE SCHEDULES
-saveSchedules(data: any): Observable<any> {
-  const url = `${this.baseUrl}/slots/schedule/save`;
-  const headers = this.getHeaders();
-  console.log('📤 Sending to:', url);
-  console.log('📦 Payload:', data);
-  console.log('🔐 Token:', headers.get('Authorization'));
-  return this.http.post(url, data, { headers });
-}
+  // ======================================
+  // 📅 SLOTS & SCHEDULES
+  // ======================================
 
+  saveSchedules(data: any): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/slots/schedule/save`,
+      data,
+      { headers: this.getJsonHeaders() }
+    );
+  }
 
-  // 🟨 GET SCHEDULES (optional for viewing existing)
   getSchedules(): Observable<any> {
-    const url = `${this.baseUrl}/slots/schedule/list`;
-    return this.http.get(url, { headers: this.getHeaders() });
+    return this.http.get(
+      `${this.baseUrl}/slots/schedule/list`,
+      { headers: this.getJsonHeaders() }
+    );
   }
 
-  // 🟦 ADD APPOINTMENT
-addAppointment(data: any): Observable<any> {
-  const url = `${this.baseUrl}/appointments/add`;
-  return this.http.post(url, data, { headers: this.getHeaders() });
-}
+   getSlotsByDate(date: string): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/slots/getSlotsBySpecificDate`,
+      { slot_date: date },
+      { headers: this.getJsonHeaders() }
+    );
+  }
 
-// 🟧 GET SLOTS BY DATE
-getSlotsByDate(date: string): Observable<any> {
-  const url = `${this.baseUrl}/slots/getSlotsBySpecificDate`;
+  getSlotInterval(slot_interval: number): Observable<any> {
+    return this.http.get(
+      `${this.baseUrl}/slots/getSlotInterval?slot_interval=${slot_interval}`,
+      { headers: this.getJsonHeaders() }
+    );
+  }
+
+  // ======================================
+  // 🧑‍⚕️ APPOINTMENTS
+  // ======================================
+
+  addAppointment(data: any): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/appointments/add`,
+      data,
+      { headers: this.getJsonHeaders() }
+    );
+  }
+
+  getTodayAppointments(): Observable<any> {
+    return this.http.get(
+      `${this.baseUrl}/appointments/getTodayAppointments`,
+      { headers: this.getJsonHeaders() }
+    );
+  }
+
+  getFutureAppointments(): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/appointments/getFutureAppointments`,
+      {},
+      { headers: this.getJsonHeaders() }
+    );
+  }
+
+  getTodayEmptySlots(): Observable<any> {
+    return this.http.get(
+      `${this.baseUrl}/slots/getTodayEmptySlots`,
+      { headers: this.getJsonHeaders() }
+    );
+  }
+
+  getByConductStatus(): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/appointments/getByConductStatus`,
+      { is_active: 'Y' },
+      { headers: this.getJsonHeaders() }
+    );
+  }
+
+  updateConductStatus(
+    appointment_code: string,
+    is_conducted: boolean,
+    price: number = 1500
+  ): Observable<any> {
+    const payload = {
+      appointment_code,
+      is_active: 'Y',
+      price,
+      is_appointment_conducted: is_conducted,
+    };
+
+    return this.http.post(
+      `${this.baseUrl}/appointments/updateConductStatus`,
+      payload,
+      { headers: this.getJsonHeaders() }
+    );
+  }
+
+  // ======================================
+  // 📷📄🎥 MEDIA UPLOAD (FIXED)
+  // ======================================
+
+  uploadImage(formData: FormData): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/media/uplodeimage`,
+      formData,
+      { headers: this.getAuthHeaders() } // ✅ NO Content-Type
+    );
+  }
+
+  uploadPdf(formData: FormData): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/media/addpdf`,
+      formData,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  uploadVideo(formData: FormData): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/media/addvideo`,
+      formData,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+
+  // ======================================
+// 📅 SLOT STATUS MANAGEMENT (FIXED)
+// ======================================
+
+updateSlotStatus(data: any) {
   return this.http.post(
-    url,
-    { slot_date: date },
-    { headers: this.getHeaders() }
+    `${this.baseUrl}/slots/updateSlotStatus`,
+    data,
+    { headers: this.getJsonHeaders() }
   );
 }
 
-// 🟦 Get Slot Interval (Fixed)
-getSlotInterval(slot_interval: number): Observable<any> {
-  const url = `${this.baseUrl}/slots/getSlotInterval?slot_interval=${slot_interval}`;
-  return this.http.get(url, { headers: this.getHeaders() });
+
+deactivateSlotsByDate(data: any): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/slots/deactivateSlotsByDate`,
+    data,
+    { headers: this.getJsonHeaders() } // ✅ FIXED
+  );
 }
 
+getDeactivatedSlotsByDate(date: string) {
+  return this.http.post(
+    `${this.baseUrl}/slots/getDeactivatedSlotsByDate`,
+    { slot_date: date },
+    { headers: this.getJsonHeaders() }
+  );
+}
 
+ addServiceBooking(data: any): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/services/addServiceBooking`,
+      data,
+      { headers: this.getAuthHeaders() }
+    );
+  }
 
-  // ✅ Helpers
-  saveToken(token: string) {
+  // ======================================
+  // 🧰 HELPERS
+  // ======================================
+
+  saveToken(token: string): void {
     localStorage.setItem('token', token);
   }
 

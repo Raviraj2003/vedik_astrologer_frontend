@@ -1,5 +1,5 @@
 <div
-    class="main-section relative font-nunito text-sm font-normal antialiased bg-gradient-to-b from-slate-50 via-white to-sky-50"
+    class="main-section relative font-nunito text-sm font-normal antialiased"
     [ngClass]="[store.sidebar ? 'toggle-sidebar' : '', store.menu, store.layout, store.rtlClass]"
 >
     <!--  BEGIN MAIN CONTAINER  -->
@@ -56,7 +56,7 @@
         <setting></setting>
         <!-- END APP SETTING LAUNCHER -->
 
-        <div class="main-container min-h-screen text-black dark:text-white-dark bg-white/60 dark:bg-[#071025]/60 backdrop-blur-sm" [ngClass]="[store.navbar]">
+        <div class="main-container min-h-screen text-black dark:text-white-dark" [ngClass]="[store.navbar]">
             <!--  BEGIN SIDEBAR  -->
             <sidebar></sidebar>
             <!--  END SIDEBAR  -->
@@ -67,7 +67,8 @@
                 <!--  END TOP NAVBAR  -->
 
                 <!--  BEGIN CONTENT AREA  -->
-                <div class="animation p-6 bg-transparent">
+                <div class="animation " >
+                    
                     <router-outlet></router-outlet>
                 </div>
                 <!--  END CONTENT AREA  -->
