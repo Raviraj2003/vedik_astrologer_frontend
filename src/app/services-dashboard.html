@@ -1,0 +1,128 @@
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+
+  <!-- ================= TOP TABS ================= -->
+  <div class="flex flex-wrap gap-3 mb-6">
+    <button (click)="setTab('services')" [ngClass]="activeTab==='services' ? 'active' : 'inactive'">
+      Services List
+    </button>
+    <button (click)="setTab('muhurta')" [ngClass]="activeTab==='muhurta' ? 'active' : 'inactive'">
+      Muhurta
+    </button>
+    <button (click)="setTab('kundali')" [ngClass]="activeTab==='kundali' ? 'active' : 'inactive'">
+      Kundali Matching
+    </button>
+    <button (click)="setTab('preparing')" [ngClass]="activeTab==='preparing' ? 'active' : 'inactive'">
+      Preparing Kundali
+    </button>
+  </div>
+
+  <!-- ================= CARD ================= -->
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+
+    <!-- ================= SEARCH ================= -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div>
+        <label class="label">Customer Name</label>
+        <input
+          type="text"
+          [(ngModel)]="customerName"
+          (input)="filterByCustomer()"
+          placeholder="Search by customer name"
+          class="input"
+        />
+      </div>
+    </div>
+
+    <!-- ================= TOTAL ================= -->
+    <p class="font-semibold mb-3 text-gray-700 dark:text-gray-200">
+      Total Paid Amount :
+      <span class="text-green-600">
+        ₹ {{ totalAmount | number:'1.2-2' }}
+      </span>
+    </p>
+
+    <!-- ================= LOADING ================= -->
+    <div *ngIf="isLoading" class="text-sm text-gray-500">Loading...</div>
+
+    <!-- ================= TABLE ================= -->
+    <div class="overflow-x-auto mt-4" *ngIf="!isLoading">
+      <table class="min-w-full border text-sm">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="th">#</th>
+            <th class="th">Service</th>
+            <th class="th">Customer Name</th>
+            <th class="th">Mobile</th>
+            <th class="th">Email</th>
+            <th class="th">Service Date</th>
+            <th class="th">Amount</th>
+            <th class="th">Transaction ID</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let row of filteredList; index as i">
+            <td class="td">{{ i + 1 }}</td>
+            <td class="td">{{ row.service_name }}</td>
+            <td class="td">{{ row.customer_name }}</td>
+            <td class="td">{{ row.mobile }}</td>
+            <td class="td">{{ row.email }}</td>
+            <td class="td">{{ row.service_date | date:'dd-MM-yyyy' }}</td>
+            <td class="td">₹ {{ row.amount }}</td>
+            <td class="td">{{ row.transaction_id }}</td>
+          </tr>
+
+          <tr *ngIf="filteredList.length === 0">
+            <td colspan="8" class="text-center py-4 text-gray-500">
+              No records found
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= STYLES ================= -->
+<style>
+  .input {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+
+  .th {
+    padding: 8px;
+    border: 1px solid #e5e7eb;
+    font-weight: 600;
+    text-align: left;
+  }
+
+  .td {
+    padding: 8px;
+    border: 1px solid #e5e7eb;
+  }
+
+  .active {
+    background: #2563eb;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+
+  .inactive {
+    background: #e5e7eb;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+
+  .label {
+    font-size: 13px;
+    font-weight: 500;
+  }
+</style>

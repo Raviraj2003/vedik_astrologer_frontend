@@ -44,15 +44,13 @@
 
           <div class="space-y-2">
             <label class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Available Slots</label>
-            <select
-              [(ngModel)]="activateSlotTime"
-              class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 outline-none transition-all appearance-none"
-            >
-              <option value="">Choose a slot to restore...</option>
-              <option *ngFor="let s of deactivatedSlots" [value]="s.slot_time">
-                {{ s.slot_time }} ({{ s.day_name }})
-              </option>
-            </select>
+            <select [(ngModel)]="activateSlotRange">
+  <option value="">Choose a slot to restore...</option>
+  <option *ngFor="let s of deactivatedSlots" [value]="s.slot_range">
+    {{ s.slot_range }} ({{ s.day_name }})
+  </option>
+</select>
+
           </div>
 
           <div class="flex flex-col sm:flex-row gap-3 pt-4">
@@ -97,15 +95,13 @@
 
           <div class="space-y-2">
             <label class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Active Slots</label>
-            <select
-              [(ngModel)]="deactivateSlotTime"
-              class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-500 outline-none transition-all appearance-none"
-            >
-              <option value="">Choose a slot to disable...</option>
-              <option *ngFor="let s of activeSlots" [value]="s.slot_time">
-                {{ s.slot_time }} ({{ s.day_name }})
-              </option>
-            </select>
+            <select [(ngModel)]="deactivateSlotRange">
+  <option value="">Choose a slot to disable...</option>
+  <option *ngFor="let s of activeSlots" [value]="s.slot_range">
+    {{ s.slot_range }} ({{ s.day_name }})
+  </option>
+</select>
+
           </div>
 
           <div class="flex flex-col sm:flex-row gap-3 pt-4">

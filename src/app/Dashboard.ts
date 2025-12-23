@@ -75,9 +75,13 @@ export class DashboardComponent implements OnInit {
     apiCall.subscribe({
       next: (res: any) => {
         if (this.activeTab === 'empty') {
-          this.appointments = res?.empty_slots || [];
-          this.totalEmptySlots = res?.total_empty_slots || 0;
-        } else {
+  this.appointments = (res?.empty_slots || []).map((slot: any) => ({
+    ...slot,
+    slot_time: slot.slot_range // normalize
+  }));
+  this.totalEmptySlots = res?.total_empty_slots || 0;
+}
+ else {
           this.appointments = res?.data || [];
         }
 

@@ -14,58 +14,88 @@ export class CloseslotsComponent {
 
   // ================= ACTIVATE =================
   activateDate = '';
-  activateSlotTime = '';
-  deactivatedSlots: any[] = [];
+  activateSlotRange = '';
+  deactivatedSlots: {
+    slot_range: string;
+    day_name?: string;
+  }[] = [];
 
   // ================= DEACTIVATE =================
   deactivateDate = '';
-  deactivateSlotTime = '';
-  activeSlots: any[] = [];
+  deactivateSlotRange = '';
+  activeSlots: {
+    slot_range: string;
+    day_name?: string;
+  }[] = [];
 
   constructor(private api: ApiService) {}
 
-  // ================= LOAD ACTIVE =================
+  // ======================================================
+  // 🔹 LOAD ACTIVE SLOTS (SAFE MAPPING)
+  // ======================================================
   loadActiveSlots() {
     if (!this.deactivateDate) return;
 
     this.api.getSlotsByDate(this.deactivateDate).subscribe({
       next: (res: any) => {
-        this.activeSlots = res?.slots ?? [];
+        const slots = res?.slots ?? [];
+
+        this.activeSlots = slots.map((s: any) =>
+          typeof s === 'string'
+            ? { slot_range: s }
+            : {
+                slot_range: s.slot_range,
+                day_name: s.day_name,
+              }
+        );
       },
       error: () => alert('❌ Failed to load active slots'),
     });
   }
 
-  // ================= LOAD DEACTIVATED =================
+  // ======================================================
+  // 🔹 LOAD DEACTIVATED SLOTS (FIXED)
+  // ======================================================
   loadDeactivatedSlots() {
     if (!this.activateDate) return;
 
     this.api.getDeactivatedSlotsByDate(this.activateDate).subscribe({
       next: (res: any) => {
-        this.deactivatedSlots = res?.slots ?? [];
+        const slots = res?.slots ?? [];
+
+        this.deactivatedSlots = slots.map((s: any) => ({
+          slot_range: typeof s === 'string' ? s : s.slot_range,
+          day_name: new Date(this.activateDate).toLocaleDateString('en-US', {
+            weekday: 'long',
+          }),
+        }));
       },
       error: () => alert('❌ Failed to load deactivated slots'),
     });
   }
 
-  // ================= SINGLE =================
+  // ======================================================
+  // 🔹 SINGLE SLOT ACTIONS
+  // ======================================================
   activateSingleSlot() {
-    if (!this.activateDate || !this.activateSlotTime) {
+    if (!this.activateDate || !this.activateSlotRange) {
       return alert('Select date and slot');
     }
 
-    this.updateSlot(this.activateDate, this.activateSlotTime, 'Y');
+    this.updateSlot(this.activateDate, this.activateSlotRange, 'Y');
   }
 
   deactivateSingleSlot() {
-    if (!this.deactivateDate || !this.deactivateSlotTime) {
+    if (!this.deactivateDate || !this.deactivateSlotRange) {
       return alert('Select date and slot');
     }
 
-    this.updateSlot(this.deactivateDate, this.deactivateSlotTime, 'N');
+    this.updateSlot(this.deactivateDate, this.deactivateSlotRange, 'N');
   }
 
-  // ================= WHOLE DAY =================
+  // ======================================================
+  // 🔹 WHOLE DAY ACTIONS
+  // ======================================================
   activateWholeDay() {
     if (!this.activateDate) return alert('Select date');
 
@@ -74,31 +104,40 @@ export class CloseslotsComponent {
     this.api.getDeactivatedSlotsByDate(this.activateDate).subscribe({
       next: (res: any) => {
         const slots = res?.slots ?? [];
-        if (slots.length === 0) {
+
+        if (!slots.length) {
           alert('No deactivated slots found');
           this.loading = false;
           return;
         }
 
-        let done = 0;
+        let completed = 0;
+
         slots.forEach((s: any) => {
+          const slotRange = typeof s === 'string' ? s : s.slot_range;
+
           this.api.updateSlotStatus({
             slot_date: this.activateDate,
-            slot_time: s.slot_time,
+            slot_range: slotRange,
             is_active: 'Y',
-          }).subscribe(() => {
-            done++;
-            if (done === slots.length) {
-              alert('✅ Whole day activated');
+          }).subscribe({
+            next: () => {
+              completed++;
+              if (completed === slots.length) {
+                alert('✅ Whole day activated');
+                this.loading = false;
+                this.reloadBoth();
+              }
+            },
+            error: () => {
+              alert('❌ Failed during activation');
               this.loading = false;
-              this.loadDeactivatedSlots();
-              this.loadActiveSlots();
-            }
+            },
           });
         });
       },
       error: () => {
-        alert('❌ Failed to activate whole day');
+        alert('❌ Failed to load deactivated slots');
         this.loading = false;
       },
     });
@@ -109,13 +148,13 @@ export class CloseslotsComponent {
 
     this.loading = true;
 
-    this.api.deactivateSlotsByDate({ slot_date: this.deactivateDate })
+    this.api
+      .deactivateSlotsByDate({ slot_date: this.deactivateDate })
       .subscribe({
         next: () => {
           alert('🚫 Whole day deactivated');
           this.loading = false;
-          this.loadActiveSlots();
-          this.loadDeactivatedSlots();
+          this.reloadBoth();
         },
         error: () => {
           alert('❌ Failed to deactivate whole day');
@@ -124,25 +163,44 @@ export class CloseslotsComponent {
       });
   }
 
-  // ================= HELPER =================
-  private updateSlot(date: string, time: string, status: 'Y' | 'N') {
+  // ======================================================
+  // 🔹 COMMON SLOT UPDATE
+  // ======================================================
+  private updateSlot(
+    date: string,
+    range: string,
+    status: 'Y' | 'N'
+  ) {
     this.loading = true;
 
-    this.api.updateSlotStatus({
-      slot_date: date,
-      slot_time: time,
-      is_active: status,
-    }).subscribe({
-      next: () => {
-        alert(status === 'Y' ? '✅ Slot activated' : '🚫 Slot deactivated');
-        this.loading = false;
-        this.loadActiveSlots();
-        this.loadDeactivatedSlots();
-      },
-      error: () => {
-        alert('❌ Failed to update slot');
-        this.loading = false;
-      },
-    });
+    this.api
+      .updateSlotStatus({
+        slot_date: date,
+        slot_range: range,
+        is_active: status,
+      })
+      .subscribe({
+        next: () => {
+          alert(
+            status === 'Y'
+              ? '✅ Slot activated'
+              : '🚫 Slot deactivated'
+          );
+          this.loading = false;
+          this.reloadBoth();
+        },
+        error: () => {
+          alert('❌ Failed to update slot');
+          this.loading = false;
+        },
+      });
+  }
+
+  // ======================================================
+  // 🔹 HELPER
+  // ======================================================
+  private reloadBoth() {
+    if (this.activateDate) this.loadDeactivatedSlots();
+    if (this.deactivateDate) this.loadActiveSlots();
   }
 }

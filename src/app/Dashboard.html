@@ -48,14 +48,20 @@
           class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 justify-items-center"
         >
           <div
-            *ngFor="let slot of filteredAppointments; let i = index"
-            class="flex flex-col items-center justify-center bg-white dark:bg-gray-800 shadow-sm rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-300 w-full py-3 sm:py-4"
-          >
-            <div class="text-sm text-gray-400 dark:text-gray-500 mb-1">Slot {{ i + 1 }}</div>
-            <div class="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100">
-              {{ slot.slot_time }}
-            </div>
-          </div>
+  *ngFor="let slot of filteredAppointments; let i = index"
+  class="flex flex-col items-center justify-center bg-white dark:bg-gray-800 shadow-sm rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-300 w-full py-3 sm:py-4"
+>
+  <div class="text-sm text-gray-400 mb-1">Slot {{ i + 1 }}</div>
+
+  <div class="text-base font-semibold text-gray-800 dark:text-gray-100">
+    {{ slot.slot_range }}
+  </div>
+
+  <div class="text-xs text-gray-400 mt-1">
+    {{ slot.day_name }} • {{ slot.slot_date | date:'dd MMM yyyy' }}
+  </div>
+</div>
+
         </div>
       </div>
     </div>
@@ -236,7 +242,5 @@
   </div>
 
   <!-- Footer -->
-  <p class="text-xs text-gray-400 dark:text-gray-500 mt-4 text-center">
-    © 2025. MITECH All rights reserved
-  </p>
+ 
 </div>

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ApiService {
-  private baseUrl = 'http://192.168.1.8:5000/api';
+  private baseUrl = 'http://192.168.1.13:5000/api';
 
   constructor(private http: HttpClient) {}
 
@@ -68,12 +68,13 @@ export class ApiService {
   // ======================================
 
   saveSchedules(data: any): Observable<any> {
-    return this.http.post(
-      `${this.baseUrl}/slots/schedule/save`,
-      data,
-      { headers: this.getJsonHeaders() }
-    );
-  }
+  return this.http.post(
+    `${this.baseUrl}/slots/saveSchedule`, // ✅ MATCH CURL
+    data,
+    { headers: this.getJsonHeaders() }
+  );
+}
+
 
   getSchedules(): Observable<any> {
     return this.http.get(
@@ -83,12 +84,12 @@ export class ApiService {
   }
 
    getSlotsByDate(date: string): Observable<any> {
-    return this.http.post(
-      `${this.baseUrl}/slots/getSlotsBySpecificDate`,
-      { slot_date: date },
-      { headers: this.getJsonHeaders() }
-    );
-  }
+  return this.http.post(
+    `${this.baseUrl}/slots/getSlotsBySpecificDate`,
+    { slot_date: date },
+    { headers: this.getJsonHeaders() }
+  );
+}
 
   getSlotInterval(slot_interval: number): Observable<any> {
     return this.http.get(
@@ -191,7 +192,28 @@ export class ApiService {
 // 📅 SLOT STATUS MANAGEMENT (FIXED)
 // ======================================
 
-updateSlotStatus(data: any) {
+// ======================================
+// 📅 SLOT & SCHEDULE MANAGEMENT
+// ======================================
+
+// 🔹 Get ACTIVE slots by date
+
+
+// 🔹 Get DEACTIVATED slots by date
+getDeactivatedSlotsByDate(date: string): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/slots/getDeactivatedSlotsByDate`,
+    { slot_date: date },
+    { headers: this.getJsonHeaders() }
+  );
+}
+
+// 🔹 Activate / Deactivate SINGLE slot
+updateSlotStatus(data: {
+  slot_date: string;
+  slot_range: string;   // ✅ MUST MATCH DB
+  is_active: 'Y' | 'N';
+}): Observable<any> {
   return this.http.post(
     `${this.baseUrl}/slots/updateSlotStatus`,
     data,
@@ -199,22 +221,17 @@ updateSlotStatus(data: any) {
   );
 }
 
-
-deactivateSlotsByDate(data: any): Observable<any> {
+// 🔹 Deactivate WHOLE DAY
+deactivateSlotsByDate(data: {
+  slot_date: string;
+}): Observable<any> {
   return this.http.post(
     `${this.baseUrl}/slots/deactivateSlotsByDate`,
     data,
-    { headers: this.getJsonHeaders() } // ✅ FIXED
-  );
-}
-
-getDeactivatedSlotsByDate(date: string) {
-  return this.http.post(
-    `${this.baseUrl}/slots/getDeactivatedSlotsByDate`,
-    { slot_date: date },
     { headers: this.getJsonHeaders() }
   );
 }
+
 
  addServiceBooking(data: any): Observable<any> {
     return this.http.post(
@@ -223,6 +240,53 @@ getDeactivatedSlotsByDate(date: string) {
       { headers: this.getAuthHeaders() }
     );
   }
+
+  getServiceBookingsByService(serviceName: string) {
+  const body = {
+    service_name: serviceName,
+  };
+
+  return this.http.post(
+    `${this.baseUrl}/services/getServiceBookingsByService`,
+    body,
+    { headers: this.getAuthHeaders() }
+  );
+}
+
+
+// ======================================
+// 🧑‍⚕️ APPOINTMENTS
+// ======================================
+
+getPendingAppointments(): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/appointments/getPendingAppointments`,
+    {},
+    { headers: this.getJsonHeaders() }
+  );
+}
+
+rescheduleAppointment(data: {
+  appointment_code: string;
+  new_date: string;
+  new_slot_range: string;
+}): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/appointments/reschedule`,
+    data,
+    { headers: this.getJsonHeaders() }
+  );
+}
+
+
+saveClassSchedule(data: any) {
+  return this.http.post(
+    `${this.baseUrl}/saveClassSchedule`,
+    data,
+    { headers: this.getJsonHeaders() }
+  );
+}
+
 
   // ======================================
   // 🧰 HELPERS

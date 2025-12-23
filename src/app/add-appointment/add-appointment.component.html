@@ -191,21 +191,25 @@
       </div>
 
       <!-- Row 12 -->
-      <div>
-        <label class="block text-sm font-medium">Slots</label>
-        <select formControlName="slot_time"
-          class="mt-1 w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white">
-          <option value="">Select Slot</option>
-          <option *ngFor="let slot of slots" [value]="slot.slot_time" [disabled]="slot.is_booked"
-            [ngClass]="{ 'text-gray-400': slot.is_booked, 'text-black dark:text-white': !slot.is_booked }">
-            {{ formatTime(slot.slot_time) }}
-            <span *ngIf="slot.is_booked"> (Booked)</span>
-          </option>
-        </select>
-        <p *ngIf="slots.length === 0" class="text-xs text-red-500 mt-1">
-          No available slots for this date.
-        </p>
-      </div>
+     <div>
+  <label class="block text-sm font-medium">Slots</label>
+
+  <select
+    formControlName="slot_time"
+    class="mt-1 w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+  >
+    <option value="">Select Slot</option>
+
+    <option *ngFor="let slot of slots" [value]="slot.slot_range">
+      {{ slot.slot_range }} ({{ slot.day_name }})
+    </option>
+  </select>
+
+  <p *ngIf="slots.length === 0" class="text-xs text-red-500 mt-1">
+    No available slots for this date.
+  </p>
+</div>
+
 
       <!-- Submit -->
       <div class="flex justify-end pt-3">
