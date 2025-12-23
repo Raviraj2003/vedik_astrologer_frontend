@@ -1,7 +1,15 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+  AbstractControl,
+  ValidationErrors
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../service/api.service';
+
 @Component({
   selector: 'app-addstudent',
   standalone: true,
@@ -14,35 +22,46 @@ export class AddstudentComponent {
   message: string = '';
 
   constructor(private fb: FormBuilder, private apiService: ApiService) {
-    // 🧩 Initialize form controls
-    this.studentForm = this.fb.group({
-      first_name: ['', Validators.required],
-      last_name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
-      phone_no: ['', Validators.required],
-      role: ['STD'], // default value
-    });
+    this.studentForm = this.fb.group(
+      {
+        first_name: ['', Validators.required],
+        last_name: ['', Validators.required],
+        email: ['', [Validators.required, Validators.email]],
+        password: ['', [Validators.required, Validators.minLength(6)]],
+        confirm_password: ['', Validators.required],
+        phone_no: ['', Validators.required],
+        role: ['STD'],
+      },
+      {
+        validators: this.passwordMatchValidator,
+      }
+    );
   }
 
-  // 🧠 Submit handler
+  // 🔐 Password match validator
+  passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+    const password = control.get('password')?.value;
+    const confirmPassword = control.get('confirm_password')?.value;
+
+    return password === confirmPassword ? null : { passwordMismatch: true };
+  }
+
   onSubmit() {
     if (this.studentForm.invalid) {
-      this.message = 'Please fill all required fields correctly!';
+      this.message = 'Please fix the errors before submitting.';
       return;
     }
 
-    console.log('Submitting:', this.studentForm.value);
+    const payload = { ...this.studentForm.value };
+    delete payload.confirm_password; // ❌ Do not send confirm password
 
-    this.apiService.createStudent(this.studentForm.value).subscribe({
+    this.apiService.createStudent(payload).subscribe({
       next: (res) => {
-        console.log('Response:', res);
         this.message = res.message || 'Student added successfully!';
-        this.studentForm.reset();
+        this.studentForm.reset({ role: 'STD' });
       },
-      error: (err) => {
-        console.error('Error:', err);
-        this.message = 'Failed to add student. Check console for details.';
+      error: () => {
+        this.message = 'Failed to add student.';
       },
     });
   }

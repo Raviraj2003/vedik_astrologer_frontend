@@ -18,6 +18,9 @@ export class AddAppointmentComponent implements OnInit {
   slots: any[] = [];
   appointmentForm!: FormGroup;
 
+  // 👇 Modal control for partner details
+  showPartnerModal = false;
+
   constructor(
     public storeData: Store<any>,
     private api: ApiService,
@@ -50,6 +53,12 @@ export class AddAppointmentComponent implements OnInit {
       transaction_id: [''],
       appointment_date: [''],
       slot_time: [''],
+
+      // 🆕 Partner Details
+      partner_name: [''],
+      partner_date_of_birth: [''],
+      partner_time_of_birth: [''],
+      partner_place_of_birth: [''],
     });
   }
 
@@ -78,7 +87,6 @@ export class AddAppointmentComponent implements OnInit {
 
     this.api.getSlotsByDate(date).subscribe({
       next: (res) => {
-        // ✅ Only show available slots
         if (res?.slots && Array.isArray(res.slots)) {
           this.slots = res.slots.filter((s: any) => !s.is_booked);
         } else {
@@ -95,36 +103,44 @@ export class AddAppointmentComponent implements OnInit {
 
   // ✅ Format slot time to 12-hour format (AM/PM)
   formatTime(time: string): string {
-  if (!time) return '';
+    if (!time) return '';
 
-  // Normalize: handle times like "9" or "9:" or "09:00"
-  let [hourStr, minuteStr] = time.split(':');
+    let [hourStr, minuteStr] = time.split(':');
+    if (!minuteStr) minuteStr = '00';
 
-  // If no minutes, default to "00"
-  if (!minuteStr) minuteStr = '00';
+    const hour = Number(hourStr);
+    const minute = Number(minuteStr);
 
-  const hour = Number(hourStr);
-  const minute = Number(minuteStr);
+    if (isNaN(hour) || isNaN(minute)) return time;
 
-  if (isNaN(hour) || isNaN(minute)) return time; // fallback if invalid
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const adjustedHour = hour % 12 || 12;
 
-  const ampm = hour >= 12 ? 'PM' : 'AM';
-  const adjustedHour = hour % 12 || 12;
+    return `${adjustedHour}:${minute.toString().padStart(2, '0')} ${ampm}`;
+  }
 
-  return `${adjustedHour}:${minute.toString().padStart(2, '0')} ${ampm}`;
-}
-
-
-  // 🟨 Handle checkbox selection for subjects
+  // 🟨 Handle checkbox selection for subjects + open modal conditionally
   toggleSubject(subject: string, event: any) {
     const subjects = this.appointmentForm.value.subjects || [];
+
     if (event.target.checked) {
       subjects.push(subject);
+
+      // ✅ Open modal if one of these selected
+      if (['Divorce', 'Child Birth', 'Joint property holder'].includes(subject)) {
+        this.showPartnerModal = true;
+      }
     } else {
       const index = subjects.indexOf(subject);
       if (index >= 0) subjects.splice(index, 1);
     }
+
     this.appointmentForm.patchValue({ subjects });
+  }
+
+  // 👇 Close Partner modal
+  closePartnerModal() {
+    this.showPartnerModal = false;
   }
 
   // 🟩 Submit appointment form
@@ -137,6 +153,7 @@ export class AddAppointmentComponent implements OnInit {
         console.log('✅ Appointment added:', res);
         alert('Appointment booked successfully!');
         this.appointmentForm.reset();
+        this.showPartnerModal = false;
       },
       error: (err) => {
         console.error('❌ Error adding appointment:', err);

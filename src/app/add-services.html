@@ -1,0 +1,111 @@
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+  <div class="max-w-6xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow border dark:border-gray-700 p-6">
+
+    <!-- FORM -->
+    <form class="space-y-6" (ngSubmit)="submitForm()">
+
+      <!-- ROW 1 -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Service -->
+        <div>
+          <label class="block text-sm font-medium mb-1">Select Service:</label>
+          <select
+            [(ngModel)]="formData.service"
+            name="service"
+            class="w-full rounded-md border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
+          >
+            <option value="">Select</option>
+            <option value="Tarot">Tarot</option>
+            <option value="Preparing Kundali">Preparing Kundali</option>
+            <option value="Kundali Matching">Kundali Matching</option>
+            <option value="Muhurta">Muhurta</option>
+          </select>
+        </div>
+
+        <!-- Name -->
+        <div>
+          <label class="block text-sm font-medium mb-1">Name:</label>
+          <input
+            type="text"
+            [(ngModel)]="formData.name"
+            name="name"
+            class="w-full rounded-md border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+        </div>
+
+        <!-- Mobile -->
+        <div>
+          <label class="block text-sm font-medium mb-1">Mobile:</label>
+          <input
+            type="text"
+            [(ngModel)]="formData.mobile"
+            name="mobile"
+            class="w-full rounded-md border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+        </div>
+      </div>
+
+      <!-- ROW 2 -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Email -->
+        <div>
+          <label class="block text-sm font-medium mb-1">Email:</label>
+          <input
+            type="email"
+            [(ngModel)]="formData.email"
+            name="email"
+            class="w-full rounded-md border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+        </div>
+
+        <!-- Service Date -->
+        <div>
+          <label class="block text-sm font-medium mb-1">Service Date:</label>
+          <input
+            type="date"
+            [(ngModel)]="formData.serviceDate"
+            name="serviceDate"
+            class="w-full rounded-md border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+        </div>
+
+        <!-- Amount -->
+        <div>
+          <label class="block text-sm font-medium mb-1">Amount:</label>
+          <input
+            type="number"
+            [(ngModel)]="formData.amount"
+            name="amount"
+            class="w-full rounded-md border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+        </div>
+      </div>
+
+      <!-- ROW 3 -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Transaction ID -->
+        <div>
+          <label class="block text-sm font-medium mb-1">Transaction ID:</label>
+          <input
+            type="text"
+            [(ngModel)]="formData.transactionId"
+            name="transactionId"
+            class="w-full rounded-md border px-3 py-2 text-sm dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+        </div>
+      </div>
+
+      <!-- SUBMIT -->
+      <div>
+        <button
+          type="submit"
+          [disabled]="loading"
+          class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-6 py-2.5 rounded-md transition disabled:opacity-50"
+        >
+          {{ loading ? 'Submitting...' : 'Submit' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
