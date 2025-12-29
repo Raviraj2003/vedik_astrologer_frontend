@@ -1,62 +1,244 @@
-<div class="form-wrapper">
-  <h2>Add New Student</h2>
+<div class="p-6 bg-gray-50 min-h-screen">
 
-  <form [formGroup]="studentForm" (ngSubmit)="onSubmit()" class="student-form">
+  <!-- ================= HEADER ================= -->
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-semibold text-gray-800">Students</h2>
 
-    <div class="form-row">
-      <label>First Name</label>
-      <input type="text" formControlName="first_name" />
+    <div class="flex items-center gap-3">
+      <button
+        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg flex items-center gap-2"
+        (click)="openAddStudent()"
+      >
+        <span class="text-lg">＋</span> Add Student
+      </button>
+
+      <div class="relative">
+        <input
+          type="text"
+          placeholder="Search Students"
+          class="border border-gray-300 rounded-lg pl-4 pr-10 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [(ngModel)]="searchText"
+          (ngModelChange)="searchStudents()"
+        />
+        <span class="absolute right-3 top-2.5 text-gray-400">🔍</span>
+      </div>
     </div>
+  </div>
 
-    <div class="form-row">
-      <label>Last Name</label>
-      <input type="text" formControlName="last_name" />
-    </div>
-
-    <div class="form-row">
-      <label>Email</label>
-      <input type="email" formControlName="email" />
-    </div>
-
-    <!-- PASSWORD -->
-    <div class="form-row">
-      <label>Password</label>
-      <input
-        type="password"
-        formControlName="password"
-        autocomplete="new-password"
-        (copy)="false"
-        (paste)="false"
-        (cut)="false"
-      />
-    </div>
-
-    <!-- CONFIRM PASSWORD -->
-    <div class="form-row">
-      <label>Confirm Password</label>
-      <input
-        type="password"
-        formControlName="confirm_password"
-        autocomplete="new-password"
-        (copy)="false"
-        (paste)="false"
-        (cut)="false"
-      />
-      <small class="error"
-        *ngIf="studentForm.errors?.['passwordMismatch'] && studentForm.get('confirm_password')?.touched">
-        Passwords do not match
-      </small>
-    </div>
-
-    <div class="form-row">
-      <label>Phone No</label>
-      <input type="text" formControlName="phone_no" />
-    </div>
-
-    <button type="submit" [disabled]="studentForm.invalid">
-      Add Student
+  <!-- ================= TABS ================= -->
+  <div class="flex gap-6 border-b mb-5">
+    <button
+      class="pb-2 text-sm font-medium"
+      [ngClass]="activeTab === 'INDIVIDUAL'
+        ? 'text-blue-600 border-b-2 border-blue-600'
+        : 'text-gray-500'"
+      (click)="switchTab('INDIVIDUAL')"
+    >
+      Individual Students
     </button>
-  </form>
 
-  <p class="success-msg" *ngIf="message">{{ message }}</p>
+    <button
+      class="pb-2 text-sm font-medium"
+      [ngClass]="activeTab === 'BATCH'
+        ? 'text-blue-600 border-b-2 border-blue-600'
+        : 'text-gray-500'"
+      (click)="switchTab('BATCH')"
+    >
+      Batch Students
+    </button>
+  </div>
+
+  <!-- ================= CARD ================= -->
+  <div class="bg-white rounded-2xl shadow-md p-6">
+
+    <!-- ================= TABLE ================= -->
+    <div *ngIf="paginatedStudents.length > 0; else noStudents" class="overflow-x-auto">
+      <table class="w-full text-sm text-left">
+        <thead class="bg-gray-50 text-gray-600">
+          <tr>
+            <th class="px-4 py-3">Name</th>
+            <th class="px-4 py-3">Email</th>
+            <th class="px-4 py-3">Phone</th>
+
+            <!-- Batch Name ONLY for Batch tab -->
+          
+
+            <th class="px-4 py-3 text-center">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody class="divide-y">
+          <tr *ngFor="let student of paginatedStudents" class="hover:bg-gray-50">
+            <td class="px-4 py-3 font-medium">
+              {{ student.first_name }} {{ student.last_name }}
+            </td>
+
+            <td class="px-4 py-3">{{ student.email }}</td>
+            <td class="px-4 py-3">{{ student.phone_no }}</td>
+
+            <!-- ✅ Batch Name value -->
+          
+
+            <td class="px-4 py-3 text-center space-x-3">
+              <button
+                class="text-blue-600 hover:underline"
+                (click)="viewStudent(student)"
+              >
+                View
+              </button>
+
+              <button
+                class="text-green-600 hover:underline"
+                (click)="openAddStudent(student)"
+              >
+                Edit
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ================= FOOTER ================= -->
+      <div class="flex items-center justify-between mt-6 text-sm text-gray-500">
+        <div>
+          Showing
+          {{ (currentPage - 1) * itemsPerPage + 1 }}
+          to
+          {{
+            currentPage * itemsPerPage > filteredStudentList.length
+              ? filteredStudentList.length
+              : currentPage * itemsPerPage
+          }}
+          of {{ filteredStudentList.length }} entries
+        </div>
+
+        <div class="flex gap-2">
+          <button
+            class="px-3 py-1 border rounded-lg"
+            [disabled]="currentPage === 1"
+            (click)="changePage(currentPage - 1)"
+          >
+            Previous
+          </button>
+
+          <button
+            *ngFor="let p of [].constructor(totalPages); let i = index"
+            class="px-3 py-1 rounded-lg"
+            [ngClass]="currentPage === i + 1
+              ? 'bg-blue-600 text-white'
+              : 'border'"
+            (click)="changePage(i + 1)"
+          >
+            {{ i + 1 }}
+          </button>
+
+          <button
+            class="px-3 py-1 border rounded-lg"
+            [disabled]="currentPage === totalPages"
+            (click)="changePage(currentPage + 1)"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noStudents>
+      <div class="text-center py-10 text-gray-500">
+        No {{ activeTab === 'BATCH' ? 'batch' : 'individual' }} students found.
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- ================= ADD / EDIT STUDENT MODAL ================= -->
+  <ngx-custom-modal #addStudentModal class="no-footer">
+    <ng-template #modalHeader>
+      <span class="text-lg font-semibold">
+        {{ studentForm.value.student_code ? 'Edit Student' : 'Add Student' }}
+      </span>
+    </ng-template>
+
+    <ng-template #modalBody>
+      <form [formGroup]="studentForm" (ngSubmit)="saveStudent()" class="space-y-4">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input class="form-input" placeholder="First Name" formControlName="first_name" />
+          <input class="form-input" placeholder="Last Name" formControlName="last_name" />
+          <input class="form-input" type="email" placeholder="Email" formControlName="email" />
+          <input class="form-input" placeholder="Phone No" formControlName="phone_no" />
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input class="form-input" type="password" placeholder="Password" formControlName="password" />
+          <input class="form-input" type="password" placeholder="Confirm Password" formControlName="confirm_password" />
+        </div>
+
+        <div
+          class="text-red-500 text-sm"
+          *ngIf="studentForm.errors?.['passwordMismatch']
+                 && studentForm.get('confirm_password')?.touched"
+        >
+          Passwords do not match
+        </div>
+
+        <label class="flex items-center gap-2 text-sm">
+          <input type="checkbox" formControlName="is_in_batch" />
+          Student is in Batch
+        </label>
+
+        <!-- ✅ IMPORTANT FIX: use batch_code -->
+        <!-- <div *ngIf="studentForm.get('is_in_batch')?.value">
+          <select class="form-input" formControlName="batch_code">
+            <option value="" disabled>Select Batch</option>
+            <option *ngFor="let batch of batchList" [value]="batch.batch_code">
+              {{ batch.batch_name }}
+            </option>
+          </select>
+
+          <div
+            class="text-red-500 text-sm mt-1"
+            *ngIf="studentForm.get('batch_code')?.invalid && studentForm.get('batch_code')?.touched"
+          >
+            Batch is required
+          </div>
+        </div> -->
+
+        <div class="flex justify-end gap-3 pt-4 border-t">
+          <button
+            type="button"
+            class="px-4 py-2 border rounded-lg text-gray-600"
+            (click)="addStudentModal.close()"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg"
+            [disabled]="loading"
+          >
+            {{ loading ? 'Saving...' : 'Save Student' }}
+          </button>
+        </div>
+      </form>
+    </ng-template>
+  </ngx-custom-modal>
+
+  <!-- ================= VIEW STUDENT MODAL ================= -->
+  <ngx-custom-modal #viewStudentModal class="no-footer">
+    <ng-template #modalHeader>
+      <span class="text-lg font-semibold">Student Details</span>
+    </ng-template>
+
+    <ng-template #modalBody>
+      <div *ngIf="selectedStudent" class="space-y-2 text-sm">
+        <p><b>Name:</b> {{ selectedStudent.first_name }} {{ selectedStudent.last_name }}</p>
+        <p><b>Email:</b> {{ selectedStudent.email }}</p>
+        <p><b>Phone:</b> {{ selectedStudent.phone_no }}</p>
+       
+
+      </div>
+    </ng-template>
+  </ngx-custom-modal>
+
 </div>

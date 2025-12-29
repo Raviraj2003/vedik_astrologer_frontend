@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpBackend, HttpClient, HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
+import { SweetAlertArrayOptions } from 'sweetalert2';
 
 //Routes
 import { routes } from './app.route';
@@ -32,6 +33,7 @@ import { DashboardComponent } from './Dashboard';
 import { AnalyticsComponent } from './analytics';
 import { FinanceComponent } from './finance';
 import { CryptoComponent } from './crypto';
+import { NgxCustomModalComponent } from 'ngx-custom-modal';
 
 
 // widgets
@@ -61,15 +63,19 @@ import { HeaderComponent } from './layouts/header';
 import { FooterComponent } from './layouts/footer';
 import { SidebarComponent } from './layouts/sidebar';
 import { ThemeCustomizerComponent } from './layouts/theme-customizer';
+import { SweetalertComponent } from './components/sweetalert';
 
 @NgModule({
     imports: [
         RouterModule.forRoot(routes, { scrollPositionRestoration: 'enabled' }),
         BrowserModule,
         ReactiveFormsModule,
+        
         BrowserAnimationsModule,
         CommonModule,
         FormsModule,
+        NgxCustomModalComponent,
+        
         HttpClientModule,
         TranslateModule.forRoot({
             loader: {
@@ -100,6 +106,9 @@ import { ThemeCustomizerComponent } from './layouts/theme-customizer';
         AuthLayout,
         KnowledgeBaseComponent,
         FaqComponent,
+        SweetalertComponent,
+        
+        
     ],
 
     providers: [Title],
