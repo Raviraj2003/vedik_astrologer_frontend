@@ -5,7 +5,7 @@ import { DashboardComponent } from './Dashboard';
 import { AnalyticsComponent } from './analytics';
 import { FinanceComponent } from './finance';
 import { CryptoComponent } from './crypto';
-import { AddstudentComponent } from './users/addstudent/addstudent.component';
+import { AddStudentComponent } from './users/addstudent/addstudent.component';
 import { StudentDashboardComponent } from './student-dashboard/student-dashboard.component';
 import { StudentDetailsComponent } from './student-details/student-details.component';
 import { AddAppointmentComponent } from './add-appointment/add-appointment.component';
@@ -15,6 +15,8 @@ import { AddServicesComponent } from './add-services';
 import { ServicesDashboardComponent } from './services-dashboard';
 import { ReshedulAppointmentComponent } from './reshedul-appointment';
 import { ClassScheduleComponent } from './class-schedule.component';
+import { CreateBatchComponent } from './users/create-batch/create-batch.component';
+import { AssignBatchComponent } from './users/assign-batch/assign-batch.component';
 
 
 // widgets
@@ -60,7 +62,7 @@ export const routes: Routes = [
             { path: 'analytics', component: AnalyticsComponent, data: { title: 'Analytics Admin' } },
             { path: 'finance', component: FinanceComponent, data: { title: 'Finance Admin' } },
             { path: 'crypto', component: CryptoComponent, data: { title: 'Crypto Admin' } },
-            { path: 'add-student', component: AddstudentComponent, data: { title: 'Add Student' } },
+            { path: 'add-student', component: AddStudentComponent, data: { title: 'Add Student' } },
             {path: 'student-dashboard', component: StudentDashboardComponent, data: { title: 'Student Dashboard' }},
             {path: 'student-details', component: StudentDetailsComponent, data: { title: 'Student Details' }},
             {path: 'shedules', component: ShedulesComponent, data: {title: 'shedules'}},
@@ -71,6 +73,8 @@ export const routes: Routes = [
             {path: 'services-dashboard', component: ServicesDashboardComponent, data: { title: 'Services Dashboard' }},
             {path: 'reshedul-appointment', component: ReshedulAppointmentComponent, data: { title: 'Reschedule Appointment' }},
             {path: 'class-schedule', component:  ClassScheduleComponent, data: {title: 'class-schedule'}},
+            {path: 'create-batch', component: CreateBatchComponent, data: {title: 'Create Batch'}},
+            {path: 'assign-batch', component: AssignBatchComponent, data: {title: 'Assign Batch'}},
 
 
                        

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ApiService {
-  private baseUrl = 'http://192.168.1.13:5000/api';
+  private baseUrl = 'http://192.168.1.15:5000/api';
 
   constructor(private http: HttpClient) {}
 
@@ -47,9 +47,9 @@ export class ApiService {
   // 🎓 STUDENT
   // ======================================
 
-  createStudent(data: any): Observable<any> {
+  addstudent(data: any): Observable<any> {
     return this.http.post(
-      `${this.baseUrl}/student/createstudent`,
+      `${this.baseUrl}/student/addstudent`,
       data,
       { headers: this.getJsonHeaders() }
     );
@@ -286,6 +286,78 @@ saveClassSchedule(data: any) {
     { headers: this.getJsonHeaders() }
   );
 }
+
+createBatch(data: any) {
+  return this.http.post(
+    `${this.baseUrl}/batches/createBatch`,    
+    data,
+    { headers: this.getJsonHeaders() }
+  );
+}
+
+
+// 🔹 Get students eligible for batch (is_in_batch = Y & batch_code IS NULL)
+getEligibleBatchStudents(): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/batches/getEligibleBatchStudents`,
+    {},
+    { headers: this.getJsonHeaders() }
+  );
+}
+
+getAllStudents(): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/student/getAllStudents`,
+    {}, // empty body as per curl
+    { headers: this.getJsonHeaders() }
+  );
+}
+
+// ======================================
+// 👨‍💼 ADMIN → UPDATE STUDENT DETAILS
+// ======================================
+
+adminUpdateStudentDetails(data: {
+  stu_ref_code: string;
+  fees?: number;
+  certificate_marksheet_code?: string;
+  marks_obtained?: number;
+}): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/student/adminUpdateStudentDetails`,
+    data,
+    { headers: this.getJsonHeaders() }
+  );
+}
+
+
+
+// ======================================
+// 📦 BATCH MASTER
+// ======================================
+
+getAllBatches(): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/batches/getAllBatches`,
+    {}, // POST body is empty as per curl
+    { headers: this.getJsonHeaders() }
+  );
+}
+
+
+
+// 🔹 Assign selected students to batch ✅ ADD THIS
+assignStudentsToBatch(data: {
+  batch_code: string;
+  student_ref_codes: string[];
+}): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/batches/assignStudentsToBatch`,
+    data,
+    { headers: this.getJsonHeaders() }
+  );
+}
+
 
 
   // ======================================

@@ -1,84 +1,168 @@
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-6">
+<div style="min-height:100vh;background:#f3f4f6;padding:16px">
 
-  <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-5 max-w-4xl mx-auto">
+  <div style="
+    max-width:900px;
+    margin:auto;
+    background:#ffffff;
+    border-radius:14px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+    padding:20px
+  ">
 
-    <h2 class="text-lg sm:text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
-      Create Class Schedule
-    </h2>
+    <!-- HEADER -->
+    <div style="margin-bottom:20px">
+      <h2 style="font-size:22px;font-weight:600;color:#111827">
+        Class Schedule
+      </h2>
+      <p style="color:#6b7280;font-size:14px">
+        Create batch-wise class schedules
+      </p>
+    </div>
 
-    <!-- CLASS INFO -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+    <!-- BASIC INFO -->
+    <div style="
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:14px;
+      margin-bottom:20px
+    ">
 
+      <!-- CLASS NAME -->
       <div>
-        <label class="label">Class Name</label>
+        <label style="font-size:13px;font-weight:500;color:#374151">Class Name</label>
         <input
           type="text"
           [(ngModel)]="form.class_name"
-          class="input"
-          placeholder="Yoga Beginner"
+          placeholder="Vedic Astrology Class"
+          style="width:100%;padding:10px;border-radius:8px;border:1px solid #d1d5db"
         />
       </div>
 
+      <!-- BATCH -->
       <div>
-        <label class="label">From Date</label>
-        <input type="date" [(ngModel)]="form.from_date" class="input" />
+        <label style="font-size:13px;font-weight:500;color:#374151">Batch</label>
+        <select
+          [(ngModel)]="form.batch_code"
+          style="width:100%;padding:10px;border-radius:8px;border:1px solid #d1d5db"
+        >
+          <option value="" disabled>Select Batch</option>
+          <option *ngFor="let batch of batchList" [value]="batch.batch_code">
+            {{ batch.batch_name }}
+          </option>
+        </select>
       </div>
 
+      <!-- TOPIC -->
       <div>
-        <label class="label">To Date</label>
-        <input type="date" [(ngModel)]="form.to_date" class="input" />
+        <label style="font-size:13px;font-weight:500;color:#374151">Topic</label>
+        <input
+          type="text"
+          [(ngModel)]="form.topic"
+          placeholder="Introduction to Kundali"
+          style="width:100%;padding:10px;border-radius:8px;border:1px solid #d1d5db"
+        />
       </div>
 
     </div>
 
+    <!-- DATES -->
+    <div style="
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:14px;
+      margin-bottom:20px
+    ">
+      <div>
+        <label style="font-size:13px;font-weight:500;color:#374151">From Date</label>
+        <input
+          type="date"
+          [(ngModel)]="form.from_date"
+          style="width:100%;padding:10px;border-radius:8px;border:1px solid #d1d5db"
+        />
+      </div>
+
+      <div>
+        <label style="font-size:13px;font-weight:500;color:#374151">To Date</label>
+        <input
+          type="date"
+          [(ngModel)]="form.to_date"
+          style="width:100%;padding:10px;border-radius:8px;border:1px solid #d1d5db"
+        />
+      </div>
+    </div>
+
     <!-- SCHEDULES -->
-    <h3 class="font-medium mb-3 text-gray-700 dark:text-gray-200">
+    <h3 style="font-size:16px;font-weight:600;margin-bottom:10px;color:#111827">
       Weekly Schedules
     </h3>
 
     <div
       *ngFor="let sch of form.schedules; let i = index"
-      class="grid grid-cols-1 sm:grid-cols-5 gap-3 mb-4 p-3 rounded-lg
-             border border-gray-200 dark:border-gray-700"
+      style="
+        border:1px solid #e5e7eb;
+        border-radius:10px;
+        padding:14px;
+        margin-bottom:12px
+      "
     >
 
-      <!-- DAY -->
-      <div>
-        <label class="label">Day</label>
-        <select [(ngModel)]="sch.day_name" class="input">
-          <option value="">Select</option>
-          <option *ngFor="let d of days">{{ d }}</option>
-        </select>
-      </div>
+      <div style="
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+        gap:12px
+      ">
 
-      <!-- START -->
-      <div>
-        <label class="label">Start Time</label>
-        <input type="time" [(ngModel)]="sch.start_time" class="input" />
-      </div>
+        <!-- DAY -->
+        <div>
+          <label style="font-size:12px;color:#374151">Day</label>
+          <select
+            [(ngModel)]="sch.day_name"
+            style="width:100%;padding:8px;border-radius:8px;border:1px solid #d1d5db"
+          >
+            <option value="">Select</option>
+            <option *ngFor="let d of days">{{ d }}</option>
+          </select>
+        </div>
 
-      <!-- END -->
-      <div>
-        <label class="label">End Time</label>
-        <input type="time" [(ngModel)]="sch.end_time" class="input" />
-      </div>
+        <!-- START -->
+        <div>
+          <label style="font-size:12px;color:#374151">Start Time</label>
+          <input
+            type="time"
+            [(ngModel)]="sch.start_time"
+            style="width:100%;padding:8px;border-radius:8px;border:1px solid #d1d5db"
+          />
+        </div>
 
-      <!-- INTERVAL -->
-      <div>
-        <label class="label">Slot Interval (min)</label>
-        <input
-          type="number"
-          [(ngModel)]="sch.slot_interval"
-          class="input"
-          min="5"
-        />
+        <!-- END -->
+        <div>
+          <label style="font-size:12px;color:#374151">End Time</label>
+          <input
+            type="time"
+            [(ngModel)]="sch.end_time"
+            style="width:100%;padding:8px;border-radius:8px;border:1px solid #d1d5db"
+          />
+        </div>
+
+        <!-- INTERVAL -->
+        <div>
+          <label style="font-size:12px;color:#374151">Slot Interval</label>
+          <input
+            type="number"
+            min="5"
+            [(ngModel)]="sch.slot_interval"
+            style="width:100%;padding:8px;border-radius:8px;border:1px solid #d1d5db"
+          />
+        </div>
+
       </div>
 
       <!-- REMOVE -->
-      <div class="flex items-end">
+      <div style="margin-top:10px;text-align:right">
         <button
-          class="text-red-600 text-sm"
+          type="button"
           (click)="removeSchedule(i)"
+          style="color:#dc2626;background:none;border:none;font-size:13px"
         >
           Remove
         </button>
@@ -88,50 +172,30 @@
 
     <!-- ADD DAY -->
     <button
-      class="text-blue-600 text-sm mb-6"
+      type="button"
       (click)="addSchedule()"
+      style="margin-bottom:20px;color:#2563eb;background:none;border:none;font-size:14px"
     >
       + Add Another Day
     </button>
 
-    <!-- ACTION -->
-    <button
-      (click)="submit()"
-      class="w-full sm:w-auto px-6 py-2 rounded-md
-             bg-blue-600 hover:bg-blue-700
-             text-white text-sm font-medium"
-    >
-      Save Schedule
-    </button>
+    <!-- SUBMIT -->
+    <div style="text-align:right">
+      <button
+        (click)="submit()"
+        [disabled]="loading"
+        style="
+          padding:10px 22px;
+          background:#2563eb;
+          color:white;
+          border:none;
+          border-radius:8px;
+          font-weight:500
+        "
+      >
+        {{ loading ? 'Saving...' : 'Save Schedule' }}
+      </button>
+    </div>
 
   </div>
 </div>
-
-<style>
-  .input {
-    width: 100%;
-    padding: 8px 10px;
-    border-radius: 6px;
-    border: 1px solid #d1d5db;
-    background: white;
-    font-size: 14px;
-  }
-
-  .dark .input {
-    background: #374151;
-    border-color: #4b5563;
-    color: #f9fafb;
-  }
-
-  .label {
-    font-size: 13px;
-    font-weight: 500;
-    margin-bottom: 4px;
-    display: block;
-    color: #374151;
-  }
-
-  .dark .label {
-    color: #d1d5db;
-  }
-</style>
