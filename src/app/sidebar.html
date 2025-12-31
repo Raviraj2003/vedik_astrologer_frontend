@@ -42,11 +42,16 @@
                                 <li>
                                     <a routerLink="/add-student" routerLinkActive="active" (click)="toggleMobileMenu()">{{ 'add-student' | translate }}</a>
                                 </li>
-                               
+                                 
+
+                                <li>
+                                    <a routerLink="/assign-media" routerLinkActive="active" (click)="toggleMobileMenu()">{{ 'Assign Media' | translate }}</a>
+                                </li>
                                 
                                 <li>
                                     <a routerLink="/add-media" routerLinkActive="active" (click)="toggleMobileMenu()">{{ 'Add Media' | translate }}</a>
                                 </li>
+
                                 
                               
                             </ul>
@@ -121,7 +126,7 @@
                             <div class="flex items-center">
                                  <icon-menu-notes class="shrink-0 group-hover:!text-primary" />
 
-                              <span class="text-black dark:text-[#506690] dark:group-hover:text-white-dark ltr:pl-3 rtl:pr-3">
+                                <span class="text-black dark:text-[#506690] dark:group-hover:text-white-dark ltr:pl-3 rtl:pr-3">
                                     {{ 'Other services' | translate }}
                                 </span>  
                             </div>

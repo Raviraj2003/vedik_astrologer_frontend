@@ -6,7 +6,6 @@ import { FormsModule } from '@angular/forms';
 import { HttpBackend, HttpClient, HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
-import { SweetAlertArrayOptions } from 'sweetalert2';
 
 //Routes
 import { routes } from './app.route';
@@ -106,7 +105,7 @@ import { SweetalertComponent } from './components/sweetalert';
         AuthLayout,
         KnowledgeBaseComponent,
         FaqComponent,
-        SweetalertComponent,
+        
         
         
     ],
