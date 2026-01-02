@@ -195,15 +195,16 @@
   <label class="block text-sm font-medium">Slots</label>
 
   <select
-    formControlName="slot_time"
-    class="mt-1 w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
-  >
-    <option value="">Select Slot</option>
+  formControlName="slot_range"
+  class="mt-1 w-full rounded-md border p-2 dark:bg-gray-700 dark:text-white"
+>
+  <option value="">Select Slot</option>
 
-    <option *ngFor="let slot of slots" [value]="slot.slot_range">
-      {{ slot.slot_range }} ({{ slot.day_name }})
-    </option>
-  </select>
+  <option *ngFor="let slot of slots" [value]="slot.slot_range">
+    {{ slot.slot_range }} ({{ slot.day_name }})
+  </option>
+</select>
+
 
   <p *ngIf="slots.length === 0" class="text-xs text-red-500 mt-1">
     No available slots for this date.

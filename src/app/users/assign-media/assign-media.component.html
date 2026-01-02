@@ -1,1 +1,111 @@
-<p>assign-media works!</p>
+<div class="p-6 bg-white rounded-xl shadow">
+
+  <!-- HEADER -->
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-xl font-bold">
+      📚 Assign Media to Batch
+      <span *ngIf="selectedBatchName" class="text-sm text-gray-500">
+        ({{ selectedBatchName }})
+      </span>
+    </h2>
+  </div>
+
+  <!-- BATCH DROPDOWN -->
+  <div class="flex gap-3 mb-5 items-center">
+    <select
+      class="border rounded px-3 py-2 w-72"
+      [(ngModel)]="selectedBatchCode"
+      (change)="onBatchChange()"
+    >
+      <option value="">-- Select Batch --</option>
+      <option *ngFor="let batch of batches" [value]="batch.batch_code">
+        {{ batch.batch_name }}
+      </option>
+    </select>
+  </div>
+
+  <!-- LOADING -->
+  <div *ngIf="loading" class="text-gray-500">
+    Loading media...
+  </div>
+
+  <!-- ERROR -->
+  <div *ngIf="errorMsg" class="text-red-500 mb-3">
+    {{ errorMsg }}
+  </div>
+
+  <!-- MEDIA TABLE -->
+  <div *ngIf="mediaList.length > 0" class="overflow-x-auto">
+    <table class="w-full border text-sm">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="p-3 border">#</th>
+          <th class="p-3 border">Title</th>
+          <th class="p-3 border">Type</th>
+          <th class="p-3 border">File</th>
+          <th class="p-3 border text-center">Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let media of mediaList; let i = index">
+          <td class="p-3 border">{{ i + 1 }}</td>
+
+          <td class="p-3 border">{{ media.title || '-' }}</td>
+
+          <td class="p-3 border">
+            <span
+              class="px-2 py-1 rounded text-xs font-semibold"
+              [ngClass]="{
+                'bg-blue-100 text-blue-700': getMediaType(media.file_name) === 'PDF',
+                'bg-green-100 text-green-700': getMediaType(media.file_name) === 'VIDEO',
+                'bg-purple-100 text-purple-700': getMediaType(media.file_name) === 'IMAGE'
+              }"
+            >
+              {{ getMediaType(media.file_name) }}
+            </span>
+          </td>
+
+          <td class="p-3 border">
+            <a
+              [href]="media.file_path"
+              target="_blank"
+              class="text-primary underline"
+            >
+              View
+            </a>
+          </td>
+
+          <!-- ACTION -->
+          <td class="p-3 border text-center">
+            <!-- Published -->
+            <span
+              *ngIf="media.is_published === 'Y'"
+              class="px-2 py-1 rounded text-xs bg-green-100 text-green-700"
+            >
+              Published
+            </span>
+
+            <!-- Publish Button -->
+            <button
+              *ngIf="media.is_published !== 'Y'"
+              class="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700"
+              (click)="publishMedia(media)"
+              [disabled]="media.publishing"
+            >
+              {{ media.publishing ? 'Publishing...' : 'Publish' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- NO DATA -->
+  <div
+    *ngIf="!loading && mediaList.length === 0 && selectedBatchCode"
+    class="text-gray-400"
+  >
+    No media found for this batch
+  </div>
+</div>

@@ -17,43 +17,27 @@
             </div>
             <ng-scrollbar class="relative !h-[calc(100vh-80px)]" appearance="compact">
                 <ul class="relative space-y-0.5 p-4 py-0 font-semibold">
-                    <li class="accordion menu nav-item">
-                        <button type="button" class="nav-link group w-full"
-                            [ngClass]="{ active: activeDropdown.includes('dashboard') }"
-                            (click)="toggleAccordion('dashboard')">
-                            <div class="flex items-center">
-                                <icon-menu-dashboard class="shrink-0 group-hover:!text-primary" />
+                  <li class="menu nav-item">
+    <a
+        routerLink="/dashboard"
+        routerLinkActive="active"
+        (click)="toggleMobileMenu()"
+        class="nav-link group w-full flex items-center justify-between"
+    >
+        <div class="flex items-center">
+            <icon-menu-dashboard class="shrink-0 group-hover:!text-primary" />
 
-                                <a routerLink="/Dashboard" routerLinkActive="active" (click)="toggleMobileMenu()"><span
-                                        class="text-black dark:text-[#506690] dark:group-hover:text-white-dark ltr:pl-3 rtl:pr-3">
-                                        {{ 'dashboard' | translate }}
-                                    </span> </a>
-                            </div>
-                            <div [ngClass]="{ 'rtl:rotate-90 -rotate-90': !activeDropdown.includes('dashboard') }">
-                                <icon-caret-down />
-                            </div>
-                        </button>
-                        <div [@slideDownUp]="!activeDropdown.includes('dashboard')" class="accordion-content">
-                            <ul class="sub-menu text-gray-500">
-                                <li>
-                                    <a routerLink="/dashboard" routerLinkActive="active" (click)="toggleMobileMenu()">{{
-                                        'Dashboard' | translate }}</a>
-                                </li>
-                                <li>
-                                    <a routerLink="/add-student" routerLinkActive="active"
-                                        (click)="toggleMobileMenu()">{{ 'add-student' | translate }}</a>
-                                </li>
-                                
-
-                                <li>
-                                    <a routerLink="/add-media" routerLinkActive="active" (click)="toggleMobileMenu()">{{
-                                        'Add Media' | translate }}</a>
-                                </li>
+            <span
+                class="text-black dark:text-[#506690] dark:group-hover:text-white-dark ltr:pl-3 rtl:pr-3"
+            >
+                {{ 'dashboard' | translate }}
+            </span>
+        </div>
+    </a>
+</li>
 
 
-                            </ul>
-                        </div>
-                    </li>
+
 
                     <li class="accordion menu nav-item">
                         <button type="button" class="nav-link group w-full"
@@ -70,14 +54,19 @@
                             </div>
 
                             <div [ngClass]="{
-              'rtl:rotate-90 -rotate-90': !activeDropdown.includes('batch')
-            }">
+                                  'rtl:rotate-90 -rotate-90': !activeDropdown.includes('batch')
+                               }">
                                 <icon-caret-down />
                             </div>
                         </button>
 
                         <div [@slideDownUp]="!activeDropdown.includes('batch')" class="accordion-content">
                             <ul class="sub-menu text-gray-500">
+
+                                 <li>
+                                    <a routerLink="/add-student" routerLinkActive="active"
+                                        (click)="toggleMobileMenu()">{{ 'add-student' | translate }}</a>
+                                </li>
                                 <li>
                                     <a routerLink="/create-batch" routerLinkActive="active"
                                         (click)="toggleMobileMenu()">
@@ -101,6 +90,47 @@
                             </ul>
                         </div>
                     </li>
+
+                    <li class="accordion menu nav-item">
+                        <button type="button" class="nav-link group w-full"
+                            [ngClass]="{ active: activeDropdown.includes('media-master') }"
+                            (click)="toggleAccordion('media-master')">
+                            <div class="flex items-center">
+                                <!-- You can change icon if needed -->
+                                <icon-menu-dashboard class="shrink-0 group-hover:!text-primary" />
+
+                                <span
+                                    class="text-black dark:text-[#506690] dark:group-hover:text-white-dark ltr:pl-3 rtl:pr-3">
+                                    {{ 'Media Master' | translate }}
+                                </span>
+                            </div>
+
+                            <div [ngClass]="{
+                'rtl:rotate-90 -rotate-90':
+                    !activeDropdown.includes('media-master')
+            }">
+                                <icon-caret-down />
+                            </div>
+                        </button>
+
+                        <div [@slideDownUp]="!activeDropdown.includes('media-master')" class="accordion-content">
+                            <ul class="sub-menu text-gray-500">
+                                <li>
+                                    <a routerLink="/add-media" routerLinkActive="active" (click)="toggleMobileMenu()">
+                                        {{ 'Add Media' | translate }}
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a routerLink="/assign-media" routerLinkActive="active"
+                                        (click)="toggleMobileMenu()">
+                                        {{ 'Assign Media' | translate }}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
 
                     <li class="accordion menu nav-item">
                         <button type="button" class="nav-link group w-full"
@@ -197,7 +227,7 @@
                         </div>
                     </li>
 
-<!-- 
+                    <!-- 
                     <h2
                         class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
                         <icon-minus class="hidden h-5 w-4 flex-none" />
@@ -414,7 +444,7 @@
                             </ul>
                         </div>
                     </li> -->
-<!-- 
+                    <!-- 
                     <li class="accordion menu nav-item">
                         <button type="button" class="nav-link group w-full"
                             [ngClass]="{ active: activeDropdown.includes('elements') }"
