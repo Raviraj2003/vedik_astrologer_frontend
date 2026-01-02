@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { ApiService } from '../service/api.service';
 
@@ -15,10 +20,9 @@ export class AddAppointmentComponent implements OnInit {
   store: any;
   isDark = false;
   isLoading = true;
+
   slots: any[] = [];
   appointmentForm!: FormGroup;
-
-  // 👇 Modal control for partner details
   showPartnerModal = false;
 
   constructor(
@@ -32,6 +36,7 @@ export class AddAppointmentComponent implements OnInit {
     this.createForm();
   }
 
+  // ================= FORM =================
   createForm() {
     this.appointmentForm = this.fb.group({
       name: [''],
@@ -39,7 +44,11 @@ export class AddAppointmentComponent implements OnInit {
       mobile_number: [''],
       gender: [''],
       marital_status: [''],
-      is_twins: [''],
+
+      // ✅ BOOLEAN DEFAULTS (FIX)
+      is_twins: [false],
+      is_appointment_conducted: [false],
+
       appointment_type: [''],
       date_of_birth: [''],
       time_of_birth: [''],
@@ -48,13 +57,12 @@ export class AddAppointmentComponent implements OnInit {
       city: [''],
       subjects: [[]],
       source: [''],
-      is_appointment_conducted: [''],
       appointment_status: [''],
       transaction_id: [''],
       appointment_date: [''],
-      slot_time: [''],
+      slot_range: [''],
 
-      // 🆕 Partner Details
+      // Partner details
       partner_name: [''],
       partner_date_of_birth: [''],
       partner_time_of_birth: [''],
@@ -62,103 +70,91 @@ export class AddAppointmentComponent implements OnInit {
     });
   }
 
+  // ================= THEME =================
   async initStore() {
     this.storeData.select((d) => d.index).subscribe((d) => {
-      const hasChangeTheme = this.store?.theme !== d?.theme;
-      const hasChangeLayout = this.store?.layout !== d?.layout;
       this.store = d;
       this.isDark = this.store.theme === 'dark' || this.store.isDarkMode;
-
-      if (hasChangeTheme || hasChangeLayout) {
-        this.applyTheme();
-      }
+      document.body.classList.toggle('dark', this.isDark);
       this.isLoading = false;
     });
   }
 
-  applyTheme() {
-    document.body.classList.toggle('dark', this.isDark);
-  }
-
-  // ✅ Fetch slots by date
+  // ================= SLOTS =================
   onDateChange(event: any) {
     const date = event.target.value;
     if (!date) return;
 
     this.api.getSlotsByDate(date).subscribe({
       next: (res) => {
-        if (res?.slots && Array.isArray(res.slots)) {
-          this.slots = res.slots.filter((s: any) => !s.is_booked);
-        } else {
-          this.slots = [];
-        }
-        console.log('🎯 Slots loaded:', this.slots);
+        this.slots = Array.isArray(res?.slots)
+          ? res.slots.filter((s: any) => !s.is_booked)
+          : [];
       },
-      error: (err) => {
-        console.error('Error fetching slots:', err);
-        alert('Failed to load available slots');
-      },
+      error: () => alert('Failed to load slots'),
     });
   }
 
-  // ✅ Format slot time to 12-hour format (AM/PM)
-  formatTime(time: string): string {
-    if (!time) return '';
-
-    let [hourStr, minuteStr] = time.split(':');
-    if (!minuteStr) minuteStr = '00';
-
-    const hour = Number(hourStr);
-    const minute = Number(minuteStr);
-
-    if (isNaN(hour) || isNaN(minute)) return time;
-
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const adjustedHour = hour % 12 || 12;
-
-    return `${adjustedHour}:${minute.toString().padStart(2, '0')} ${ampm}`;
-  }
-
-  // 🟨 Handle checkbox selection for subjects + open modal conditionally
+  // ================= SUBJECTS =================
   toggleSubject(subject: string, event: any) {
     const subjects = this.appointmentForm.value.subjects || [];
 
     if (event.target.checked) {
       subjects.push(subject);
 
-      // ✅ Open modal if one of these selected
       if (['Divorce', 'Child Birth', 'Joint property holder'].includes(subject)) {
         this.showPartnerModal = true;
       }
     } else {
-      const index = subjects.indexOf(subject);
-      if (index >= 0) subjects.splice(index, 1);
+      const i = subjects.indexOf(subject);
+      if (i >= 0) subjects.splice(i, 1);
     }
 
     this.appointmentForm.patchValue({ subjects });
   }
 
-  // 👇 Close Partner modal
   closePartnerModal() {
     this.showPartnerModal = false;
   }
 
-  // 🟩 Submit appointment form
+  // ================= SUBMIT =================
   submitForm() {
-    const payload = this.appointmentForm.value;
-    console.log('📦 Submitting appointment:', payload);
+  const raw = this.appointmentForm.value;
 
-    this.api.addAppointment(payload).subscribe({
-      next: (res) => {
-        console.log('✅ Appointment added:', res);
-        alert('Appointment booked successfully!');
-        this.appointmentForm.reset();
-        this.showPartnerModal = false;
-      },
-      error: (err) => {
-        console.error('❌ Error adding appointment:', err);
-        alert('Failed to book appointment.');
-      },
-    });
-  }
+  const payload = {
+    ...raw,
+
+    // ✅ DATE FIELDS → NULL
+    date_of_birth: raw.date_of_birth || null,
+    appointment_date: raw.appointment_date || null,
+    partner_date_of_birth: raw.partner_date_of_birth || null,
+
+    // ✅ TIME FIELDS → NULL  🔥 THIS FIXES YOUR ERROR
+    time_of_birth: raw.time_of_birth || null,
+    partner_time_of_birth: raw.partner_time_of_birth || null,
+
+    // ✅ BOOLEAN SAFETY
+    is_twins: raw.is_twins === true,
+    is_appointment_conducted: raw.is_appointment_conducted === true,
+  };
+
+  console.log('📦 FINAL PAYLOAD:', payload);
+
+  this.api.addAppointment(payload).subscribe({
+    next: () => {
+      alert('✅ Appointment booked successfully!');
+      this.appointmentForm.reset({
+        is_twins: false,
+        is_appointment_conducted: false,
+      });
+      this.slots = [];
+      this.showPartnerModal = false;
+    },
+    error: (err) => {
+      console.error('❌ Error:', err);
+      alert('Failed to book appointment.');
+    },
+  });
+}
+
 }

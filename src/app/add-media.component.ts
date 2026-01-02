@@ -107,6 +107,7 @@ export class AddMediaComponent {
     this.pdfData = { title: '', description: '', file: null };   // Clears description
     this.pdfFileName = '';
   } else if (type === 'video') {
+    
     this.videoData = { title: '', description: '', file: null }; // Clears description
     this.videoFileName = '';
   }

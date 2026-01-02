@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ApiService {
-  private baseUrl = 'http://192.168.1.15:5000/api';
+  private baseUrl = 'http://192.168.1.9:5000/api';
 
   constructor(private http: HttpClient) {}
 
@@ -192,12 +192,6 @@ export class ApiService {
 // 📅 SLOT STATUS MANAGEMENT (FIXED)
 // ======================================
 
-// ======================================
-// 📅 SLOT & SCHEDULE MANAGEMENT
-// ======================================
-
-// 🔹 Get ACTIVE slots by date
-
 
 // 🔹 Get DEACTIVATED slots by date
 getDeactivatedSlotsByDate(date: string): Observable<any> {
@@ -358,7 +352,29 @@ assignStudentsToBatch(data: {
   );
 }
 
+getBatchMediaList(batchCode: string): Observable<any> {
+  const body = {
+    batch_code: batchCode
+  };
 
+  return this.http.post(
+    `${this.baseUrl}/media/getBatchMediaList`,
+    body,
+    { headers: this.getJsonHeaders() }
+  );
+}
+
+publishMediaToBatch(data: {
+  batch_code: string;
+  media_ref_code: string;
+  media_type: 'PDF' | 'VIDEO' | 'IMAGE';
+}): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/media/publishMediaToBatch`,
+    data,
+    { headers: this.getJsonHeaders() }
+  );
+}
 
   // ======================================
   // 🧰 HELPERS
