@@ -17,6 +17,7 @@ import { ReshedulAppointmentComponent } from './reshedul-appointment';
 import { ClassScheduleComponent } from './class-schedule.component';
 import { CreateBatchComponent } from './users/create-batch/create-batch.component';
 import { AssignBatchComponent } from './users/assign-batch/assign-batch.component';
+import { AssignMediaComponent } from './users/assign-media/assign-media.component';
 
 
 // widgets
@@ -75,6 +76,7 @@ export const routes: Routes = [
             {path: 'class-schedule', component:  ClassScheduleComponent, data: {title: 'class-schedule'}},
             {path: 'create-batch', component: CreateBatchComponent, data: {title: 'Create Batch'}},
             {path: 'assign-batch', component: AssignBatchComponent, data: {title: 'Assign Batch'}},
+            {path: 'assign-media', component: AssignMediaComponent, data: {title: 'Assign Media'}},
 
 
                        
