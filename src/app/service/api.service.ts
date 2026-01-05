@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ApiService {
-  private baseUrl = 'http://192.168.1.9:5000/api';
+  private baseUrl = 'http://192.168.0.157:5000/api';
 
   constructor(private http: HttpClient) {}
 
@@ -375,6 +375,40 @@ publishMediaToBatch(data: {
     { headers: this.getJsonHeaders() }
   );
 }
+
+getStudentClassSchedule(): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/student/getStudentClassSchedule`,
+    {}, // ✅ empty body as per curl
+    { headers: this.getJsonHeaders() }
+  );
+}
+
+// STUDENT → GET PUBLISHED STUDY MATERIALS
+getStudentStudyMaterials(): Observable<{
+  success: boolean;
+  batch_code: string;
+  total: number;
+  data: any[];
+}> {
+  return this.http.post<{
+    success: boolean;
+    batch_code: string;
+    total: number;
+    data: any[];
+  }>(
+    `${this.baseUrl}/media/getBatchMediaForStudent`,
+    {},
+    { headers: this.getJsonHeaders() }
+  );
+}
+
+viewMedia(refCode: string): string {
+  // We return the URL directly because this API is used
+  // in <a href> or <iframe>, not via HttpClient
+  return `${this.baseUrl}/media/view/${refCode}`;
+}
+
 
   // ======================================
   // 🧰 HELPERS
