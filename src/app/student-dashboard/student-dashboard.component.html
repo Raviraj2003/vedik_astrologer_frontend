@@ -1,1 +1,102 @@
-<p>student-dashboard works!</p>
+<div class="panel mt-4 px-2 sm:px-6">
+
+  <!-- ================= HEADER ================= -->
+  <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+    <h5 class="text-base sm:text-lg font-semibold dark:text-white-light">
+      📚 My Class Schedule
+    </h5>
+
+    <!-- Loader -->
+    <div *ngIf="isLoading" class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+      <svg
+        class="animate-spin h-4 w-4 mr-2 text-primary"
+        viewBox="0 0 24 24"
+      >
+        <circle class="opacity-25" cx="12" cy="12" r="10"
+                stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+      </svg>
+      Loading...
+    </div>
+  </div>
+
+  <!-- ================= TABS ================= -->
+  <div class="flex flex-wrap gap-2 mb-4 justify-center sm:justify-start">
+    <button
+      *ngFor="let tab of tabs"
+      (click)="setActiveTab(tab)"
+      [disabled]="isLoading"
+      [ngClass]="{
+        'bg-primary text-white': activeTab === tab,
+        'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300': activeTab !== tab
+      }"
+      class="px-4 py-1.5 sm:px-5 sm:py-2 text-sm rounded-md
+             transition-all duration-300 disabled:opacity-50"
+    >
+      {{ getTabLabel(tab) }}
+    </button>
+  </div>
+
+  <!-- ================= CARD GRID ================= -->
+  <div class="p-4">
+
+    <div
+      *ngIf="filteredSchedules.length; else noData"
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+    >
+
+      <!-- ================= SINGLE CARD ================= -->
+      <div
+        *ngFor="let s of filteredSchedules"
+        class="bg-white dark:bg-gray-800
+               border border-gray-200 dark:border-gray-700
+               rounded-xl p-4 shadow-sm
+               hover:shadow-md transition-all duration-300"
+      >
+
+        <!-- Class Name -->
+        <h3 class="text-lg font-semibold text-primary mb-1">
+          {{ s.class_name }}
+        </h3>
+
+        <!-- Topic -->
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+          📘 {{ s.topic }}
+        </p>
+
+        <!-- Details -->
+        <div class="text-sm space-y-1 text-gray-700 dark:text-gray-300">
+          <div>📅 <strong>{{ s.day_name }}</strong></div>
+          <div>⏰ {{ s.start_time }} – {{ s.end_time }}</div>
+
+          <div class="text-xs text-gray-500 mt-2">
+            {{ s.from_date | date:'dd MMM yyyy' }}
+            →
+            {{ s.to_date | date:'dd MMM yyyy' }}
+          </div>
+        </div>
+
+        <!-- ACTION -->
+        <button
+          routerLink="/student-study-materials"
+          class="mt-4 w-full bg-primary text-white py-2 rounded-md
+                 hover:opacity-90 transition text-sm"
+        >
+          View Study Materials
+        </button>
+
+      </div>
+      <!-- ================= END CARD ================= -->
+
+    </div>
+  </div>
+
+  <!-- ================= NO DATA ================= -->
+  <ng-template #noData>
+    <div class="text-center py-6 italic text-gray-400 dark:text-gray-500">
+      No {{ getTabLabel(activeTab) }} classes found
+    </div>
+  </ng-template>
+
+</div>
