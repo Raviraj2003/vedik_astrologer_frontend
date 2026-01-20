@@ -1,268 +1,445 @@
-﻿<div [ngClass]="{ 'dark text-white-dark': store.semidark }">
-    <nav
-        class="sidebar fixed bottom-0 top-0 z-50 h-full min-h-screen w-[260px] shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] transition-all duration-300">
-        <div class="h-full bg-white dark:bg-[#0e1726]">
-            <div class="flex items-center justify-between px-4 py-3">
-                <a routerLink="/dashboard" class="main-logo flex shrink-0 items-center">
-                    <!-- <img class="ml-[5px] w-8 flex-none" src="/assets/images/logo.svg" alt="" /> -->
-                    <span
-                        class="align-middle text-2xl font-semibold dark:text-white-light lg:inline ltr:ml-1.5 rtl:mr-1.5">Vedik
-                        Astrologer</span>
-                </a>
-                <a href="javascript:;"
-                    class="collapse-icon flex h-8 w-8 items-center rounded-full transition duration-300 hover:bg-gray-500/10 hover:text-primary dark:text-white-light dark:hover:bg-dark-light/10 rtl:rotate-180"
-                    (click)="storeData.dispatch({ type: 'toggleSidebar'})">
-                    <icon-carets-down class="m-auto rotate-90" />
-                </a>
+﻿<style>
+  /* ACTIVE LINK */
+  a.active {
+    background-color: #6c524dc4 !important;
+    color: #ffffff !important;
+    border-radius: 10px;
+  }
+
+  .sidebar ul.sub-menu li a.active {
+    color: #ffffff !important;
+  }
+
+  /* HOVER */
+  .sidebar a.group:hover,
+  .sidebar button.nav-link:hover {
+    background-color: rgba(99, 102, 241, 0.08);
+    border-radius: 10px;
+  }
+
+  /* ICON HOVER */
+  .sidebar .group:hover svg {
+    color: #4f46e5;
+  }
+
+  /* 🔥 FORCE SIDEBAR LINKS TO FLEX (OVERRIDE THEME) */
+  .sidebar .nav-link {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+
+    grid-template-columns: unset !important;
+  }
+
+  /* ===============================
+   🔥 NUCLEAR SIDEBAR RESET
+   =============================== */
+
+  /* =========================================================
+   SIDEBAR – LAYOUT RESET (OVERRIDE THEME GRID)
+   ========================================================= */
+
+  .sidebar a,
+  .sidebar button.nav-link {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+
+    padding: 8px 12px !important;
+
+    grid-template-columns: none !important;
+    grid-auto-flow: unset !important;
+  }
+
+  /* Remove theme pseudo-elements */
+  .sidebar a::before,
+  .sidebar a::after,
+  .sidebar button::before,
+  .sidebar button::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  /* =========================================================
+   ICON NORMALIZATION
+   ========================================================= */
+
+  .sidebar icon-menu-dashboard,
+  .sidebar icon-menu-users,
+  .sidebar icon-menu-notes,
+  .sidebar icon-menu-elements,
+  .sidebar icon-menu-charts,
+  .sidebar icon-clipboard-text {
+    width: 20px !important;
+    min-width: 20px !important;
+    height: 20px !important;
+    flex-shrink: 0 !important;
+    color: #000000 !important; /* BLACK ICONS */
+  }
+
+  /* =========================================================
+   TEXT STYLING (BLACK & BOLD)
+   ========================================================= */
+
+  .sidebar span {
+    display: inline-flex !important;
+    align-items: center !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+    padding: 0 !important;
+
+    color: #000000 !important; /* BLACK TEXT */
+    font-weight: 700 !important;
+  }
+
+  /* Sub-menu text */
+  .sidebar .sub-menu a {
+    color: #000000 !important;
+    font-weight: 600 !important;
+  }
+
+  /* =========================================================
+   ACTIVE & HOVER STATES
+   ========================================================= */
+
+  /* Active link */
+  .sidebar a.active {
+    background-color: #6c524dc4 !important;
+    border-radius: 10px !important;
+  }
+
+  .sidebar a.active span {
+    color: #ffffff !important; /* white text on active */
+    font-weight: 800 !important;
+  }
+
+  /* Hover background */
+  .sidebar a.group:hover,
+  .sidebar button.nav-link:hover {
+    background-color: rgba(99, 102, 241, 0.08) !important;
+    border-radius: 10px !important;
+  }
+
+  /* =========================================================
+   SIDEBAR LOGO (CENTERED, NO EXTRA SPACE)
+   ========================================================= */
+
+  .sidebar .logo-wrapper {
+    padding: 0 !important;
+    margin: 0 !important;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .sidebar .main-logo {
+    padding: 0 !important;
+    margin: 0 !important;
+    line-height: 0 !important;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .sidebar .sidebar-logo {
+    display: block;
+    margin: 0 !important;
+    padding: 0 !important;
+
+    height: 72px; /* ✅ FINAL SIZE */
+    max-width: 200px;
+    width: auto;
+
+    object-fit: contain;
+  }
+
+  /* Mobile safety */
+  @media (max-width: 768px) {
+    .sidebar .sidebar-logo {
+      height: 64px;
+    }
+  }
+
+  .sidebar .sidebar-logo {
+    filter: drop-shadow(0 2px 6px rgb(0, 0, 0));
+  }
+
+  .sidebar .nav-item {
+    margin-bottom: 10px; /* 👈 small clean gap */
+  }
+
+  /* Slightly more gap before accordion content */
+  .sidebar .accordion > button.nav-link {
+    margin-bottom: 4px;
+  }
+
+  /* Optional: gap between submenu items */
+  .sidebar .sub-menu li {
+    margin-bottom: 4px;
+  }
+</style>
+
+<div [ngClass]="{ 'dark text-white-dark': store.semidark }">
+  <nav
+    class="sidebar fixed bottom-0 top-0 z-50 h-full min-h-screen w-[260px] shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] transition-all duration-300 bg-cover bg-center"
+    style="background-image: url(&quot;/assets/images/auth/sidebar.jpg&quot;)"
+  >
+    <div class="h-full bg-white/30 dark:bg-[#0e1726]/80 backdrop-blur-sm">
+      <!-- HEADER -->
+      <div class="logo-wrapper">
+        <a routerLink="/dashboard" class="main-logo">
+          <img
+            src="/assets/images/auth/vedik logo.png"
+            alt="Vedik Astrologer"
+            class="sidebar-logo"
+          />
+        </a>
+      </div>
+
+      <!-- MENU -->
+      <ng-scrollbar class="relative !h-[calc(100vh-80px)]" appearance="compact">
+        <ul class="p-4 space-y-1 font-semibold">
+          <!-- DASHBOARD -->
+          <li class="menu nav-item">
+            <a
+              routerLink="/dashboard"
+              routerLinkActive="active"
+              (click)="toggleMobileMenu()"
+              class="nav-link group rounded-lg"
+            >
+              <icon-menu-dashboard />
+              <span>{{ 'dashboard' | translate }}</span>
+            </a>
+          </li>
+
+          <!-- BATCH MASTER -->
+          <li class="accordion menu nav-item">
+            <button
+              type="button"
+              class="nav-link group w-full flex items-center justify-between p-2 rounded-lg"
+              [ngClass]="{ active: activeDropdown.includes('batch') }"
+              (click)="toggleAccordion('batch')"
+            >
+              <div class="flex items-center">
+                <icon-menu-users />
+                <span class="ltr:pl-3">Batch Master</span>
+              </div>
+              <icon-caret-down />
+            </button>
+
+            <div
+              [@slideDownUp]="!activeDropdown.includes('batch')"
+              class="accordion-content"
+            >
+              <ul class="sub-menu pl-8 space-y-1">
+                <li>
+                  <a routerLink="/add-student" routerLinkActive="active"
+                    >Add Student</a
+                  >
+                </li>
+                <li>
+                  <a routerLink="/create-batch" routerLinkActive="active"
+                    >Create Batch</a
+                  >
+                </li>
+                <li>
+                  <a routerLink="/assign-batch" routerLinkActive="active"
+                    >Assign Students</a
+                  >
+                </li>
+                <li>
+                  <a routerLink="/class-schedule" routerLinkActive="active"
+                    >Class Schedule</a
+                  >
+                </li>
+              </ul>
             </div>
-            <ng-scrollbar class="relative !h-[calc(100vh-80px)]" appearance="compact">
-                <ul class="relative space-y-0.5 p-4 py-0 font-semibold">
-                    <li class="menu nav-item">
-                        <a routerLink="/dashboard" routerLinkActive="active" (click)="toggleMobileMenu()"
-                            class="nav-link group w-full flex items-center justify-between">
-                            <div class="flex items-center">
-                                <icon-menu-dashboard class="shrink-0 group-hover:!text-primary" />
+          </li>
 
-                                <span
-                                    class="text-black dark:text-[#506690] dark:group-hover:text-white-dark ltr:pl-3 rtl:pr-3">
-                                    {{ 'dashboard' | translate }}
-                                </span>
-                            </div>
-                        </a>
-                    </li>
+          <!-- MEDIA MASTER -->
+          <li class="accordion menu nav-item">
+            <button
+              type="button"
+              class="nav-link group w-full flex items-center justify-between p-2 rounded-lg"
+              [ngClass]="{ active: activeDropdown.includes('media-master') }"
+              (click)="toggleAccordion('media-master')"
+            >
+              <div class="flex items-center">
+                <icon-menu-dashboard />
+                <span class="ltr:pl-3">Media Master</span>
+              </div>
+              <icon-caret-down />
+            </button>
 
+            <div
+              [@slideDownUp]="!activeDropdown.includes('media-master')"
+              class="accordion-content"
+            >
+              <ul class="sub-menu pl-8 space-y-1">
+                <li>
+                  <a routerLink="/add-media" routerLinkActive="active"
+                    >Add Media</a
+                  >
+                </li>
+                <li>
+                  <a routerLink="/assign-media" routerLinkActive="active"
+                    >Assign Media</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </li>
 
+          <!-- SCHEDULE MASTER -->
+          <li class="accordion menu nav-item">
+            <button
+              type="button"
+              class="nav-link group w-full flex items-center justify-between p-2 rounded-lg"
+              [ngClass]="{ active: activeDropdown.includes('shedules') }"
+              (click)="toggleAccordion('shedules')"
+            >
+              <div class="flex items-center">
+                <icon-menu-notes />
+                <span class="ltr:pl-3">Schedules Master</span>
+              </div>
+              <icon-caret-down />
+            </button>
 
+            <div
+              [@slideDownUp]="!activeDropdown.includes('shedules')"
+              class="accordion-content"
+            >
+              <ul class="sub-menu pl-8 space-y-1">
+                <li>
+                  <a routerLink="/shedules" routerLinkActive="active"
+                    >Add Slots</a
+                  >
+                </li>
+                <li>
+                  <a routerLink="/close-slots" routerLinkActive="active"
+                    >Close Slots</a
+                  >
+                </li>
+                <li>
+                  <a
+                    routerLink="/reshedul-appointment"
+                    routerLinkActive="active"
+                    >Reschedule Appointment</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </li>
 
-                    <li class="accordion menu nav-item">
-                        <button type="button" class="nav-link group w-full"
-                            [ngClass]="{ active: activeDropdown.includes('batch') }" (click)="toggleAccordion('batch')">
-                            <div class="flex items-center">
-                                <icon-menu-users class="shrink-0 group-hover:!text-primary" />
+          <!-- APPOINTMENT -->
+          <li class="accordion menu nav-item">
+            <button
+              type="button"
+              class="nav-link group w-full flex items-center justify-between p-2 rounded-lg"
+              [ngClass]="{ active: activeDropdown.includes('add-appointment') }"
+              (click)="toggleAccordion('add-appointment')"
+            >
+              <div class="flex items-center">
+                <icon-menu-notes />
+                <span class="ltr:pl-3">Appointment</span>
+              </div>
+              <icon-caret-down />
+            </button>
 
-                                <a routerLink="/create-batch" routerLinkActive="active" (click)="toggleMobileMenu()">
-                                    <span
-                                        class="text-black dark:text-[#506690] dark:group-hover:text-white-dark ltr:pl-3 rtl:pr-3">
-                                        Batch Master
-                                    </span>
-                                </a>
-                            </div>
+            <div
+              [@slideDownUp]="!activeDropdown.includes('add-appointment')"
+              class="accordion-content"
+            >
+              <ul class="sub-menu pl-8">
+                <li>
+                  <a routerLink="/add-appointment" routerLinkActive="active"
+                    >Add Appointment</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </li>
 
-                            <div [ngClass]="{
-                                  'rtl:rotate-90 -rotate-90': !activeDropdown.includes('batch')
-                               }">
-                                <icon-caret-down />
-                            </div>
-                        </button>
+          <!-- OTHER SERVICES -->
+          <li class="accordion menu nav-item">
+            <button
+              type="button"
+              class="nav-link group w-full flex items-center justify-between p-2 rounded-lg"
+              [ngClass]="{ active: activeDropdown.includes('other services') }"
+              (click)="toggleAccordion('other services')"
+            >
+              <div class="flex items-center">
+                <icon-menu-notes />
+                <span class="ltr:pl-3">Other Services</span>
+              </div>
+              <icon-caret-down />
+            </button>
 
-                        <div [@slideDownUp]="!activeDropdown.includes('batch')" class="accordion-content">
-                            <ul class="sub-menu text-gray-500">
-
-                                <li>
-                                    <a routerLink="/add-student" routerLinkActive="active"
-                                        (click)="toggleMobileMenu()">{{ 'add-student' | translate }}</a>
-                                </li>
-                                <li>
-                                    <a routerLink="/create-batch" routerLinkActive="active"
-                                        (click)="toggleMobileMenu()">
-                                        Create Batch
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a routerLink="/assign-batch" routerLinkActive="active"
-                                        (click)="toggleMobileMenu()">
-                                        Assign Students
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a routerLink="/class-schedule" routerLinkActive="active"
-                                        (click)="toggleMobileMenu()">
-                                        Class Schedule
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-
-                    <li class="accordion menu nav-item">
-                        <button type="button" class="nav-link group w-full"
-                            [ngClass]="{ active: activeDropdown.includes('media-master') }"
-                            (click)="toggleAccordion('media-master')">
-                            <div class="flex items-center">
-                                <!-- You can change icon if needed -->
-                                <icon-menu-dashboard class="shrink-0 group-hover:!text-primary" />
-
-                                <span
-                                    class="text-black dark:text-[#506690] dark:group-hover:text-white-dark ltr:pl-3 rtl:pr-3">
-                                    {{ 'Media Master' | translate }}
-                                </span>
-                            </div>
-
-                            <div [ngClass]="{
-                'rtl:rotate-90 -rotate-90':
-                    !activeDropdown.includes('media-master')
-            }">
-                                <icon-caret-down />
-                            </div>
-                        </button>
-
-                        <div [@slideDownUp]="!activeDropdown.includes('media-master')" class="accordion-content">
-                            <ul class="sub-menu text-gray-500">
-                                <li>
-                                    <a routerLink="/add-media" routerLinkActive="active" (click)="toggleMobileMenu()">
-                                        {{ 'Add Media' | translate }}
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a routerLink="/assign-media" routerLinkActive="active"
-                                        (click)="toggleMobileMenu()">
-                                        {{ 'Assign Media' | translate }}
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-
-
-                    <li class="accordion menu nav-item">
-                        <button type="button" class="nav-link group w-full"
-                            [ngClass]="{ active: activeDropdown.includes('shedules') }"
-                            (click)="toggleAccordion('shedules')">
-                            <div class="flex items-center">
-                                <icon-menu-notes class="shrink-0 group-hover:!text-primary" />
-
-                                <a routerLink="/shedules" routerLinkActive="active" (click)="toggleMobileMenu()"><span
-                                        class="text-black dark:text-[#506690] dark:group-hover:text-white-dark ltr:pl-3 rtl:pr-3">
-                                        {{ 'Shedules Master' | translate }}
-                                    </span> </a>
-                            </div>
-                            <div [ngClass]="{ 'rtl:rotate-90 -rotate-90': !activeDropdown.includes('shedules') }">
-                                <icon-caret-down />
-                            </div>
-                        </button>
-                        <div [@slideDownUp]="!activeDropdown.includes('shedules')" class="accordion-content">
-                            <ul class="sub-menu text-gray-500">
-                                <li>
-                                    <a routerLink="/shedules" routerLinkActive="active" (click)="toggleMobileMenu()">{{
-                                        'add-Slots' | translate }}</a>
-                                </li>
-                                <li>
-                                    <a routerLink="/close-slots" routerLinkActive="active"
-                                        (click)="toggleMobileMenu()">{{ 'Close-Slots' | translate }}</a>
-                                </li>
-                                <li>
-                                    <a routerLink="/reshedul-appointment" routerLinkActive="active"
-                                        (click)="toggleMobileMenu()">{{ 'Reshedul-Appointment' | translate }}</a>
-                                </li>
-
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="accordion menu nav-item">
-                        <button type="button" class="nav-link group w-full"
-                            [ngClass]="{ active: activeDropdown.includes('add-appointment') }"
-                            (click)="toggleAccordion('add-appointment')">
-                            <div class="flex items-center">
-                                <icon-menu-notes class="shrink-0 group-hover:!text-primary" />
-
-                                <span
-                                    class="text-black dark:text-[#506690] dark:group-hover:text-white-dark ltr:pl-3 rtl:pr-3">
-                                    {{ 'Appointment' | translate }}
-                                </span>
-                            </div>
-                            <div
-                                [ngClass]="{ 'rtl:rotate-90 -rotate-90': !activeDropdown.includes('add-appointment') }">
-                                <icon-caret-down />
-                            </div>
-                        </button>
-                        <div [@slideDownUp]="!activeDropdown.includes('add-appointment')" class="accordion-content">
-                            <ul class="sub-menu text-gray-500">
-                                <li>
-                                    <a routerLink="/add-appointment" routerLinkActive="active"
-                                        (click)="toggleMobileMenu()">{{ 'Add-Appointment' | translate }}</a>
-                                </li>
-
-
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="accordion menu nav-item">
-                        <button type="button" class="nav-link group w-full"
-                            [ngClass]="{ active: activeDropdown.includes('other services') }"
-                            (click)="toggleAccordion('other services')">
-                            <div class="flex items-center">
-                                <icon-menu-notes class="shrink-0 group-hover:!text-primary" />
-
-                                <span
-                                    class="text-black dark:text-[#506690] dark:group-hover:text-white-dark ltr:pl-3 rtl:pr-3">
-                                    {{ 'Other services' | translate }}
-                                </span>
-                            </div>
-                            <div [ngClass]="{ 'rtl:rotate-90 -rotate-90': !activeDropdown.includes('other services') }">
-                                <icon-caret-down />
-                            </div>
-                        </button>
-                        <div [@slideDownUp]="!activeDropdown.includes('other services')" class="accordion-content">
-                            <ul class="sub-menu text-gray-500">
-                                <li>
-                                    <a routerLink="/add-services" routerLinkActive="active"
-                                        (click)="toggleMobileMenu()">{{ 'Add-Services' | translate }}</a>
-                                </li>
-
-                                <li>
-                                    <a routerLink="/services-dashboard" routerLinkActive="active"
-                                        (click)="toggleMobileMenu()">{{ 'Services Dashboard' | translate }}</a>
-                                </li>
-
-
-                            </ul>
-                        </div>
-                    </li>
-
-                   
-                </ul>
-            </ng-scrollbar>
-        </div>
-    </nav>
+            <div
+              [@slideDownUp]="!activeDropdown.includes('other services')"
+              class="accordion-content"
+            >
+              <ul class="sub-menu pl-8 space-y-1">
+                <li>
+                  <a routerLink="/add-services" routerLinkActive="active"
+                    >Add Services</a
+                  >
+                </li>
+                <li>
+                  <a routerLink="/services-dashboard" routerLinkActive="active"
+                    >Services Dashboard</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </ng-scrollbar>
+    </div>
+  </nav>
 </div>
-
 
 <!-- 🎓 STUDENT SIDEBAR -->
 <div *ngIf="role === 'STD'">
   <div [ngClass]="{ 'dark text-white-dark': store.semidark }">
-
     <nav
-      class="sidebar fixed bottom-0 top-0 z-50 h-full min-h-screen w-[260px]
-             shadow-[5px_0_25px_0_rgba(94,92,154,0.1)]
-             transition-all duration-300">
-
+      class="sidebar fixed bottom-0 top-0 z-50 h-full min-h-screen w-[260px] shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] transition-all duration-300"
+    >
       <div class="h-full bg-white dark:bg-[#0e1726]">
-
         <!-- ================= HEADER ================= -->
         <div class="flex items-center justify-between px-4 py-3">
           <a routerLink="/" class="main-logo flex items-center gap-2">
-            <img class="w-8" src="/assets/images/logo.svg" alt="Logo" />
-            <span class="text-2xl font-semibold dark:text-white-light">
-              VRISTO
-            </span>
+            <div class="logo-wrapper">
+              <a routerLink="/dashboard" class="main-logo">
+                <img
+                  src="/assets/images/auth/vedik logo.png"
+                  alt="Vedik Astrologer"
+                  class="sidebar-logo"
+                />
+              </a>
+            </div>
           </a>
 
           <button
-            class="collapse-icon flex h-8 w-8 items-center justify-center
-                   rounded-full transition hover:bg-gray-500/10 hover:text-primary
-                   dark:text-white-light dark:hover:bg-dark-light/10 rtl:rotate-180"
-            (click)="storeData.dispatch({ type: 'toggleSidebar' })">
+            class="collapse-icon flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-gray-500/10 hover:text-primary dark:text-white-light dark:hover:bg-dark-light/10 rtl:rotate-180"
+            (click)="storeData.dispatch({ type: 'toggleSidebar' })"
+          >
             <icon-carets-down class="rotate-90" />
           </button>
         </div>
 
         <!-- ================= MENU ================= -->
-        <ng-scrollbar class="relative !h-[calc(100vh-80px)]" appearance="compact">
+        <ng-scrollbar
+          class="relative !h-[calc(100vh-80px)]"
+          appearance="compact"
+        >
           <ul class="px-4 py-2 space-y-1 font-semibold">
-
             <!-- My Dashboard -->
             <li class="menu nav-item">
               <a
@@ -270,33 +447,33 @@
                 routerLinkActive="active"
                 (click)="toggleMobileMenu()"
                 style="
-                  display:flex !important;
-                  align-items:center !important;
-                  justify-content:flex-start !important;
-                  gap:12px;
-                  width:100%;
-                  padding:10px 16px;
-                  border-radius:10px;
+                  display: flex !important;
+                  align-items: center !important;
+                  justify-content: flex-start !important;
+                  gap: 12px;
+                  width: 100%;
+                  padding: 10px 16px;
+                  border-radius: 10px;
                 "
                 class="nav-link group"
               >
                 <icon-menu-dashboard
                   style="
-                    margin:0 !important;
-                    padding:0 !important;
-                    min-width:20px;
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    min-width: 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                   "
                   class="group-hover:!text-primary"
                 ></icon-menu-dashboard>
 
                 <span
                   style="
-                    margin:0 !important;
-                    padding:0 !important;
-                    white-space:nowrap;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    white-space: nowrap;
                   "
                   class="text-black dark:text-[#506690] dark:group-hover:text-white-dark"
                 >
@@ -312,33 +489,33 @@
                 routerLinkActive="active"
                 (click)="toggleMobileMenu()"
                 style="
-                  display:flex !important;
-                  align-items:center !important;
-                  justify-content:flex-start !important;
-                  gap:12px;
-                  width:100%;
-                  padding:10px 16px;
-                  border-radius:10px;
+                  display: flex !important;
+                  align-items: center !important;
+                  justify-content: flex-start !important;
+                  gap: 12px;
+                  width: 100%;
+                  padding: 10px 16px;
+                  border-radius: 10px;
                 "
                 class="nav-link group"
               >
                 <icon-menu-charts
                   style="
-                    margin:0 !important;
-                    padding:0 !important;
-                    min-width:20px;
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    min-width: 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                   "
                   class="group-hover:!text-primary"
                 ></icon-menu-charts>
 
                 <span
                   style="
-                    margin:0 !important;
-                    padding:0 !important;
-                    white-space:nowrap;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    white-space: nowrap;
                   "
                   class="text-black dark:text-[#506690] dark:group-hover:text-white-dark"
                 >
@@ -354,33 +531,33 @@
                 routerLinkActive="active"
                 (click)="toggleMobileMenu()"
                 style="
-                  display:flex !important;
-                  align-items:center !important;
-                  justify-content:flex-start !important;
-                  gap:12px;
-                  width:100%;
-                  padding:10px 16px;
-                  border-radius:10px;
+                  display: flex !important;
+                  align-items: center !important;
+                  justify-content: flex-start !important;
+                  gap: 12px;
+                  width: 100%;
+                  padding: 10px 16px;
+                  border-radius: 10px;
                 "
                 class="nav-link group"
               >
                 <icon-menu-elements
                   style="
-                    margin:0 !important;
-                    padding:0 !important;
-                    min-width:20px;
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    min-width: 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                   "
                   class="group-hover:!text-primary"
                 ></icon-menu-elements>
 
                 <span
                   style="
-                    margin:0 !important;
-                    padding:0 !important;
-                    white-space:nowrap;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    white-space: nowrap;
                   "
                   class="text-black dark:text-[#506690] dark:group-hover:text-white-dark"
                 >
@@ -388,13 +565,9 @@
                 </span>
               </a>
             </li>
-
           </ul>
         </ng-scrollbar>
-
       </div>
     </nav>
   </div>
 </div>
-
-

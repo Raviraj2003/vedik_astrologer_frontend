@@ -1,102 +1,94 @@
 <div class="panel mt-4 px-2 sm:px-6">
-
   <!-- ================= HEADER ================= -->
-  <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+  <div class="mb-4 flex items-center justify-between">
     <h5 class="text-base sm:text-lg font-semibold dark:text-white-light">
       📚 My Class Schedule
     </h5>
 
-    <!-- Loader -->
-    <div *ngIf="isLoading" class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-      <svg
-        class="animate-spin h-4 w-4 mr-2 text-primary"
-        viewBox="0 0 24 24"
-      >
-        <circle class="opacity-25" cx="12" cy="12" r="10"
-                stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor"
-              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-      </svg>
-      Loading...
-    </div>
+    <span *ngIf="isLoading" class="text-sm text-gray-400"> Loading... </span>
   </div>
 
   <!-- ================= TABS ================= -->
-  <div class="flex flex-wrap gap-2 mb-4 justify-center sm:justify-start">
+  <div class="flex flex-wrap gap-2 mb-4">
     <button
       *ngFor="let tab of tabs"
       (click)="setActiveTab(tab)"
-      [disabled]="isLoading"
       [ngClass]="{
         'bg-primary text-white': activeTab === tab,
-        'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300': activeTab !== tab
+        'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300':
+          activeTab !== tab,
       }"
-      class="px-4 py-1.5 sm:px-5 sm:py-2 text-sm rounded-md
-             transition-all duration-300 disabled:opacity-50"
+      class="px-4 py-1.5 rounded-md text-sm transition"
     >
       {{ getTabLabel(tab) }}
     </button>
   </div>
 
-  <!-- ================= CARD GRID ================= -->
-  <div class="p-4">
-
-    <div
-      *ngIf="filteredSchedules.length; else noData"
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
-    >
-
-      <!-- ================= SINGLE CARD ================= -->
+  <!-- ================= DATE-WISE CARD GRID ================= -->
+  <ng-container *ngIf="groupedSchedules.length; else noData">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+      <!-- ================= DATE CARD ================= -->
       <div
-        *ngFor="let s of filteredSchedules"
-        class="bg-white dark:bg-gray-800
-               border border-gray-200 dark:border-gray-700
-               rounded-xl p-4 shadow-sm
-               hover:shadow-md transition-all duration-300"
+        *ngFor="let group of groupedSchedules"
+        class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-4"
       >
-
-        <!-- Class Name -->
-        <h3 class="text-lg font-semibold text-primary mb-1">
-          {{ s.class_name }}
-        </h3>
-
-        <!-- Topic -->
-        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
-          📘 {{ s.topic }}
-        </p>
-
-        <!-- Details -->
-        <div class="text-sm space-y-1 text-gray-700 dark:text-gray-300">
-          <div>📅 <strong>{{ s.day_name }}</strong></div>
-          <div>⏰ {{ s.start_time }} – {{ s.end_time }}</div>
-
-          <div class="text-xs text-gray-500 mt-2">
-            {{ s.from_date | date:'dd MMM yyyy' }}
-            →
-            {{ s.to_date | date:'dd MMM yyyy' }}
+        <!-- DATE + DAY HEADER -->
+        <div class="mb-4 text-center">
+          <h6 class="text-primary font-semibold text-sm">
+            📅 {{ group.date | date: "dd MMM yyyy" }}
+          </h6>
+          <div class="text-xs text-gray-500 dark:text-gray-400">
+            {{ group.classes[0].day_name }}
           </div>
         </div>
+        
+        <!-- ================= CLASSES INSIDE DATE ================= -->
+        <div class="space-y-3">
+          <!-- CLASS CARD -->
+          <div
+            *ngFor="let s of group.classes"
+            class="border border-gray-200 dark:border-gray-700 rounded-lg p-3 hover:shadow transition"
+          >
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-semibold text-gray-800 dark:text-white">
+                  {{ s.class_name }}
+                </h4>
+                <p class="text-xs text-gray-500 dark:text-gray-400">
+                  📘 {{ s.topic }}
+                </p>
+              </div>
 
-        <!-- ACTION -->
-        <button
-          routerLink="/student-study-materials"
-          class="mt-4 w-full bg-primary text-white py-2 rounded-md
-                 hover:opacity-90 transition text-sm"
-        >
-          View Study Materials
-        </button>
+              <!-- DAY BADGE -->
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
+              >
+                {{ s.day_name }}
+              </span>
+            </div>
 
+            <div class="mt-2 text-sm text-gray-700 dark:text-gray-300">
+              ⏰ {{ s.start_time }} – {{ s.end_time }}
+            </div>
+
+            <button
+              routerLink="/student-study-materials"
+              class="mt-3 w-full bg-primary text-white py-1.5 rounded-md text-sm hover:opacity-90 transition"
+            >
+              View Study Materials
+            </button>
+          </div>
+          <!-- END CLASS CARD -->
+        </div>
       </div>
-      <!-- ================= END CARD ================= -->
-
+      <!-- ================= END DATE CARD ================= -->
     </div>
-  </div>
+  </ng-container>
 
   <!-- ================= NO DATA ================= -->
   <ng-template #noData>
     <div class="text-center py-6 italic text-gray-400 dark:text-gray-500">
-      No {{ getTabLabel(activeTab) }} classes found
+      No classes found
     </div>
   </ng-template>
-
 </div>
