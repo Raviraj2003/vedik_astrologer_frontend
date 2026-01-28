@@ -344,6 +344,28 @@ export class ApiService {
     );
   }
 
+  getStudentClasses(batchCode: string): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/getStudentClasses/${batchCode}`,
+      {}, // empty body
+      { headers: this.getJsonHeaders() },
+    );
+  }
+
+  // ======================================
+  // 🧑‍💼 ADMIN → UPDATE CLASS TOPIC (DATE-WISE)
+  // ======================================
+
+  updateClassTopicByDate(data: {
+    schedule_id: number;
+    class_date: string; // YYYY-MM-DD
+    topic: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/updateClassTopicByDate`, data, {
+      headers: this.getJsonHeaders(),
+    });
+  }
+
   // STUDENT → GET PUBLISHED STUDY MATERIALS
   getStudentStudyMaterials(): Observable<{
     success: boolean;

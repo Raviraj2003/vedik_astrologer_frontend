@@ -1,117 +1,112 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ApiService } from '../service/api.service';
+import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { ApiService } from "../service/api.service";
 
-type ScheduleTab = 'today' | 'all' | 'upcoming';
+type ScheduleTab = "today" | "upcoming" | "all";
 
 @Component({
-  selector: 'app-student-dashboard',
+  selector: "app-student-dashboard",
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './student-dashboard.component.html',
-  styleUrl: './student-dashboard.component.css'
+  templateUrl: "./student-dashboard.component.html",
+  styleUrl: "./student-dashboard.component.css",
 })
 export class StudentDashboardComponent implements OnInit {
+  tabs: ScheduleTab[] = ["today", "upcoming", "all"];
+  activeTab: ScheduleTab = "today";
 
-  tabs: ScheduleTab[] = ['today', 'all', 'upcoming'];
-  activeTab: ScheduleTab = 'today';
+  /** 🔹 Raw slot-wise data from API */
+  rawClasses: any[] = [];
 
-  schedules: any[] = [];
-  filteredSchedules: any[] = [];
-
-  // ✅ DATE-WISE GROUPED DATA
+  /** 🔹 Grouped for UI */
   groupedSchedules: { date: string; classes: any[] }[] = [];
 
   isLoading = true;
-
-  private weekDays = [
-    'Sunday', 'Monday', 'Tuesday',
-    'Wednesday', 'Thursday', 'Friday', 'Saturday'
-  ];
+  todayStr = "";
 
   constructor(private api: ApiService) {}
 
   ngOnInit(): void {
+    this.todayStr = this.formatDate(new Date());
     this.loadSchedule();
   }
 
+  /* ======================================
+     LOAD STUDENT CLASSES (SLOT-BASED API)
+  ====================================== */
   loadSchedule(): void {
-    this.api.getStudentClassSchedule().subscribe({
+    const batchCode = "BAT9296"; // ⚠️ later: derive from logged-in student
+
+    this.isLoading = true;
+
+    this.api.getStudentClasses(batchCode).subscribe({
       next: (res: any) => {
-        this.schedules = res.schedule || [];
-        this.expandAndGroup();
+        this.rawClasses = res?.data || [];
+        this.applyFilter();
         this.isLoading = false;
       },
-      error: () => this.isLoading = false
+      error: () => {
+        this.rawClasses = [];
+        this.groupedSchedules = [];
+        this.isLoading = false;
+      },
     });
   }
 
+  /* ======================================
+     TAB CHANGE
+  ====================================== */
   setActiveTab(tab: ScheduleTab): void {
     this.activeTab = tab;
-    this.expandAndGroup();
+    this.applyFilter();
   }
 
   getTabLabel(tab: ScheduleTab): string {
     return {
-      today: 'Today',
-      all: 'All Classes',
-      upcoming: 'Upcoming'
+      today: "Today",
+      upcoming: "Upcoming",
+      all: "All Classes",
     }[tab];
   }
 
-  /* ------------------------------------
-     EXPAND + GROUP DATE-WISE
-  ------------------------------------ */
-  expandAndGroup(): void {
-    const todayStr = new Date().toISOString().split('T')[0];
-    const occurrences: any[] = [];
+  /* ======================================
+     FILTER + GROUP BY DATE
+  ====================================== */
+  applyFilter(): void {
+    let filtered = [...this.rawClasses];
 
-    this.schedules.forEach(s => {
-      const from = new Date(s.from_date);
-      const to = new Date(s.to_date);
+    if (this.activeTab === "today") {
+      filtered = filtered.filter((c) => c.class_date === this.todayStr);
+    }
 
-      from.setHours(0, 0, 0, 0);
-      to.setHours(0, 0, 0, 0);
+    if (this.activeTab === "upcoming") {
+      filtered = filtered.filter((c) => c.class_date > this.todayStr);
+    }
 
-      const targetDay = this.weekDays.indexOf(s.day_name);
-      if (targetDay === -1) return;
-
-      const current = new Date(from);
-
-      while (current <= to) {
-        if (current.getDay() === targetDay) {
-          const dateStr = current.toISOString().split('T')[0];
-
-          if (
-            this.activeTab === 'today' && dateStr !== todayStr ||
-            this.activeTab === 'upcoming' && dateStr <= todayStr
-          ) {
-            current.setDate(current.getDate() + 1);
-            continue;
-          }
-
-          occurrences.push({
-            ...s,
-            class_date: dateStr
-          });
-        }
-        current.setDate(current.getDate() + 1);
-      }
-    });
-
-    // ✅ GROUP BY DATE
     const map = new Map<string, any[]>();
 
-    occurrences.forEach(o => {
-      if (!map.has(o.class_date)) {
-        map.set(o.class_date, []);
+    filtered.forEach((c) => {
+      if (!map.has(c.class_date)) {
+        map.set(c.class_date, []);
       }
-      map.get(o.class_date)!.push(o);
+      map.get(c.class_date)!.push(c);
     });
 
-    // ✅ CONVERT TO ARRAY (SORTED)
     this.groupedSchedules = Array.from(map.entries())
       .sort((a, b) => a[0].localeCompare(b[0]))
       .map(([date, classes]) => ({ date, classes }));
+  }
+
+  /* ======================================
+     SAFE DATE FORMATTER (YYYY-MM-DD)
+  ====================================== */
+  private formatDate(d: Date): string {
+    return (
+      d.getFullYear() +
+      "-" +
+      String(d.getMonth() + 1).padStart(2, "0") +
+      "-" +
+      String(d.getDate()).padStart(2, "0")
+    );
   }
 }

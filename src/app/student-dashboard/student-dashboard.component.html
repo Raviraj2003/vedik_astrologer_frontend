@@ -14,9 +14,8 @@
       *ngFor="let tab of tabs"
       (click)="setActiveTab(tab)"
       [ngClass]="{
-        'bg-primary text-white': activeTab === tab,
-        'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300':
-          activeTab !== tab,
+        'bg-[#8b6f63] text-white shadow-sm': activeTab === tab,
+        'bg-[#f3ece8] text-[#6c524d] hover:bg-[#e8ddd7]': activeTab !== tab,
       }"
       class="px-4 py-1.5 rounded-md text-sm transition"
     >
@@ -38,47 +37,41 @@
             📅 {{ group.date | date: "dd MMM yyyy" }}
           </h6>
           <div class="text-xs text-gray-500 dark:text-gray-400">
-            {{ group.classes[0].day_name }}
+            {{ group.date | date: "EEEE" }}
           </div>
         </div>
-        
-        <!-- ================= CLASSES INSIDE DATE ================= -->
+
+        <!-- ================= CLASSES ================= -->
         <div class="space-y-3">
-          <!-- CLASS CARD -->
           <div
             *ngFor="let s of group.classes"
             class="border border-gray-200 dark:border-gray-700 rounded-lg p-3 hover:shadow transition"
           >
-            <div class="flex justify-between items-start">
-              <div>
-                <h4 class="font-semibold text-gray-800 dark:text-white">
-                  {{ s.class_name }}
-                </h4>
-                <p class="text-xs text-gray-500 dark:text-gray-400">
-                  📘 {{ s.topic }}
-                </p>
-              </div>
+            <h4 class="font-semibold text-gray-800 dark:text-white">
+              {{ s.class_name }}
+            </h4>
 
-              <!-- DAY BADGE -->
-              <span
-                class="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
-              >
-                {{ s.day_name }}
-              </span>
-            </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              📘 {{ s.topic || "Topic will be updated soon" }}
+            </p>
 
             <div class="mt-2 text-sm text-gray-700 dark:text-gray-300">
               ⏰ {{ s.start_time }} – {{ s.end_time }}
             </div>
 
-            <button
-              routerLink="/student-study-materials"
-              class="mt-3 w-full bg-primary text-white py-1.5 rounded-md text-sm hover:opacity-90 transition"
-            >
-              View Study Materials
-            </button>
+          <button
+  routerLink="/student-study-materials"
+  [disabled]="group.date < todayStr"
+  [ngClass]="{
+    'bg-[#a07f73] hover:bg-[#8f6f64]': group.date >= todayStr,
+    'bg-gray-300 cursor-not-allowed': group.date < todayStr
+  }"
+  class="mt-3 w-full text-white py-1.5 rounded-md text-sm transition shadow-sm"
+>
+  Join Class
+</button>
+
           </div>
-          <!-- END CLASS CARD -->
         </div>
       </div>
       <!-- ================= END DATE CARD ================= -->

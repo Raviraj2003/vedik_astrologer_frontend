@@ -1,48 +1,63 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { ApiService } from '../service/api.service';
+import { Component, OnInit } from "@angular/core";
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from "@angular/forms";
+import { CommonModule } from "@angular/common";
+import { ApiService } from "../service/api.service";
 
 @Component({
-  selector: 'app-student-details',
+  selector: "app-student-details",
   standalone: true,
-  templateUrl: './student-details.component.html',
   imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: "./student-details.component.html",
 })
 export class StudentDetailsComponent implements OnInit {
   studentForm!: FormGroup;
-  successMessage = '';
-  errorMessage = '';
+  successMessage = "";
+  errorMessage = "";
 
-  constructor(private fb: FormBuilder, private apiService: ApiService) {}
+  constructor(
+    private fb: FormBuilder,
+    private apiService: ApiService,
+  ) {}
 
   ngOnInit(): void {
-    // Build the student update form
     this.studentForm = this.fb.group({
-      batch_name: ['', Validators.required],
-      fees: ['', [Validators.required, Validators.min(0)]],
-      certificate_marksheet_code: ['', Validators.required],
-      marks_obtained: ['', [Validators.required, Validators.min(0), Validators.max(100)]],
+      full_name: ["", Validators.required],
+      phone_no: ["", Validators.required],
+      email: ["", [Validators.required, Validators.email]],
+      address: ["", Validators.required],
+      birth_date: ["", Validators.required],
+      birth_time: ["", Validators.required],
+      whatsapp_group: ["", Validators.required], // ALL | BATCH | NONE
+      qualification: ["", Validators.required],
+      studied_astrology: ["", Validators.required], // Y | N
+      computer_knowledge: ["", Validators.required], // Y | N
+      class_mode: ["", Validators.required], // OFFLINE | LAPTOP | MOBILE
+      fees: [null],
+      certificate_marksheet_code: [""],
+      marks_obtained: [null, [Validators.min(0), Validators.max(100)]],
     });
   }
 
-  // Submit updated details
   onSubmit(): void {
     if (this.studentForm.invalid) {
-      this.errorMessage = 'Please fill all required fields correctly.';
-      this.successMessage = '';
+      this.errorMessage = "Please fill all required fields.";
+      this.successMessage = "";
       return;
     }
 
     this.apiService.updateStudentDetails(this.studentForm.value).subscribe({
-      next: (response: any) => {
-        this.successMessage = response.message || 'Student details updated successfully!';
-        this.errorMessage = '';
+      next: (res: any) => {
+        this.successMessage = res.message || "Details saved successfully";
+        this.errorMessage = "";
       },
-      error: (error) => {
-        console.error('Error updating details:', error);
-        this.errorMessage = error.error?.message || 'Failed to update student details.';
-        this.successMessage = '';
+      error: (err) => {
+        this.errorMessage = err.error?.message || "Something went wrong";
+        this.successMessage = "";
       },
     });
   }
