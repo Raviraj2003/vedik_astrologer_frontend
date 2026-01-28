@@ -18,7 +18,8 @@ import { ClassScheduleComponent } from './class-schedule.component';
 import { CreateBatchComponent } from './users/create-batch/create-batch.component';
 import { AssignBatchComponent } from './users/assign-batch/assign-batch.component';
 import { AssignMediaComponent } from './users/assign-media/assign-media.component';
-import  { StudentStudyMaterialsComponent } from './student-study-materials/student-study-materials.component';
+import { StudentStudyMaterialsComponent } from './student-study-materials/student-study-materials.component';
+import { AssignTopicComponent } from './assign-topic/assign-topic.component';
 
 
 // widgets
@@ -78,7 +79,8 @@ export const routes: Routes = [
             {path: 'create-batch', component: CreateBatchComponent, data: {title: 'Create Batch'}},
             {path: 'assign-batch', component: AssignBatchComponent, data: {title: 'Assign Batch'}},
             {path: 'assign-media', component: AssignMediaComponent, data: {title: 'Assign Media'}},
-            {path: 'student-study-materials', component: StudentStudyMaterialsComponent, data: {title: 'Student Study Materials'}},
+            { path: 'student-study-materials', component: StudentStudyMaterialsComponent, data: { title: 'Student Study Materials' } },
+            { path: 'assign-topic', component: AssignTopicComponent, data: { title: 'Assign Topic' } },
 
 
                        

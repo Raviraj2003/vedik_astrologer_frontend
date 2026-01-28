@@ -183,6 +183,85 @@
   .sidebar .sub-menu li {
     margin-bottom: 4px;
   }
+
+  /* Active sidebar item */
+.sidebar .nav-link.active {
+  background-color: #e8ddd7; /* light Vedik brown */
+  color: #6c524d;
+}
+
+/* Dark mode active */
+.dark .sidebar .nav-link.active {
+  background-color: #3a2f28;
+  color: #ffffff;
+}
+/* ================= SIDEBAR HOVER FIX ================= */
+
+/* Normal state */
+.sidebar .sidebar-link {
+  background-color: transparent !important;
+  color: inherit;
+}
+
+/* Hover state – LIGHT MODE */
+.sidebar .sidebar-link:hover {
+  background-color: #f3ece8 !important; /* light Vedik brown */
+  color: #6c524d !important;
+}
+
+/* Active state – LIGHT MODE */
+.sidebar .sidebar-link.active {
+  background-color: #e8ddd7 !important;
+  color: #6c524d !important;
+}
+
+/* Hover – DARK MODE */
+.dark .sidebar .sidebar-link:hover {
+  background-color: #2f261f !important;
+  color: #ffffff !important;
+}
+
+/* Active – DARK MODE */
+.dark .sidebar .sidebar-link.active {
+  background-color: #3a2f28 !important;
+  color: #ffffff !important;
+}
+/* ================= REMOVE WHITE OVERLAY ================= */
+
+/* Kill template pseudo-element */
+.sidebar .sidebar-link::before {
+  content: none !important;
+}
+
+/* Normal */
+.sidebar .sidebar-link {
+  background: transparent !important;
+}
+
+/* Hover – Light mode */
+.sidebar .sidebar-link:hover {
+  background-color: #f3ece8 !important; /* light Vedik */
+  color: #6c524d !important;
+}
+
+/* Active – Light mode */
+.sidebar .sidebar-link.active {
+  background-color: #e8ddd7 !important;
+  color: #6c524d !important;
+}
+
+/* Hover – Dark mode */
+.dark .sidebar .sidebar-link:hover {
+  background-color: #2f261f !important;
+  color: #ffffff !important;
+}
+
+/* Active – Dark mode */
+.dark .sidebar .sidebar-link.active {
+  background-color: #3a2f28 !important;
+  color: #ffffff !important;
+}
+
 </style>
 
 <div [ngClass]="{ 'dark text-white-dark': store.semidark }">
@@ -256,6 +335,11 @@
                 <li>
                   <a routerLink="/class-schedule" routerLinkActive="active"
                     >Class Schedule</a
+                  >
+                </li>
+                <li>
+                  <a routerLink="/assign-topic" routerLinkActive="active"
+                    >Assign Topic</a
                   >
                 </li>
               </ul>
@@ -455,7 +539,11 @@
                   padding: 10px 16px;
                   border-radius: 10px;
                 "
-                class="nav-link group"
+                class="nav-link group transition-colors
+       hover:bg-[#f3ece8] dark:hover:bg-[#2f261f]
+       hover:text-[#6c524d]
+       dark:hover:text-white"
+
               >
                 <icon-menu-dashboard
                   style="
