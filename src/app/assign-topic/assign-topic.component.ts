@@ -11,11 +11,13 @@ import { ApiService } from "../service/api.service";
   styleUrl: "./assign-topic.component.css",
 })
 export class AssignTopicComponent implements OnInit {
-  // 🔹 Data
+  /* ================= MASTER ================= */
   batches: any[] = [];
+  topics: any[] = [];
+
+  /* ================= CLASS GROUPS ================= */
   classes: any[] = [];
 
-  // 🔹 Selected values
   selectedBatchCode = "";
   isLoading = false;
 
@@ -26,25 +28,34 @@ export class AssignTopicComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadBatches();
+    this.loadTopics();
   }
 
-  /* ================================
-     LOAD ALL BATCHES
-  ================================= */
+  /* ================= LOAD BATCHES ================= */
   loadBatches(): void {
     this.api.getAllBatches().subscribe({
       next: (res: any) => {
-        this.batches = res.data || [];
+        this.batches = res?.data || [];
       },
       error: () => {
-        this.errorMsg = "Failed to load batches";
+        this.errorMsg = "❌ Failed to load batches";
       },
     });
   }
 
-  /* ================================
-     WHEN BATCH SELECTED
-  ================================= */
+  /* ================= LOAD TOPICS ================= */
+  loadTopics(): void {
+    this.api.getTopicList().subscribe({
+      next: (res: any) => {
+        this.topics = res?.data || [];
+      },
+      error: () => {
+        this.errorMsg = "❌ Failed to load topics";
+      },
+    });
+  }
+
+  /* ================= LOAD CLASSES ================= */
   onBatchChange(): void {
     this.classes = [];
     this.successMsg = "";
@@ -54,60 +65,89 @@ export class AssignTopicComponent implements OnInit {
 
     this.isLoading = true;
 
-    // 👉 reuse student classes API (admin can use it too)
     this.api.getStudentClasses(this.selectedBatchCode).subscribe({
       next: (res: any) => {
-        this.classes = res.data || [];
+        const rows = res?.data || [];
+        const grouped: any = {};
+
+        for (const row of rows) {
+          const key = `${row.class_date}_${row.schedule_id}`;
+
+          if (!grouped[key]) {
+            grouped[key] = {
+              class_date: row.class_date,
+              display_date: new Date(row.class_date).toLocaleDateString(
+                "en-IN",
+                {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                },
+              ),
+              day_name: row.day_name,
+              schedule_id: row.schedule_id,
+              slot_ids: [],
+              slot_times: [],
+              selectedTopicId: null,
+              topicMedia: [],
+            };
+          }
+
+          grouped[key].slot_ids.push(Number(row.slot_id));
+          grouped[key].slot_times.push(row.slot_time);
+        }
+
+        this.classes = Object.values(grouped);
         this.isLoading = false;
       },
       error: () => {
-        this.errorMsg = "Failed to load class slots";
+        this.errorMsg = "❌ Failed to load class slots";
         this.isLoading = false;
       },
     });
   }
 
-  /* ================================
-     UPDATE TOPIC
-  ================================= */
-  updateTopic(c: any): void {
-    this.successMsg = "";
-    this.errorMsg = "";
+  /* ================= TOPIC CHANGE PER SLOT ================= */
+  onSlotTopicChange(slot: any): void {
+    slot.topicMedia = [];
 
-    if (!c.topic || !c.class_date || !c.schedule_id) {
-      this.errorMsg = "⚠️ Please enter a topic before saving.";
-      return;
-    }
+    if (!slot.selectedTopicId) return;
 
-    this.api
-      .updateClassTopicByDate({
-        schedule_id: c.schedule_id,
-        class_date: c.class_date,
-        topic: c.topic,
-      })
-      .subscribe({
-        next: () => {
-          const formattedDate = new Date(c.class_date).toLocaleDateString(
-            "en-IN",
-            { day: "2-digit", month: "short", year: "numeric" },
-          );
+    this.api.getTopicMedia(slot.selectedTopicId).subscribe({
+      next: (res: any) => {
+        slot.topicMedia = (res?.data || []).map((m: any) => ({
+          ...m,
+          selected: false,
+        }));
+      },
+      error: () => {
+        this.errorMsg = "❌ Failed to load topic media";
+      },
+    });
+  }
 
-          this.successMsg = `✅ Topic updated successfully.
-Batch: ${this.selectedBatchCode} • Date: ${formattedDate}`;
+  /* ================= ASSIGN TOPIC + MEDIA ================= */
+  assignTopicAndMedia(slot: any): void {
+    const mediaIds = (slot.topicMedia || [])
+      .filter((m: any) => m.selected)
+      .map((m: any) => Number(m.id));
 
-          // Auto clear message after 3 seconds (recommended)
-          setTimeout(() => {
-            this.successMsg = "";
-          }, 3000);
-        },
-        error: () => {
-          this.errorMsg = `❌ Failed to update topic.
-Please try again or check your connection.`;
+    const payload = {
+      batch_code: this.selectedBatchCode,
+      slot_ids: slot.slot_ids, // ✅ MULTIPLE SLOT IDS
+      topic_id: Number(slot.selectedTopicId),
+      media_ids: mediaIds,
+    };
 
-          setTimeout(() => {
-            this.errorMsg = "";
-          }, 4000);
-        },
-      });
+    this.api.assignTopicAndMediaToSlot(payload).subscribe({
+      next: () => {
+        this.successMsg = `✅ Topic & media assigned\nDate: ${slot.display_date}`;
+        setTimeout(() => (this.successMsg = ""), 3000);
+      },
+      error: () => {
+        this.errorMsg = "❌ Failed to assign topic & media";
+        setTimeout(() => (this.errorMsg = ""), 3000);
+      },
+    });
   }
 }

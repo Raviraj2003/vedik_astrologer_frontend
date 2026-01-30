@@ -7,33 +7,47 @@
     </h5>
 
     <div *ngIf="isLoading" class="flex items-center text-sm text-gray-500">
-      <svg
-        class="animate-spin h-4 w-4 mr-2 text-primary"
-        viewBox="0 0 24 24"
-      >
+      <svg class="animate-spin h-4 w-4 mr-2 text-primary" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10"
-                stroke="currentColor" stroke-width="4"></circle>
+          stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor"
-              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
       </svg>
       Loading...
     </div>
   </div>
 
+  <!-- ================= BATCH DROPDOWN ================= -->
+  <div class="mb-6 max-w-sm">
+    <label class="block text-sm font-medium text-gray-600 mb-2">
+      Select Batch
+    </label>
+
+    <select
+      class="form-input w-full"
+      [(ngModel)]="selectedBatchCode"
+      (change)="filterByBatch()"
+    >
+      <option *ngFor="let b of batchList" [value]="b.batch_code">
+        {{ b.batch_name }}
+      </option>
+    </select>
+  </div>
+
   <!-- ================= NO DATA ================= -->
-  <div *ngIf="!isLoading && materials.length === 0"
+  <div *ngIf="!isLoading && filteredMaterials.length === 0"
        class="text-center py-6 text-gray-400 italic">
-    No study materials published yet.
+    No study materials published for this batch.
   </div>
 
   <!-- ================= MATERIAL CARDS ================= -->
   <div
-    *ngIf="!isLoading && materials.length > 0"
+    *ngIf="!isLoading && filteredMaterials.length > 0"
     class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
   >
 
     <div
-      *ngFor="let m of materials"
+      *ngFor="let m of filteredMaterials"
       class="bg-white dark:bg-gray-800
              border border-gray-200 dark:border-gray-700
              rounded-xl p-4 shadow-sm hover:shadow-md transition"
@@ -67,19 +81,17 @@
         {{ m.description }}
       </p>
 
-      <!-- Actions -->
-   <a
-  [href]="'http://192.168.1.14:5000/' + m.file_path"
-  target="_blank"
-  rel="noopener"
-  class="block text-center bg-[#a07f73] text-white py-2 rounded-md
-         hover:bg-[#8f6f64] transition text-sm shadow-sm"
->
-  View
-</a>
-
+      <!-- View -->
+      <a
+        [href]="'http://192.168.1.14:5000/' + m.file_path"
+        target="_blank"
+        rel="noopener"
+        class="block text-center bg-[#a07f73] text-white py-2 rounded-md
+               hover:bg-[#8f6f64] transition text-sm shadow-sm"
+      >
+        View
+      </a>
 
     </div>
-
   </div>
 </div>

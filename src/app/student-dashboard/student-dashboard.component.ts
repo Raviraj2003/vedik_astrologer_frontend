@@ -12,14 +12,22 @@ type ScheduleTab = "today" | "upcoming" | "all";
   styleUrl: "./student-dashboard.component.css",
 })
 export class StudentDashboardComponent implements OnInit {
+  /* ================= TABS ================= */
   tabs: ScheduleTab[] = ["today", "upcoming", "all"];
   activeTab: ScheduleTab = "today";
 
-  /** 🔹 Raw slot-wise data from API */
+  /* ================= DATA ================= */
   rawClasses: any[] = [];
+  groupedSchedules: {
+    date: string;
+    classes: any[];
+  }[] = [];
 
-  /** 🔹 Grouped for UI */
-  groupedSchedules: { date: string; classes: any[] }[] = [];
+  /* ================= STUDY MATERIAL STATE ================= */
+  openedSlotId: number | null = null;
+  studyTopic: any = null;
+  studyMedia: any[] = [];
+  isMaterialLoading = false;
 
   isLoading = true;
   todayStr = "";
@@ -31,15 +39,13 @@ export class StudentDashboardComponent implements OnInit {
     this.loadSchedule();
   }
 
-  /* ======================================
-     LOAD STUDENT CLASSES (SLOT-BASED API)
-  ====================================== */
+  /* ================= LOAD CLASSES ================= */
+  /* ================= LOAD CLASSES ================= */
   loadSchedule(): void {
-    const batchCode = "BAT9296"; // ⚠️ later: derive from logged-in student
-
     this.isLoading = true;
 
-    this.api.getStudentClasses(batchCode).subscribe({
+    // 🔁 REPLACED API
+    this.api.getStudentClassesFromToken().subscribe({
       next: (res: any) => {
         this.rawClasses = res?.data || [];
         this.applyFilter();
@@ -53,9 +59,42 @@ export class StudentDashboardComponent implements OnInit {
     });
   }
 
-  /* ======================================
-     TAB CHANGE
-  ====================================== */
+  /* ================= VIEW STUDY MATERIAL ================= */
+  /* ================= VIEW STUDY MATERIAL ================= */
+  viewStudyMaterials(slot: any): void {
+    if (this.openedSlotId === slot.slot_id) {
+      this.openedSlotId = null;
+      this.studyTopic = null;
+      this.studyMedia = [];
+      return;
+    }
+
+    this.openedSlotId = slot.slot_id;
+    this.isMaterialLoading = true;
+    this.studyTopic = null;
+    this.studyMedia = [];
+
+    // 🔁 REPLACED API
+    this.api.getStudentStudyMaterialsFromToken().subscribe({
+      next: (res: any) => {
+        this.studyTopic = res?.topic || null;
+        this.studyMedia = res?.media || [];
+        this.isMaterialLoading = false;
+      },
+      error: () => {
+        this.studyTopic = null;
+        this.studyMedia = [];
+        this.isMaterialLoading = false;
+      },
+    });
+  }
+
+  /* ================= OPEN FILE ================= */
+  openFile(path: string): void {
+    window.open(path, "_blank");
+  }
+
+  /* ================= TAB HELPERS ================= */
   setActiveTab(tab: ScheduleTab): void {
     this.activeTab = tab;
     this.applyFilter();
@@ -69,9 +108,7 @@ export class StudentDashboardComponent implements OnInit {
     }[tab];
   }
 
-  /* ======================================
-     FILTER + GROUP BY DATE
-  ====================================== */
+  /* ================= FILTER + GROUP ================= */
   applyFilter(): void {
     let filtered = [...this.rawClasses];
 
@@ -89,7 +126,14 @@ export class StudentDashboardComponent implements OnInit {
       if (!map.has(c.class_date)) {
         map.set(c.class_date, []);
       }
-      map.get(c.class_date)!.push(c);
+      const [start, end] = c.slot_time?.split(" - ") || ["", ""];
+
+      map.get(c.class_date)!.push({
+        ...c,
+        start_time: start,
+        end_time: end,
+        topic: c.topic ?? null,
+      });
     });
 
     this.groupedSchedules = Array.from(map.entries())
@@ -97,9 +141,7 @@ export class StudentDashboardComponent implements OnInit {
       .map(([date, classes]) => ({ date, classes }));
   }
 
-  /* ======================================
-     SAFE DATE FORMATTER (YYYY-MM-DD)
-  ====================================== */
+  /* ================= DATE FORMAT ================= */
   private formatDate(d: Date): string {
     return (
       d.getFullYear() +
