@@ -29,7 +29,6 @@ export class ClassScheduleComponent implements OnInit {
   form: any = {
     class_name: '',
     batch_code: '',
-    topic: '',
     from_date: '',
     to_date: '',
     schedules: [
@@ -108,7 +107,6 @@ export class ClassScheduleComponent implements OnInit {
     const payload = {
       class_name: this.form.class_name,
       batch_code: this.form.batch_code,
-      topic: this.form.topic,
       from_date: this.form.from_date,
       to_date: this.form.to_date,
       schedules: this.form.schedules,
@@ -133,7 +131,6 @@ export class ClassScheduleComponent implements OnInit {
     this.form = {
       class_name: '',
       batch_code: '',
-      topic: '',
       from_date: '',
       to_date: '',
       schedules: [
