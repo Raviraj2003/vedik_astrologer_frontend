@@ -4,6 +4,33 @@ import { ApiService } from "../service/api.service";
 
 type ScheduleTab = "today" | "upcoming" | "all";
 
+interface ClassItem {
+  slot_id: number;
+  class_date: string;
+  slot_time: string;
+  subject_name: string;
+  topic_name?: string;
+  room_no?: string;
+  start_time?: string;
+  end_time?: string;
+}
+
+interface StudyMaterial {
+  title?: string;
+  file_name?: string;
+  mime_type?: string;
+  file_path?: string;
+  file_size?: number;
+}
+
+interface TopicObject {
+  name?: string;
+  title?: string;
+  topic_name?: string;
+  topic?: string;
+  [key: string]: any; // Allow any other properties
+}
+
 @Component({
   selector: "app-student-dashboard",
   standalone: true,
@@ -16,17 +43,18 @@ export class StudentDashboardComponent implements OnInit {
   tabs: ScheduleTab[] = ["today", "upcoming", "all"];
   activeTab: ScheduleTab = "today";
 
-  /* ================= DATA ================= */
-  rawClasses: any[] = [];
+  /* ================= CLASS DATA ================= */
+  rawClasses: ClassItem[] = [];
   groupedSchedules: {
     date: string;
-    classes: any[];
+    classes: ClassItem[];
   }[] = [];
 
-  /* ================= STUDY MATERIAL STATE ================= */
-  openedSlotId: number | null = null;
-  studyTopic: any = null;
-  studyMedia: any[] = [];
+  /* ================= MODAL FOR STUDY MATERIAL ================= */
+  showMaterialModal = false;
+  selectedSlot: ClassItem | null = null;
+  studyMediaBySlot: { [slotId: number]: StudyMaterial[] } = {};
+  studyTopicBySlot: { [slotId: number]: string } = {};
   isMaterialLoading = false;
 
   isLoading = true;
@@ -40,11 +68,9 @@ export class StudentDashboardComponent implements OnInit {
   }
 
   /* ================= LOAD CLASSES ================= */
-  /* ================= LOAD CLASSES ================= */
   loadSchedule(): void {
     this.isLoading = true;
 
-    // 🔁 REPLACED API
     this.api.getStudentClassesFromToken().subscribe({
       next: (res: any) => {
         this.rawClasses = res?.data || [];
@@ -60,52 +86,126 @@ export class StudentDashboardComponent implements OnInit {
   }
 
   /* ================= VIEW STUDY MATERIAL ================= */
-  /* ================= VIEW STUDY MATERIAL ================= */
-  viewStudyMaterials(slot: any): void {
-    if (this.openedSlotId === slot.slot_id) {
-      this.openedSlotId = null;
-      this.studyTopic = null;
-      this.studyMedia = [];
-      return;
-    }
+  viewStudyMaterials(slot: ClassItem): void {
+    this.selectedSlot = slot;
+    const slotId = slot.slot_id;
 
-    this.openedSlotId = slot.slot_id;
+    // Reset the modal state
+    this.showMaterialModal = true;
     this.isMaterialLoading = true;
-    this.studyTopic = null;
-    this.studyMedia = [];
 
-    // 🔁 REPLACED API
-    this.api.getStudentStudyMaterialsFromToken().subscribe({
+    // Clear any previous data for this slot to force reload
+    delete this.studyMediaBySlot[slotId];
+    delete this.studyTopicBySlot[slotId];
+
+    this.api.getStudentStudyMaterialsFromToken({ slot_id: slotId }).subscribe({
       next: (res: any) => {
-        this.studyTopic = res?.topic || null;
-        this.studyMedia = res?.media || [];
+        console.log("Study materials API response:", res); // Debug log
+
+        // Extract topic from the response - handle object case
+        let topic = "No topic specified";
+
+        if (res) {
+          // Check different possible structures
+          if (typeof res.topic === "string") {
+            topic = res.topic;
+          } else if (res.topic && typeof res.topic === "object") {
+            // If topic is an object, try to get its name/title property
+            const topicObj = res.topic as TopicObject;
+            topic =
+              topicObj.name ||
+              topicObj.title ||
+              topicObj.topic_name ||
+              topicObj.topic ||
+              JSON.stringify(res.topic);
+          } else if (res.data?.topic) {
+            if (typeof res.data.topic === "string") {
+              topic = res.data.topic;
+            } else if (typeof res.data.topic === "object") {
+              const dataTopicObj = res.data.topic as TopicObject;
+              topic =
+                dataTopicObj.name ||
+                dataTopicObj.title ||
+                dataTopicObj.topic_name ||
+                dataTopicObj.topic ||
+                JSON.stringify(res.data.topic);
+            }
+          } else if (res.data?.topic_name) {
+            topic = res.data.topic_name;
+          } else if (res.topic_name) {
+            topic = res.topic_name;
+          }
+        }
+
+        // If still no topic, use the slot's topic name
+        if (topic === "No topic specified" && this.selectedSlot?.topic_name) {
+          topic = this.selectedSlot.topic_name;
+        }
+
+        this.studyTopicBySlot[slotId] = topic;
+        console.log("Extracted topic:", topic); // Debug log
+
+        // Extract media from the response
+        let media: StudyMaterial[] = [];
+
+        if (res?.media && Array.isArray(res.media)) {
+          media = res.media;
+        } else if (res?.data?.media && Array.isArray(res.data.media)) {
+          media = res.data.media;
+        } else if (res?.data && Array.isArray(res.data)) {
+          media = res.data;
+        } else if (res && Array.isArray(res)) {
+          media = res;
+        }
+
+        this.studyMediaBySlot[slotId] = media;
+        console.log("Extracted media:", media); // Debug log
+
         this.isMaterialLoading = false;
       },
-      error: () => {
-        this.studyTopic = null;
-        this.studyMedia = [];
+      error: (error) => {
+        console.error("Error loading study materials:", error);
+
+        // Fallback to slot's topic name if available
+        const fallbackTopic =
+          this.selectedSlot?.topic_name ||
+          "Failed to load topic. Please try again.";
+
+        this.studyTopicBySlot[slotId] = fallbackTopic;
+        this.studyMediaBySlot[slotId] = [];
         this.isMaterialLoading = false;
       },
     });
   }
 
-  /* ================= OPEN FILE ================= */
-  openFile(path: string): void {
-    window.open(path, "_blank");
+  /* ================= CLOSE MODAL ================= */
+  closeModal(): void {
+    this.showMaterialModal = false;
+    this.selectedSlot = null;
   }
 
-  /* ================= TAB HELPERS ================= */
+  /* ================= OPEN FILE ================= */
+  openFile(path: string | undefined): void {
+    if (path) {
+      window.open(path, "_blank");
+    } else {
+      console.warn("No file path provided");
+    }
+  }
+
+  /* ================= TAB HANDLERS ================= */
   setActiveTab(tab: ScheduleTab): void {
     this.activeTab = tab;
     this.applyFilter();
   }
 
   getTabLabel(tab: ScheduleTab): string {
-    return {
+    const labels = {
       today: "Today",
       upcoming: "Upcoming",
       all: "All Classes",
-    }[tab];
+    };
+    return labels[tab];
   }
 
   /* ================= FILTER + GROUP ================= */
@@ -120,25 +220,25 @@ export class StudentDashboardComponent implements OnInit {
       filtered = filtered.filter((c) => c.class_date > this.todayStr);
     }
 
-    const map = new Map<string, any[]>();
+    const map = new Map<string, ClassItem[]>();
 
     filtered.forEach((c) => {
       if (!map.has(c.class_date)) {
         map.set(c.class_date, []);
       }
+
       const [start, end] = c.slot_time?.split(" - ") || ["", ""];
 
       map.get(c.class_date)!.push({
         ...c,
         start_time: start,
         end_time: end,
-        topic: c.topic ?? null,
       });
     });
 
-    this.groupedSchedules = Array.from(map.entries())
-      .sort((a, b) => a[0].localeCompare(b[0]))
-      .map(([date, classes]) => ({ date, classes }));
+    this.groupedSchedules = Array.from(map.entries()).map(
+      ([date, classes]) => ({ date, classes }),
+    );
   }
 
   /* ================= DATE FORMAT ================= */
@@ -150,5 +250,61 @@ export class StudentDashboardComponent implements OnInit {
       "-" +
       String(d.getDate()).padStart(2, "0")
     );
+  }
+
+  /* ================= GET FILE ICON ================= */
+  getFileIcon(mimeType: string | undefined): string {
+    if (!mimeType) return "📎";
+
+    const mime = mimeType.toLowerCase();
+    if (mime.includes("pdf")) return "📄";
+    if (mime.includes("image")) return "🖼️";
+    if (mime.includes("video")) return "🎬";
+    if (mime.includes("audio")) return "🎵";
+    if (mime.includes("word") || mime.includes("doc")) return "📝";
+    if (mime.includes("excel") || mime.includes("sheet")) return "📊";
+    if (mime.includes("powerpoint") || mime.includes("ppt")) return "📽️";
+    if (mime.includes("text") || mime.includes("txt")) return "📃";
+    return "📎";
+  }
+
+  /* ================= GET CURRENT TOPIC ================= */
+  getCurrentTopic(): string {
+    if (!this.selectedSlot) return "No topic specified";
+
+    const slotId = this.selectedSlot.slot_id;
+    const topic = this.studyTopicBySlot[slotId];
+
+    // Ensure topic is a string, not an object
+    if (topic && typeof topic === "object") {
+      const topicObj = topic as unknown as TopicObject;
+      return (
+        topicObj.name ||
+        topicObj.title ||
+        topicObj.topic_name ||
+        JSON.stringify(topic)
+      );
+    }
+
+    return topic || this.selectedSlot.topic_name || "No topic specified";
+  }
+
+  /* ================= GET CURRENT MEDIA ================= */
+  getCurrentMedia(): StudyMaterial[] {
+    if (!this.selectedSlot) return [];
+
+    const slotId = this.selectedSlot.slot_id;
+    return this.studyMediaBySlot[slotId] || [];
+  }
+
+  /* ================= FORMAT FILE SIZE ================= */
+  formatFileSize(bytes: number | undefined): string {
+    if (!bytes) return "Size unknown";
+
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    if (bytes === 0) return "0 Byte";
+
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return Math.round(bytes / Math.pow(1024, i)) + " " + sizes[i];
   }
 }

@@ -1,244 +1,510 @@
-<div class="p-6 bg-gray-50 min-h-screen">
-
-  <!-- ================= HEADER ================= -->
-  <div class="flex items-center justify-between mb-6">
-    <h2 class="text-xl font-semibold text-gray-800">Students</h2>
-
-    <div class="flex items-center gap-3">
-      <button
-        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg flex items-center gap-2"
-        (click)="openAddStudent()"
-      >
-        <span class="text-lg">＋</span> Add Student
-      </button>
-
-      <div class="relative">
-        <input
-          type="text"
-          placeholder="Search Students"
-          class="border border-gray-300 rounded-lg pl-4 pr-10 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          [(ngModel)]="searchText"
-          (ngModelChange)="searchStudents()"
-        />
-        <span class="absolute right-3 top-2.5 text-gray-400">🔍</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ================= TABS ================= -->
-  <div class="flex gap-6 border-b mb-5">
-    <button
-      class="pb-2 text-sm font-medium"
-      [ngClass]="activeTab === 'INDIVIDUAL'
-        ? 'text-blue-600 border-b-2 border-blue-600'
-        : 'text-gray-500'"
-      (click)="switchTab('INDIVIDUAL')"
-    >
-      Individual Students
-    </button>
-
-    <button
-      class="pb-2 text-sm font-medium"
-      [ngClass]="activeTab === 'BATCH'
-        ? 'text-blue-600 border-b-2 border-blue-600'
-        : 'text-gray-500'"
-      (click)="switchTab('BATCH')"
-    >
-      Batch Students
-    </button>
-  </div>
-
-  <!-- ================= CARD ================= -->
-  <div class="bg-white rounded-2xl shadow-md p-6">
-
-    <!-- ================= TABLE ================= -->
-    <div *ngIf="paginatedStudents.length > 0; else noStudents" class="overflow-x-auto">
-      <table class="w-full text-sm text-left">
-        <thead class="bg-gray-50 text-gray-600">
-          <tr>
-            <th class="px-4 py-3">Name</th>
-            <th class="px-4 py-3">Email</th>
-            <th class="px-4 py-3">Phone</th>
-
-            <!-- Batch Name ONLY for Batch tab -->
-          
-
-            <th class="px-4 py-3 text-center">Actions</th>
-          </tr>
-        </thead>
-
-        <tbody class="divide-y">
-          <tr *ngFor="let student of paginatedStudents" class="hover:bg-gray-50">
-            <td class="px-4 py-3 font-medium">
-              {{ student.first_name }} {{ student.last_name }}
-            </td>
-
-            <td class="px-4 py-3">{{ student.email }}</td>
-            <td class="px-4 py-3">{{ student.phone_no }}</td>
-
-            <!-- ✅ Batch Name value -->
-          
-
-            <td class="px-4 py-3 text-center space-x-3">
-              <button
-                class="text-blue-600 hover:underline"
-                (click)="viewStudent(student)"
-              >
-                View
-              </button>
-
-              <button
-                class="text-green-600 hover:underline"
-                (click)="openAddStudent(student)"
-              >
-                Edit
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <!-- ================= FOOTER ================= -->
-      <div class="flex items-center justify-between mt-6 text-sm text-gray-500">
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-6">
+  <div class="max-w-7xl mx-auto">
+    
+    <!-- HEADER SECTION -->
+    <div class="mb-8">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div>
-          Showing
-          {{ (currentPage - 1) * itemsPerPage + 1 }}
-          to
-          {{
-            currentPage * itemsPerPage > filteredStudentList.length
-              ? filteredStudentList.length
-              : currentPage * itemsPerPage
-          }}
-          of {{ filteredStudentList.length }} entries
+          <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mb-2">
+            👨‍🎓 Student Management
+          </h1>
+          <p class="text-gray-600 dark:text-gray-400">
+            Manage individual and batch students efficiently
+          </p>
         </div>
-
-        <div class="flex gap-2">
+        
+        <!-- HEADER ACTIONS -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <!-- SEARCH BOX -->
+          <div class="relative flex-1 sm:w-auto">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Search students..."
+              class="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              [(ngModel)]="searchText"
+              (ngModelChange)="searchStudents()"
+            />
+          </div>
+          
+          <!-- ADD STUDENT BUTTON -->
           <button
-            class="px-3 py-1 border rounded-lg"
-            [disabled]="currentPage === 1"
-            (click)="changePage(currentPage - 1)"
+            class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-5 py-2.5 rounded-lg font-medium flex items-center justify-center gap-2 transition-all duration-300 shadow-lg hover:shadow-xl"
+            (click)="openAddStudent()"
           >
-            Previous
-          </button>
-
-          <button
-            *ngFor="let p of [].constructor(totalPages); let i = index"
-            class="px-3 py-1 rounded-lg"
-            [ngClass]="currentPage === i + 1
-              ? 'bg-blue-600 text-white'
-              : 'border'"
-            (click)="changePage(i + 1)"
-          >
-            {{ i + 1 }}
-          </button>
-
-          <button
-            class="px-3 py-1 border rounded-lg"
-            [disabled]="currentPage === totalPages"
-            (click)="changePage(currentPage + 1)"
-          >
-            Next
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Add Student
           </button>
         </div>
       </div>
     </div>
 
-    <ng-template #noStudents>
-      <div class="text-center py-10 text-gray-500">
-        No {{ activeTab === 'BATCH' ? 'batch' : 'individual' }} students found.
+    <!-- TABS NAVIGATION -->
+    <div class="mb-6">
+      <div class="inline-flex bg-white dark:bg-gray-800 rounded-xl shadow-sm p-1 border border-gray-200 dark:border-gray-700">
+        <button
+          *ngFor="let tab of tabs"
+          (click)="switchTab(tab)"
+          [ngClass]="{
+            'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md': activeTab === tab,
+            'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700': activeTab !== tab
+          }"
+          class="px-6 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 whitespace-nowrap"
+        >
+          {{ tab === 'INDIVIDUAL' ? '👤 Individual Students' : '👥 Batch Students' }}
+        </button>
       </div>
-    </ng-template>
+    </div>
+
+    <!-- STUDENTS CARD -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+      
+      <!-- TABLE CONTAINER -->
+      <div class="overflow-hidden">
+        <div *ngIf="paginatedStudents.length > 0; else noStudents">
+          <div class="overflow-x-auto">
+            <table class="w-full min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                    Student
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                    Contact Info
+                  </th>
+                  <th *ngIf="activeTab === 'BATCH'" class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                    Batch
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <tr 
+                  *ngFor="let student of paginatedStudents"
+                  class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200"
+                >
+                  <!-- STUDENT INFO -->
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center">
+                        <span class="text-blue-600 dark:text-blue-300 font-medium">
+                          {{ (student.first_name || '')[0] }}{{ (student.last_name || '')[0] }}
+                        </span>
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                          {{ student.first_name }} {{ student.last_name }}
+                        </div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">
+                          {{ student.student_code || 'N/A' }}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- CONTACT INFO -->
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="space-y-1">
+                      <div class="flex items-center text-sm text-gray-900 dark:text-white">
+                        <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                        {{ student.email }}
+                      </div>
+                      <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                        <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                        </svg>
+                        {{ student.phone_no || 'N/A' }}
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- BATCH INFO (Only for batch tab) -->
+                  <td *ngIf="activeTab === 'BATCH'" class="px-6 py-4 whitespace-nowrap">
+                    <div class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900 dark:to-emerald-900 text-green-800 dark:text-green-300">
+                      {{ student.batch_name || 'Not Assigned' }}
+                    </div>
+                  </td>
+
+                  <!-- ACTIONS -->
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div class="flex items-center space-x-2">
+                      <button
+                        (click)="viewStudent(student)"
+                        class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 text-blue-600 dark:text-blue-300 rounded-lg hover:from-blue-100 hover:to-blue-200 dark:hover:from-blue-800 dark:hover:to-blue-700 transition-all duration-300"
+                      >
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                        View
+                      </button>
+                      <button
+                        (click)="openAddStudent(student)"
+                        class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-green-50 to-emerald-100 dark:from-green-900 dark:to-emerald-900 text-green-600 dark:text-green-300 rounded-lg hover:from-green-100 hover:to-emerald-200 dark:hover:from-green-800 dark:hover:to-emerald-800 transition-all duration-300"
+                      >
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        Edit
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGINATION -->
+      <div *ngIf="paginatedStudents.length > 0" class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div class="text-sm text-gray-600 dark:text-gray-400">
+            Showing
+            <span class="font-semibold text-gray-900 dark:text-white">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>
+            to
+            <span class="font-semibold text-gray-900 dark:text-white">{{ 
+              currentPage * itemsPerPage > filteredStudentList.length 
+                ? filteredStudentList.length 
+                : currentPage * itemsPerPage 
+            }}</span>
+            of
+            <span class="font-semibold text-gray-900 dark:text-white">{{ filteredStudentList.length }}</span>
+            students
+          </div>
+          
+          <div class="flex items-center space-x-2">
+            <button
+              (click)="changePage(currentPage - 1)"
+              [disabled]="currentPage === 1"
+              class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+              </svg>
+              Previous
+            </button>
+            
+            <div class="flex space-x-1">
+              <button
+                *ngFor="let p of [].constructor(totalPages); let i = index"
+                (click)="changePage(i + 1)"
+                [ngClass]="currentPage === i + 1
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md'
+                  : 'border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'"
+                class="w-8 h-8 rounded-lg text-sm font-medium transition-all duration-300"
+              >
+                {{ i + 1 }}
+              </button>
+            </div>
+            
+            <button
+              (click)="changePage(currentPage + 1)"
+              [disabled]="currentPage === totalPages"
+              class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Next
+              <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- NO STUDENTS STATE -->
+      <ng-template #noStudents>
+        <div class="flex flex-col items-center justify-center py-16 text-center">
+          <div class="w-24 h-24 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 flex items-center justify-center mb-6">
+            <span class="text-4xl">👨‍🎓</span>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+            No {{ activeTab === 'BATCH' ? 'batch' : 'individual' }} students found
+          </h3>
+          <p class="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-6">
+            {{ searchText ? 'Try adjusting your search terms' : 'Get started by adding your first student' }}
+          </p>
+          <button
+            (click)="openAddStudent()"
+            class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transition-all duration-300 shadow-lg hover:shadow-xl"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Add First Student
+          </button>
+        </div>
+      </ng-template>
+    </div>
   </div>
 
-  <!-- ================= ADD / EDIT STUDENT MODAL ================= -->
+  <!-- ADD/EDIT STUDENT MODAL -->
   <ngx-custom-modal #addStudentModal class="no-footer">
     <ng-template #modalHeader>
-      <span class="text-lg font-semibold">
-        {{ studentForm.value.student_code ? 'Edit Student' : 'Add Student' }}
-      </span>
+      <div class="flex items-center justify-between w-full">
+        <h2 class="text-xl font-bold text-gray-800 dark:text-white flex items-center">
+          <span class="mr-3">{{ studentForm.value.student_code ? '✏️' : '➕' }}</span>
+          {{ studentForm.value.student_code ? 'Edit Student' : 'Add New Student' }}
+        </h2>
+      </div>
     </ng-template>
 
     <ng-template #modalBody>
-      <form [formGroup]="studentForm" (ngSubmit)="saveStudent()" class="space-y-4">
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input class="form-input" placeholder="First Name" formControlName="first_name" />
-          <input class="form-input" placeholder="Last Name" formControlName="last_name" />
-          <input class="form-input" type="email" placeholder="Email" formControlName="email" />
-          <input class="form-input" placeholder="Phone No" formControlName="phone_no" />
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input class="form-input" type="password" placeholder="Password" formControlName="password" />
-          <input class="form-input" type="password" placeholder="Confirm Password" formControlName="confirm_password" />
-        </div>
-
-        <div
-          class="text-red-500 text-sm"
-          *ngIf="studentForm.errors?.['passwordMismatch']
-                 && studentForm.get('confirm_password')?.touched"
-        >
-          Passwords do not match
-        </div>
-
-        <label class="flex items-center gap-2 text-sm">
-          <input type="checkbox" formControlName="is_in_batch" />
-          Student is in Batch
-        </label>
-
-        <!-- ✅ IMPORTANT FIX: use batch_code -->
-        <!-- <div *ngIf="studentForm.get('is_in_batch')?.value">
-          <select class="form-input" formControlName="batch_code">
-            <option value="" disabled>Select Batch</option>
-            <option *ngFor="let batch of batchList" [value]="batch.batch_code">
-              {{ batch.batch_name }}
-            </option>
-          </select>
-
-          <div
-            class="text-red-500 text-sm mt-1"
-            *ngIf="studentForm.get('batch_code')?.invalid && studentForm.get('batch_code')?.touched"
-          >
-            Batch is required
+      <form [formGroup]="studentForm" (ngSubmit)="saveStudent()" class="space-y-6">
+        <!-- PERSONAL INFO SECTION -->
+        <div class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 p-4 rounded-xl">
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-3">Personal Information</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">First Name *</label>
+              <input
+                type="text"
+                formControlName="first_name"
+                placeholder="Enter first name"
+                class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              />
+              <div *ngIf="studentForm.get('first_name')?.invalid && studentForm.get('first_name')?.touched" class="mt-1 text-sm text-red-600">
+                First name is required
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Last Name *</label>
+              <input
+                type="text"
+                formControlName="last_name"
+                placeholder="Enter last name"
+                class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              />
+              <div *ngIf="studentForm.get('last_name')?.invalid && studentForm.get('last_name')?.touched" class="mt-1 text-sm text-red-600">
+                Last name is required
+              </div>
+            </div>
           </div>
-        </div> -->
+        </div>
 
-        <div class="flex justify-end gap-3 pt-4 border-t">
+        <!-- CONTACT INFO SECTION -->
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 p-4 rounded-xl">
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-3">Contact Information</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address *</label>
+              <input
+                type="email"
+                formControlName="email"
+                placeholder="student@example.com"
+                class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              />
+              <div *ngIf="studentForm.get('email')?.invalid && studentForm.get('email')?.touched" class="mt-1 text-sm text-red-600">
+                Valid email is required
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number *</label>
+              <input
+                type="tel"
+                formControlName="phone_no"
+                placeholder="Enter phone number"
+                class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              />
+              <div *ngIf="studentForm.get('phone_no')?.invalid && studentForm.get('phone_no')?.touched" class="mt-1 text-sm text-red-600">
+                Phone number is required
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PASSWORD SECTION -->
+        <div class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 p-4 rounded-xl">
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-3">Account Security</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+              <input
+                type="password"
+                formControlName="password"
+                placeholder="Enter password"
+                class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm Password</label>
+              <input
+                type="password"
+                formControlName="confirm_password"
+                placeholder="Confirm password"
+                class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              />
+            </div>
+          </div>
+          
+          <div *ngIf="studentForm.errors?.['passwordMismatch'] && studentForm.get('confirm_password')?.touched" class="mt-3 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg">
+            <div class="flex items-center text-red-600 dark:text-red-400">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              Passwords do not match
+            </div>
+          </div>
+        </div>
+
+        <!-- BATCH SETTINGS -->
+        <div class="bg-gradient-to-br from-amber-50 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 p-4 rounded-xl">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1">Batch Settings</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Assign student to a batch</p>
+            </div>
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="checkbox" formControlName="is_in_batch" class="sr-only peer">
+              <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+              <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                {{ studentForm.get('is_in_batch')?.value ? 'In Batch' : 'Individual' }}
+              </span>
+            </label>
+          </div>
+
+          <!-- <div *ngIf="studentForm.get('is_in_batch')?.value" class="mt-4">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Batch</label>
+            <select
+              formControlName="batch_code"
+              class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+            >
+              <option value="" disabled>Select a batch...</option>
+              <option *ngFor="let batch of batchList" [value]="batch.batch_code">
+                {{ batch.batch_name }}
+              </option>
+            </select>
+            <div *ngIf="studentForm.get('batch_code')?.invalid && studentForm.get('batch_code')?.touched" class="mt-1 text-sm text-red-600">
+              Please select a batch
+            </div>
+          </div> -->
+        </div>
+
+        <!-- FORM ACTIONS -->
+        <div class="flex justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
           <button
             type="button"
-            class="px-4 py-2 border rounded-lg text-gray-600"
             (click)="addStudentModal.close()"
+            class="px-5 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors"
           >
             Cancel
           </button>
-
           <button
             type="submit"
-            class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg"
-            [disabled]="loading"
+            [disabled]="loading || studentForm.invalid"
+            class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {{ loading ? 'Saving...' : 'Save Student' }}
+            <div class="flex items-center justify-center gap-2">
+              <svg *ngIf="loading" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V4a4 4 0 00-4 4H4z"></path>
+              </svg>
+              {{ loading ? 'Saving...' : 'Save Student' }}
+            </div>
           </button>
         </div>
       </form>
     </ng-template>
   </ngx-custom-modal>
 
-  <!-- ================= VIEW STUDENT MODAL ================= -->
+  <!-- VIEW STUDENT MODAL -->
   <ngx-custom-modal #viewStudentModal class="no-footer">
     <ng-template #modalHeader>
-      <span class="text-lg font-semibold">Student Details</span>
+      <div class="flex items-center justify-between w-full">
+        <h2 class="text-xl font-bold text-gray-800 dark:text-white flex items-center">
+          <span class="mr-3">👤</span>
+          Student Details
+        </h2>
+      </div>
     </ng-template>
 
     <ng-template #modalBody>
-      <div *ngIf="selectedStudent" class="space-y-2 text-sm">
-        <p><b>Name:</b> {{ selectedStudent.first_name }} {{ selectedStudent.last_name }}</p>
-        <p><b>Email:</b> {{ selectedStudent.email }}</p>
-        <p><b>Phone:</b> {{ selectedStudent.phone_no }}</p>
-       
+      <div *ngIf="selectedStudent" class="space-y-6">
+        <!-- STUDENT PROFILE -->
+        <div class="flex items-center space-x-4">
+          <div class="w-16 h-16 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center">
+            <span class="text-blue-600 dark:text-blue-300 text-2xl font-bold">
+              {{ (selectedStudent.first_name || '')[0] }}{{ (selectedStudent.last_name || '')[0] }}
+            </span>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-gray-800 dark:text-white">
+              {{ selectedStudent.first_name }} {{ selectedStudent.last_name }}
+            </h3>
+            <p class="text-gray-500 dark:text-gray-400">{{ selectedStudent.student_code }}</p>
+          </div>
+        </div>
 
+        <!-- DETAILS GRID -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+            <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">Contact Information</h4>
+            <div class="space-y-2">
+              <div class="flex items-center text-gray-600 dark:text-gray-400">
+                <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+                {{ selectedStudent.email }}
+              </div>
+              <div class="flex items-center text-gray-600 dark:text-gray-400">
+                <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                </svg>
+                {{ selectedStudent.phone_no || 'N/A' }}
+              </div>
+            </div>
+          </div>
+
+          <!-- <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+            <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">Batch Information</h4>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-gray-600 dark:text-gray-400">Batch Status</span>
+                <span [ngClass]="selectedStudent.is_in_batch === 'Y' 
+                  ? 'px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-green-100 to-emerald-100 text-green-800'
+                  : 'px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800'">
+                  {{ selectedStudent.is_in_batch === 'Y' ? 'In Batch' : 'Individual' }}
+                </span>
+              </div>
+              <div *ngIf="selectedStudent.is_in_batch === 'Y'" class="flex items-center justify-between">
+                <span class="text-gray-600 dark:text-gray-400">Batch Name</span>
+                <span class="font-medium text-gray-800 dark:text-white">{{ selectedStudent.batch_name || 'N/A' }}</span>
+              </div>
+            </div>
+          </div> -->
+        </div>
+
+        <!-- MODAL ACTIONS -->
+        <div class="flex justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <button
+            type="button"
+            (click)="viewStudentModal.close()"
+            class="px-5 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors"
+          >
+            Close
+          </button>
+          <button
+            type="button"
+            (click)="openAddStudent(selectedStudent); viewStudentModal.close()"
+            class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl"
+          >
+            Edit Student
+          </button>
+        </div>
       </div>
     </ng-template>
   </ngx-custom-modal>
-
 </div>

@@ -1,21 +1,20 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import Swal from 'sweetalert2';
-import { ApiService } from '../../service/api.service';
+import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import Swal from "sweetalert2";
+import { ApiService } from "../../service/api.service";
 
 @Component({
-  selector: 'app-assign-batch',
+  selector: "app-assign-batch",
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './assign-batch.component.html',
+  templateUrl: "./assign-batch.component.html",
 })
 export class AssignBatchComponent implements OnInit {
-
   batchList: any[] = [];
   studentList: any[] = [];
 
-  selectedBatchCode = '';
+  selectedBatchCode = "";
   selectedStudents: Set<string> = new Set();
 
   loading = false;
@@ -34,7 +33,7 @@ export class AssignBatchComponent implements OnInit {
       next: (res: any) => {
         this.batchList = Array.isArray(res?.data) ? res.data : [];
       },
-      error: () => (this.batchList = [])
+      error: () => (this.batchList = []),
     });
   }
 
@@ -43,7 +42,7 @@ export class AssignBatchComponent implements OnInit {
       next: (res: any) => {
         this.studentList = Array.isArray(res?.data) ? res.data : [];
       },
-      error: () => (this.studentList = [])
+      error: () => (this.studentList = []),
     });
   }
 
@@ -59,16 +58,41 @@ export class AssignBatchComponent implements OnInit {
     return this.selectedStudents.has(code);
   }
 
+  /* ================= NEW METHODS FOR TEMPLATE ================= */
+
+  getSelectedCount(): number {
+    return this.selectedStudents.size;
+  }
+
+  areAllSelected(): boolean {
+    return (
+      this.studentList.length > 0 &&
+      this.selectedStudents.size === this.studentList.length
+    );
+  }
+
+  toggleSelectAll(): void {
+    if (this.areAllSelected()) {
+      // Deselect all
+      this.selectedStudents.clear();
+    } else {
+      // Select all
+      this.studentList.forEach((student) => {
+        this.selectedStudents.add(student.stu_ref_code);
+      });
+    }
+  }
+
   /* ================= ASSIGN ================= */
 
   assignBatch(): void {
     if (!this.selectedBatchCode) {
-      Swal.fire('Warning', 'Please select a batch', 'warning');
+      Swal.fire("Warning", "Please select a batch", "warning");
       return;
     }
 
     if (this.selectedStudents.size === 0) {
-      Swal.fire('Warning', 'Please select at least one student', 'warning');
+      Swal.fire("Warning", "Please select at least one student", "warning");
       return;
     }
 
@@ -76,19 +100,23 @@ export class AssignBatchComponent implements OnInit {
 
     const payload = {
       batch_code: this.selectedBatchCode,
-      student_ref_codes: Array.from(this.selectedStudents)
+      student_ref_codes: Array.from(this.selectedStudents),
     };
 
     this.apiService.assignStudentsToBatch(payload).subscribe({
       next: (res: any) => {
-        Swal.fire('Success', res.message || 'Students assigned successfully', 'success');
+        Swal.fire(
+          "Success",
+          res.message || "Students assigned successfully",
+          "success",
+        );
         this.selectedStudents.clear();
         this.loadEligibleStudents();
       },
       error: (err) => {
-        Swal.fire('Error', err?.error?.message || 'Assignment failed', 'error');
+        Swal.fire("Error", err?.error?.message || "Assignment failed", "error");
       },
-      complete: () => (this.loading = false)
+      complete: () => (this.loading = false),
     });
   }
 }

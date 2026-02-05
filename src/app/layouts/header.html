@@ -2,10 +2,7 @@
   class="z-40 shadow-sm"
   [ngClass]="{ 'dark text-white-dark': store.semidark && store.menu === 'horizontal'}"
 >
-  <div
-  class="relative flex w-full items-center bg-[#6c524dc4] px-5 py-2.5 text-white"
->
-
+<div class="relative flex w-full items-center bg-gradient-to-b from-blue-50 to-blue-500 px-5 py-2.5">
     <div
       class="horizontal-logo flex items-center justify-between lg:hidden ltr:mr-2 rtl:ml-2"
     >
@@ -15,11 +12,11 @@
           src="/assets/images/r/vedik-logo.png"
           alt=""
         /> -->
-            <span
-              class="hidden align-middle text-2xl font-semibold transition-all duration-300 dark:text-white-light md:inline ltr:ml-1.5 rtl:mr-1.5"
-            >
-              Vedik Astrologer
-            </span>
+        <span
+          class="hidden align-middle text-2xl font-semibold transition-all duration-300 dark:text-white-light md:inline ltr:ml-1.5 rtl:mr-1.5"
+        >
+          Vedik Astrologer
+        </span>
       </a>
 
       <a
@@ -33,10 +30,7 @@
     <div class="hidden sm:block ltr:mr-2 rtl:ml-2">
       <ul
         class="flex items-center space-x-2 dark:text-[#d0d2d6] rtl:space-x-reverse"
-      >
-      
-       
-      </ul>
+      ></ul>
     </div>
     <div
       class="flex items-center space-x-1.5 dark:text-[#d0d2d6] sm:flex-1 lg:space-x-2 ltr:ml-auto ltr:sm:ml-0 rtl:mr-auto rtl:space-x-reverse sm:rtl:mr-0"
@@ -46,9 +40,7 @@
           class="absolute inset-x-0 top-1/2 z-10 mx-4 hidden -translate-y-1/2 sm:relative sm:top-0 sm:mx-0 sm:block sm:translate-y-0"
           [ngClass]="{ '!block': search }"
           (submit.prevent)="search = false"
-        >
-          
-        </form>
+        ></form>
 
         <button
           type="button"
@@ -84,12 +76,6 @@
           <icon-laptop />
         </a>
       </div>
-
-     
-
-   
-
-      
 
       <div class="dropdown shrink-0">
         <div hlMenu class="!block">

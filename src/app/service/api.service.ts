@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: "root",
 })
 export class ApiService {
-  private baseUrl = "http://192.168.1.8:5000/api";
+  private baseUrl = "http://192.168.1.12:5000/api";
 
   constructor(private http: HttpClient) {}
 
@@ -478,25 +478,11 @@ export class ApiService {
   // ======================================
   // 📚 STUDENT → STUDY MATERIALS (ALL BATCHES FROM TOKEN)
   // ======================================
-  getStudentStudyMaterialsFromToken(): Observable<{
-    success: boolean;
-    topic: {
-      topic_id: number;
-      topic_name: string;
-    } | null;
-    media: any[];
-  }> {
-    return this.http.post<{
-      success: boolean;
-      topic: {
-        topic_id: number;
-        topic_name: string;
-      } | null;
-      media: any[];
-    }>(
+  getStudentStudyMaterialsFromToken(payload: { slot_id: number }) {
+    return this.http.post(
       `${this.baseUrl}/media/getStudentStudyMaterialsFromToken`,
-      {}, // ❌ no body
-      { headers: this.getJsonHeaders() }, // 🔐 Bearer token
+      payload,
+      { headers: this.getAuthHeaders() },
     );
   }
 

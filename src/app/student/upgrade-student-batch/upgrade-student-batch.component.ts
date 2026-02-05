@@ -6,10 +6,9 @@ import { ApiService } from "../../service/api.service";
 
 @Component({
   selector: "app-upgrade-student-batch",
-  standalone: true, // keep as-is for now
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: "./upgrade-student-batch.component.html",
-  styleUrl: "./upgrade-student-batch.component.css",
 })
 export class UpgradeStudentBatchComponent implements OnInit {
   batchList: any[] = [];
@@ -56,6 +55,10 @@ export class UpgradeStudentBatchComponent implements OnInit {
 
   isSelected(code: string): boolean {
     return this.selectedStudentCode === code;
+  }
+
+  getSelectedCount(): number {
+    return this.selectedStudentCode ? 1 : 0;
   }
 
   /* ================= UPGRADE BATCH ================= */

@@ -8,7 +8,6 @@ import { ApiService } from "../service/api.service";
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: "./assign-topic.component.html",
-  styleUrl: "./assign-topic.component.css",
 })
 export class AssignTopicComponent implements OnInit {
   /* ================= MASTER ================= */
@@ -124,6 +123,19 @@ export class AssignTopicComponent implements OnInit {
         this.errorMsg = "❌ Failed to load topic media";
       },
     });
+  }
+
+  /* ================= HELPER METHODS ================= */
+
+  getSelectedMediaCount(slot: any): number {
+    if (!slot.topicMedia || !Array.isArray(slot.topicMedia)) {
+      return 0;
+    }
+    return slot.topicMedia.filter((media: any) => media.selected).length;
+  }
+
+  toggleMediaSelection(media: any): void {
+    media.selected = !media.selected;
   }
 
   /* ================= ASSIGN TOPIC + MEDIA ================= */

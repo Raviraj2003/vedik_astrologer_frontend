@@ -1,33 +1,34 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, ViewChild } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import {
   FormBuilder,
   FormGroup,
   Validators,
   AbstractControl,
-  ValidationErrors
-} from '@angular/forms';
+  ValidationErrors,
+} from "@angular/forms";
 
-import { NgxCustomModalComponent } from 'ngx-custom-modal';
-import Swal from 'sweetalert2';
-import { ApiService } from '../../service/api.service';
+import { NgxCustomModalComponent } from "ngx-custom-modal";
+import Swal from "sweetalert2";
+import { ApiService } from "../../service/api.service";
+
+type TabType = "INDIVIDUAL" | "BATCH";
 
 @Component({
-  selector: 'app-addstudent',
+  selector: "app-addstudent",
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    NgxCustomModalComponent
+    NgxCustomModalComponent,
   ],
-  templateUrl: './addstudent.component.html',
+  templateUrl: "./addstudent.component.html",
 })
 export class AddStudentComponent implements OnInit {
-
-  @ViewChild('addStudentModal') addStudentModal!: NgxCustomModalComponent;
-  @ViewChild('viewStudentModal') viewStudentModal!: NgxCustomModalComponent;
+  @ViewChild("addStudentModal") addStudentModal!: NgxCustomModalComponent;
+  @ViewChild("viewStudentModal") viewStudentModal!: NgxCustomModalComponent;
 
   studentForm!: FormGroup;
 
@@ -36,18 +37,19 @@ export class AddStudentComponent implements OnInit {
   batchList: any[] = [];
   selectedStudent: any = null;
 
-  searchText = '';
+  searchText = "";
   loading = false;
 
   currentPage = 1;
   itemsPerPage = 10;
   totalPages = 0;
 
-  activeTab: 'INDIVIDUAL' | 'BATCH' = 'INDIVIDUAL';
+  activeTab: TabType = "INDIVIDUAL";
+  tabs: TabType[] = ["INDIVIDUAL", "BATCH"];
 
   constructor(
     private fb: FormBuilder,
-    private apiService: ApiService
+    private apiService: ApiService,
   ) {}
 
   ngOnInit(): void {
@@ -65,7 +67,7 @@ export class AddStudentComponent implements OnInit {
       error: () => {
         this.batchList = [];
         this.getAllStudents();
-      }
+      },
     });
   }
 
@@ -73,33 +75,33 @@ export class AddStudentComponent implements OnInit {
   initForm(): void {
     this.studentForm = this.fb.group(
       {
-        student_code: [''],
-        first_name: ['', Validators.required],
-        last_name: ['', Validators.required],
-        email: ['', [Validators.required, Validators.email]],
-        password: [''],
-        confirm_password: [''],
-        phone_no: ['', Validators.required],
+        student_code: [""],
+        first_name: ["", Validators.required],
+        last_name: ["", Validators.required],
+        email: ["", [Validators.required, Validators.email]],
+        password: [""],
+        confirm_password: [""],
+        phone_no: ["", Validators.required],
         is_in_batch: [false],
       },
-      { validators: this.passwordMatchValidator }
+      { validators: this.passwordMatchValidator },
     );
 
-    this.studentForm.get('is_in_batch')?.valueChanges.subscribe((checked) => {
-      const ctrl = this.studentForm.get('batch_code');
+    this.studentForm.get("is_in_batch")?.valueChanges.subscribe((checked) => {
+      const ctrl = this.studentForm.get("batch_code");
       if (checked) {
         ctrl?.setValidators([Validators.required]);
       } else {
         ctrl?.clearValidators();
-        ctrl?.setValue('');
+        ctrl?.setValue("");
       }
       ctrl?.updateValueAndValidity();
     });
   }
 
   passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
-    const p = control.get('password')?.value;
-    const c = control.get('confirm_password')?.value;
+    const p = control.get("password")?.value;
+    const c = control.get("confirm_password")?.value;
     if (!p && !c) return null;
     return p === c ? null : { passwordMismatch: true };
   }
@@ -108,15 +110,14 @@ export class AddStudentComponent implements OnInit {
   getAllStudents(): void {
     this.apiService.getAllStudents().subscribe((res: any) => {
       if (res?.success && Array.isArray(res.data)) {
-
         this.studentList = res.data.map((s: any) => {
           const batch = this.batchList.find(
-            b => b.batch_code === s.batch_code
+            (b) => b.batch_code === s.batch_code,
           );
 
           return {
             ...s,
-            batch_name: batch?.batch_name || ''
+            batch_name: batch?.batch_name || "",
           };
         });
 
@@ -129,22 +130,23 @@ export class AddStudentComponent implements OnInit {
   searchStudents(): void {
     const term = this.searchText.toLowerCase();
 
-    this.filteredStudentList = this.studentList.filter(s => {
+    this.filteredStudentList = this.studentList.filter((s) => {
       const matchesTab =
-        this.activeTab === 'BATCH'
-          ? s.is_in_batch === 'Y'
-          : s.is_in_batch !== 'Y';
+        this.activeTab === "BATCH"
+          ? s.is_in_batch === "Y"
+          : s.is_in_batch !== "Y";
 
-      const matchesSearch =
-        (s.first_name + s.last_name + s.email + s.phone_no)
-          .toLowerCase()
-          .includes(term);
+      const matchesSearch = (s.first_name + s.last_name + s.email + s.phone_no)
+        .toLowerCase()
+        .includes(term);
 
       return matchesTab && matchesSearch;
     });
 
     this.currentPage = 1;
-    this.totalPages = Math.ceil(this.filteredStudentList.length / this.itemsPerPage);
+    this.totalPages = Math.ceil(
+      this.filteredStudentList.length / this.itemsPerPage,
+    );
   }
 
   get paginatedStudents(): any[] {
@@ -157,9 +159,9 @@ export class AddStudentComponent implements OnInit {
     this.currentPage = page;
   }
 
-  switchTab(tab: 'INDIVIDUAL' | 'BATCH'): void {
+  switchTab(tab: TabType): void {
     this.activeTab = tab;
-    this.searchText = '';
+    this.searchText = "";
     this.searchStudents();
   }
 
@@ -169,7 +171,7 @@ export class AddStudentComponent implements OnInit {
     if (student) {
       this.studentForm.patchValue({
         ...student,
-        is_in_batch: student.is_in_batch === 'Y'
+        is_in_batch: student.is_in_batch === "Y",
       });
     }
     this.addStudentModal.open();
@@ -192,8 +194,8 @@ export class AddStudentComponent implements OnInit {
 
     const payload: any = {
       ...v,
-      is_in_batch: v.is_in_batch ? 'Y' : 'N',
-      batch_code: v.is_in_batch ? v.batch_code : null
+      is_in_batch: v.is_in_batch ? "Y" : "N",
+      batch_code: v.is_in_batch ? v.batch_code : null,
     };
 
     delete payload.confirm_password;
@@ -204,11 +206,11 @@ export class AddStudentComponent implements OnInit {
 
     apiCall.subscribe({
       next: (res: any) => {
-        Swal.fire('Success', res.message || 'Student saved', 'success');
+        Swal.fire("Success", res.message || "Student saved", "success");
         this.addStudentModal.close();
         this.loadInitialData();
       },
-      error: () => Swal.fire('Error', 'Failed to save student', 'error'),
+      error: () => Swal.fire("Error", "Failed to save student", "error"),
       complete: () => (this.loading = false),
     });
   }
