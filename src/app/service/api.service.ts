@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: "root",
 })
 export class ApiService {
-  private baseUrl = "http://192.168.1.8:5000/api";
+  private baseUrl = "http://192.168.1.12:5000/api";
 
   constructor(private http: HttpClient) {}
 
@@ -356,11 +356,7 @@ export class ApiService {
   // 🧑‍💼 ADMIN → UPDATE CLASS TOPIC (DATE-WISE)
   // ======================================
 
-  updateClassTopicByDate(data: {
-    schedule_id: number;
-    class_date: string; // YYYY-MM-DD
-    topic: string;
-  }): Observable<any> {
+  updateClassTopicByDate(data: { class_date: string; topic: string }) {
     return this.http.post(`${this.baseUrl}/updateClassTopicByDate`, data, {
       headers: this.getJsonHeaders(),
     });
@@ -389,6 +385,105 @@ export class ApiService {
     // We return the URL directly because this API is used
     // in <a href> or <iframe>, not via HttpClient
     return `${this.baseUrl}/media/view/${refCode}`;
+  }
+
+  getTopicList(): Observable<{
+    success: boolean;
+    data: {
+      id: number;
+      topic_name: string;
+    }[];
+  }> {
+    return this.http.get<{
+      success: boolean;
+      data: {
+        id: number;
+        topic_name: string;
+      }[];
+    }>(`${this.baseUrl}/media/getTopicList`, {
+      headers: this.getJsonHeaders(), // 🔐 Bearer token
+    });
+  }
+
+  // ======================================
+  // 📚 TOPIC MEDIA
+  // ======================================
+
+  uploadTopicMedia(formData: FormData): Observable<any> {
+    return this.http.post(`${this.baseUrl}/media/uploadTopicMedia`, formData, {
+      headers: this.getAuthHeaders(), // ❗ no Content-Type
+    });
+  }
+
+  getAllMedia(): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/media/getAllMedia`,
+      {},
+      { headers: this.getJsonHeaders() },
+    );
+  }
+
+  assignTopicAndMediaToSlot(data: {
+    batch_code: string;
+    slot_ids: number[];
+    topic_id: number;
+    media_ids: number[];
+  }) {
+    return this.http.post(
+      `${this.baseUrl}/media/assignTopicAndMediaToSlot`,
+      data,
+      { headers: this.getJsonHeaders() },
+    );
+  }
+
+  getTopicMedia(topicId: number) {
+    return this.http.post(
+      `${this.baseUrl}/media/getTopicMedia`,
+      { topic_id: topicId },
+      { headers: this.getJsonHeaders() },
+    );
+  }
+
+  getClassStudyMaterials(slotId: number) {
+    return this.http.post(
+      `${this.baseUrl}/media/getClassStudyMaterials/${slotId}`,
+      {},
+      { headers: this.getJsonHeaders() },
+    );
+  }
+
+  // 🔹 Upgrade ONE student to another batch (KEEP OLD BATCH)
+  upgradeStudentBatch(data: {
+    stu_ref_code: string;
+    batch_code: string;
+  }): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/batches/upgradeStudentBatch`,
+      data,
+      { headers: this.getJsonHeaders() }, // 🔐 Bearer token auto-added
+    );
+  }
+
+  // ======================================
+  // 🎓 STUDENT → CLASSES (ALL BATCHES FROM TOKEN)
+  // ======================================
+  getStudentClassesFromToken(): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/getStudentClassesFromToken`,
+      {}, // ❌ no body
+      { headers: this.getJsonHeaders() }, // 🔐 Bearer token
+    );
+  }
+
+  // ======================================
+  // 📚 STUDENT → STUDY MATERIALS (ALL BATCHES FROM TOKEN)
+  // ======================================
+  getStudentStudyMaterialsFromToken(payload: { slot_id: number }) {
+    return this.http.post(
+      `${this.baseUrl}/media/getStudentStudyMaterialsFromToken`,
+      payload,
+      { headers: this.getAuthHeaders() },
+    );
   }
 
   // ======================================

@@ -1,115 +1,196 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ApiService } from 'src/app/service/api.service';
+import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { ApiService } from "src/app/service/api.service";
 
 @Component({
-  selector: 'app-add-media',
+  selector: "app-add-media",
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './add-media.component.html',
+  templateUrl: "./add-media.component.html",
 })
-export class AddMediaComponent {
+export class AddMediaComponent implements OnInit {
   loading = false;
 
-  // Data Objects
-  imageData = { title: '', description: '', file: null as File | null };
-  pdfData   = { title: '', description: '', file: null as File | null };
-  videoData = { title: '', description: '', file: null as File | null };
+  // ================= IMAGE / PDF / VIDEO =================
+  imageData = { title: "", description: "", file: null as File | null };
+  pdfData = { title: "", description: "", file: null as File | null };
+  videoData = { title: "", description: "", file: null as File | null };
 
-  // UI Preview Helpers
   imagePreview: string | ArrayBuffer | null = null;
-  pdfFileName: string = '';
-  videoFileName: string = '';
+  pdfFileName = "";
+  videoFileName = "";
+
+  // ================= TOPIC MEDIA =================
+  topics: any[] = [];
+  selectedTopicId: number | null = null;
+  selectedTopicName = ""; // ✅ UI ONLY
+
+  topicMediaData = {
+    title: "",
+    description: "",
+    file: null as File | null,
+  };
+
+  topicFileName = "";
+  topicFileType = "";
 
   constructor(private api: ApiService) {}
 
-  onFileChange(event: any, type: 'image' | 'pdf' | 'video') {
-    const file = event.target.files[0];
-    if (!file) return;
+  // ================= INIT =================
+  ngOnInit(): void {
+    this.loadTopics();
+  }
 
-    if (type === 'image') {
+  // ================= LOAD TOPICS =================
+  loadTopics(): void {
+    this.api.getTopicList().subscribe({
+      next: (res: any) => {
+        this.topics = res?.data || [];
+      },
+      error: () => {
+        alert("❌ Failed to load topics");
+      },
+    });
+  }
+
+  // ================= TOPIC CHANGE =================
+  onTopicChange(): void {
+    const topic = this.topics.find((t) => t.id === this.selectedTopicId);
+    this.selectedTopicName = topic ? topic.topic_name : "";
+  }
+
+  // ================= IMAGE / PDF / VIDEO =================
+  onFileChange(event: Event, type: "image" | "pdf" | "video"): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || !input.files.length) return;
+
+    const file = input.files[0];
+
+    if (type === "image") {
       this.imageData.file = file;
-      // Generate Image Preview
       const reader = new FileReader();
       reader.onload = () => (this.imagePreview = reader.result);
       reader.readAsDataURL(file);
-    } 
-    
-    if (type === 'pdf') {
+    }
+
+    if (type === "pdf") {
       this.pdfData.file = file;
       this.pdfFileName = file.name;
-    } 
-    
-    if (type === 'video') {
+    }
+
+    if (type === "video") {
       this.videoData.file = file;
       this.videoFileName = file.name;
     }
   }
 
-  // ================= UPLOAD ACTIONS =================
+  // ================= TOPIC FILE =================
+  onTopicFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || !input.files.length) return;
 
-  uploadImage() {
-    if (!this.imageData.file) return alert('Please select an image first');
-    
-    const fd = new FormData();
-    fd.append('title', this.imageData.title);
-    fd.append('description', this.imageData.description);
-    fd.append('image', this.imageData.file);
+    const file = input.files[0];
+    this.topicMediaData.file = file;
+    this.topicFileName = file.name;
 
-    this.executeUpload(this.api.uploadImage(fd), 'image');
+    if (file.type.includes("pdf")) this.topicFileType = "PDF";
+    else if (file.type.includes("image")) this.topicFileType = "IMAGE";
+    else if (file.type.includes("video")) this.topicFileType = "VIDEO";
+    else this.topicFileType = "FILE";
   }
 
-  uploadPdf() {
-    if (!this.pdfData.file) return alert('Please select a PDF first');
-    
-    const fd = new FormData();
-    fd.append('title', this.pdfData.title);
-    fd.append('description', this.pdfData.description);
-    fd.append('pdf', this.pdfData.file);
+  // ================= UPLOAD IMAGE =================
+  uploadImage(): void {
+    if (!this.imageData.file) return alert("Select image");
 
-    this.executeUpload(this.api.uploadPdf(fd), 'pdf');
+    const fd = new FormData();
+    fd.append("title", this.imageData.title);
+    fd.append("description", this.imageData.description);
+    fd.append("image", this.imageData.file);
+
+    this.executeUpload(this.api.uploadImage(fd), "image");
   }
 
-  uploadVideo() {
-    if (!this.videoData.file) return alert('Please select a video first');
-    
-    const fd = new FormData();
-    fd.append('title', this.videoData.title);
-    fd.append('description', this.videoData.description);
-    fd.append('video', this.videoData.file);
+  // ================= UPLOAD PDF =================
+  uploadPdf(): void {
+    if (!this.pdfData.file) return alert("Select PDF");
 
-    this.executeUpload(this.api.uploadVideo(fd), 'video');
+    const fd = new FormData();
+    fd.append("title", this.pdfData.title);
+    fd.append("description", this.pdfData.description);
+    fd.append("pdf", this.pdfData.file);
+
+    this.executeUpload(this.api.uploadPdf(fd), "pdf");
   }
 
-  // Helper to handle the API call and cleanup
-  private executeUpload(obs: any, type: 'image' | 'pdf' | 'video') {
+  // ================= UPLOAD VIDEO =================
+  uploadVideo(): void {
+    if (!this.videoData.file) return alert("Select video");
+
+    const fd = new FormData();
+    fd.append("title", this.videoData.title);
+    fd.append("description", this.videoData.description);
+    fd.append("video", this.videoData.file);
+
+    this.executeUpload(this.api.uploadVideo(fd), "video");
+  }
+
+  // ================= UPLOAD TOPIC MEDIA =================
+  uploadTopicMedia(): void {
+    if (!this.selectedTopicId || !this.topicMediaData.file) {
+      return alert("Select topic and file");
+    }
+
+    const fd = new FormData();
+    fd.append("topic_id", String(this.selectedTopicId)); // ✅ ID ONLY
+    fd.append("title", this.topicMediaData.title || "");
+    fd.append("description", this.topicMediaData.description || "");
+    fd.append("file", this.topicMediaData.file);
+
+    this.executeUpload(this.api.uploadTopicMedia(fd), "topic media");
+  }
+
+  // ================= COMMON UPLOADER =================
+  private executeUpload(obs: any, type: string): void {
     this.loading = true;
+
     obs.subscribe({
       next: () => {
-        alert(`✅ ${type.toUpperCase()} uploaded successfully!`);
+        alert(`✅ ${type.toUpperCase()} uploaded successfully`);
         this.resetForm(type);
         this.loading = false;
       },
-      error: (err: any) => {
-        console.error(err);
-        alert('Upload failed. Please try again.');
+      error: () => {
+        alert("❌ Upload failed");
         this.loading = false;
-      }
+      },
     });
   }
 
-  private resetForm(type: 'image' | 'pdf' | 'video') {
-  if (type === 'image') {
-    this.imageData = { title: '', description: '', file: null }; // Clears description
-    this.imagePreview = null;
-  } else if (type === 'pdf') {
-    this.pdfData = { title: '', description: '', file: null };   // Clears description
-    this.pdfFileName = '';
-  } else if (type === 'video') {
-    
-    this.videoData = { title: '', description: '', file: null }; // Clears description
-    this.videoFileName = '';
+  // ================= RESET =================
+  private resetForm(type: string): void {
+    if (type === "image") {
+      this.imageData = { title: "", description: "", file: null };
+      this.imagePreview = null;
+    }
+
+    if (type === "pdf") {
+      this.pdfData = { title: "", description: "", file: null };
+      this.pdfFileName = "";
+    }
+
+    if (type === "video") {
+      this.videoData = { title: "", description: "", file: null };
+      this.videoFileName = "";
+    }
+
+    if (type === "topic media") {
+      this.topicMediaData = { title: "", description: "", file: null };
+      this.selectedTopicId = null;
+      this.selectedTopicName = "";
+      this.topicFileName = "";
+      this.topicFileType = "";
+    }
   }
-}
 }
