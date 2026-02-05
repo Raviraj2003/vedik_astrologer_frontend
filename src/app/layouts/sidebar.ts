@@ -5,48 +5,51 @@ import { TranslateService } from '@ngx-translate/core';
 import { slideDownUp } from '../shared/animations';
 
 @Component({
-  selector: 'sidebar',
-  templateUrl: './sidebar.html',
+  selector: "sidebar",
+  templateUrl: "./sidebar.html",
   animations: [slideDownUp],
 })
 export class SidebarComponent {
   active = false;
   store: any;
   activeDropdown: string[] = [];
-  parentDropdown: string = '';
-  role: string = ''; // 👈 Add this line
+  parentDropdown: string = "";
+  role: string = ""; // 👈 Add this line
 
   constructor(
     public translate: TranslateService,
     public storeData: Store<any>,
-    public router: Router
+    public router: Router,
   ) {
     this.initStore();
   }
 
   async initStore() {
-    this.storeData.select((d) => d.index).subscribe((d) => {
-      this.store = d;
-    });
+    this.storeData
+      .select((d) => d.index)
+      .subscribe((d) => {
+        this.store = d;
+      });
   }
 
   ngOnInit() {
     this.setActiveDropdown();
 
     // 👇 get user role from localStorage
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    this.role = user?.role?.toUpperCase() || '';
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    this.role = user?.role?.toUpperCase() || "";
   }
 
   setActiveDropdown() {
     const selector = document.querySelector(
-      '.sidebar ul a[routerLink="' + window.location.pathname + '"]'
+      '.sidebar ul a[routerLink="' + window.location.pathname + '"]',
     );
     if (selector) {
-      selector.classList.add('active');
-      const ul: any = selector.closest('ul.sub-menu');
+      selector.classList.add("active");
+      const ul: any = selector.closest("ul.sub-menu");
       if (ul) {
-        let ele: any = ul.closest('li.menu').querySelectorAll('.nav-link') || [];
+        let ele: any =
+          ul.closest("li.menu").querySelectorAll(".nav-link") || [];
         if (ele.length) {
           ele = ele[0];
           setTimeout(() => {
@@ -59,15 +62,17 @@ export class SidebarComponent {
 
   toggleMobileMenu() {
     if (window.innerWidth < 1024) {
-      this.storeData.dispatch({ type: 'toggleSidebar' });
+      this.storeData.dispatch({ type: "toggleSidebar" });
     }
   }
 
   toggleAccordion(name: string, parent?: string) {
     if (this.activeDropdown.includes(name)) {
+      // If clicking an already open dropdown, close it
       this.activeDropdown = this.activeDropdown.filter((d) => d !== name);
     } else {
-      this.activeDropdown.push(name);
+      // Close all other dropdowns and open only this one
+      this.activeDropdown = [name];
     }
   }
 }
