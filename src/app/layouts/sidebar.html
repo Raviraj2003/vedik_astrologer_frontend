@@ -3,567 +3,591 @@
    BLUE-PURPLE MODERN SIDEBAR THEME - ENHANCED VISIBILITY
    ========================================================= */
 
-/* Base Sidebar Styling - Full background image coverage */
-.sidebar {
-  border-right: none !important;
-  backdrop-filter: blur(5px) !important;
-  box-shadow: 
-    0 0 0 1px rgba(59, 130, 246, 0.05),
-    4px 0 30px rgba(99, 102, 241, 0.08),
-    8px 0 50px rgba(99, 102, 241, 0.04) !important;
-  background: linear-gradient(rgba(249, 250, 251, 0.7), rgba(243, 244, 246, 0.8)), url('/assets/images/auth/sidebar.jpg') center/cover no-repeat !important;
-}
-
-.dark .sidebar {
-  box-shadow: 
-    0 0 0 1px rgba(99, 102, 241, 0.1),
-    4px 0 30px rgba(0, 0, 0, 0.4),
-    8px 0 50px rgba(0, 0, 0, 0.3) !important;
-  background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(30, 41, 59, 0.8)), url('/assets/images/auth/sidebar.jpg') center/cover no-repeat !important;
-}
-
-/* Make the inner div transparent */
-.sidebar > div {
-  background: transparent !important;
-  backdrop-filter: none !important;
-}
-
-/* Logo Section with Blue-Purple Accent - Semi-transparent */
-.logo-wrapper {
-  padding: 1.25rem 1rem 0.75rem !important;
-  text-align: center !important;
-  margin-bottom: 0.5rem !important;
-  position: relative !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
-  background: rgba(255, 255, 255, 0.25) !important;
-  backdrop-filter: blur(10px) !important;
-  border-radius: 0 0 12px 12px !important;
-}
-
-.logo-wrapper::after {
-  content: '' !important;
-  position: absolute !important;
-  bottom: -1px !important;
-  left: 25% !important;
-  width: 50% !important;
-  height: 2px !important;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(59, 130, 246, 0.8) 20%, 
-    rgba(139, 92, 246, 0.8) 50%, 
-    rgba(59, 130, 246, 0.8) 80%, 
-    transparent 100%
-  ) !important;
-  border-radius: 2px !important;
-}
-
-.dark .logo-wrapper {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
-  background: rgba(15, 23, 42, 0.4) !important;
-}
-
-/* Logo Section with Blue-Purple Accent - Semi-transparent */
-.logo-wrapper {
-  padding: 1.25rem 1rem 0.75rem !important;
-  text-align: center !important;
-  margin-bottom: 0.5rem !important;
-  position: relative !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
-  background: rgba(255, 255, 255, 0.25) !important;
-  backdrop-filter: blur(10px) !important;
-  border-radius: 0 0 12px 12px !important;
-}
-
-.logo-wrapper::after {
-  content: '' !important;
-  position: absolute !important;
-  bottom: -1px !important;
-  left: 25% !important;
-  width: 50% !important;
-  height: 2px !important;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(59, 130, 246, 0.8) 20%, 
-    rgba(139, 92, 246, 0.8) 50%, 
-    rgba(59, 130, 246, 0.8) 80%, 
-    transparent 100%
-  ) !important;
-  border-radius: 2px !important;
-}
-
-.dark .logo-wrapper {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
-  background: rgba(15, 23, 42, 0.4) !important;
-}
-
-.sidebar-logo {
-  height: 60px !important; /* Increased size */
-  width: auto !important;
-  max-width: 200px !important; /* Increased size */
-  display: block !important;
-  margin: 0 auto !important;
-  transition: all 0.3s ease !important;
-  filter: 
-    drop-shadow(0 3px 8px rgba(59, 130, 246, 0.25))
-    drop-shadow(0 1px 3px rgba(99, 102, 241, 0.15))
-    brightness(1.05) !important;
-}
-
-.sidebar-logo:hover {
-  transform: scale(1.04) !important;
-  filter: 
-    drop-shadow(0 5px 15px rgba(99, 102, 241, 0.35))
-    drop-shadow(0 2px 6px rgba(139, 92, 246, 0.25))
-    brightness(1.1) !important;
-}
-
-.dark .sidebar-logo {
-  filter: 
-    drop-shadow(0 3px 10px rgba(99, 102, 241, 0.3))
-    drop-shadow(0 1px 4px rgba(139, 92, 246, 0.2))
-    brightness(1.05) !important;
-}
-
-.dark .sidebar-logo:hover {
-  filter: 
-    drop-shadow(0 6px 20px rgba(139, 92, 246, 0.4))
-    drop-shadow(0 3px 10px rgba(99, 102, 241, 0.3))
-    brightness(1.12) !important;
-}
-
-/* Update mobile responsive size */
-@media (max-width: 768px) {
-  .sidebar-logo {
-    height: 52px !important;
-    max-width: 180px !important;
+  /* Base Sidebar Styling - Full background image coverage */
+  .sidebar {
+    border-right: none !important;
+    backdrop-filter: blur(5px) !important;
+    box-shadow:
+      0 0 0 1px rgba(59, 130, 246, 0.05),
+      4px 0 30px rgba(99, 102, 241, 0.08),
+      8px 0 50px rgba(99, 102, 241, 0.04) !important;
+    background:
+      linear-gradient(rgba(249, 250, 251, 0.7), rgba(243, 244, 246, 0.8)),
+      url("/assets/images/auth/sidebar.jpg") center/cover no-repeat !important;
   }
-}
 
-/* Dark mode specific shadow */
-.dark .sidebar-logo {
-  filter: 
-    drop-shadow(0 4px 15px rgba(99, 102, 241, 0.4))
-    drop-shadow(0 1px 4px rgba(139, 92, 246, 0.3))
-    brightness(1.05) !important;
-  box-shadow: 
-    0 10px 30px rgba(0, 0, 0, 0.4),
-    0 5px 12px rgba(99, 102, 241, 0.25) !important;
-}
-
-.dark .sidebar-logo:hover {
-  filter: 
-    drop-shadow(0 10px 30px rgba(139, 92, 246, 0.6))
-    drop-shadow(0 4px 10px rgba(99, 102, 241, 0.4))
-    brightness(1.2) !important;
-  box-shadow: 
-    0 20px 45px rgba(0, 0, 0, 0.6),
-    0 10px 20px rgba(139, 92, 246, 0.3),
-    inset 0 0 25px rgba(255, 255, 255, 0.08) !important;
-}
-
-/* Update mobile responsive size as well */
-@media (max-width: 768px) {
-  .sidebar-logo {
-    height: 52px !important; /* Increased from 42px */
-    max-width: 180px !important;
-    filter: 
-      drop-shadow(0 3px 10px rgba(59, 130, 246, 0.3))
-      drop-shadow(0 1px 3px rgba(99, 102, 241, 0.2))
-      brightness(1.1) !important;
-    box-shadow: 
-      0 8px 20px rgba(59, 130, 246, 0.15),
-      0 3px 8px rgba(99, 102, 241, 0.1) !important;
+  .dark .sidebar {
+    box-shadow:
+      0 0 0 1px rgba(99, 102, 241, 0.1),
+      4px 0 30px rgba(0, 0, 0, 0.4),
+      8px 0 50px rgba(0, 0, 0, 0.3) !important;
+    background:
+      linear-gradient(rgba(15, 23, 42, 0.7), rgba(30, 41, 59, 0.8)),
+      url("/assets/images/auth/sidebar.jpg") center/cover no-repeat !important;
   }
-}
 
-/* Compact Main Menu Container */
-.sidebar .ng-scrollbar {
-  padding: 0 0.75rem 0.75rem !important;
-}
+  /* Make the inner div transparent */
+  .sidebar > div {
+    background: transparent !important;
+    backdrop-filter: none !important;
+  }
 
-/* Compact Menu Items - More transparent for better background visibility */
-.menu-item-wrapper {
-  margin: 0.125rem 0 !important;
-  position: relative !important;
-}
+  /* Logo Section with Blue-Purple Accent - Semi-transparent */
+  .logo-wrapper {
+    padding: 1.25rem 1rem 0.75rem !important;
+    text-align: center !important;
+    margin-bottom: 0.5rem !important;
+    position: relative !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+    background: rgba(255, 255, 255, 0.25) !important;
+    backdrop-filter: blur(10px) !important;
+    border-radius: 0 0 12px 12px !important;
+  }
 
-/* COMPACT NAV LINK - ENHANCED VISIBILITY */
-.nav-link {
-  display: flex !important;
-  align-items: center !important;
-  gap: 0.625rem !important;
-  padding: 0.625rem 0.75rem !important;
-  margin: 0.125rem 0 !important;
-  border-radius: 10px !important;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  color: #1f2937 !important; /* Darker text for better visibility */
-  font-weight: 600 !important; /* Bolder font weight */
-  font-size: 0.875rem !important;
-  width: 100% !important;
-  background: rgba(255, 255, 255, 0.7) !important; /* Less transparent for better visibility */
-  border: 1.5px solid rgba(59, 130, 246, 0.25) !important; /* Thicker border */
-  position: relative !important;
-  overflow: hidden !important;
-  backdrop-filter: blur(8px) !important;
-  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5) !important; /* Text shadow for readability */
-}
+  .logo-wrapper::after {
+    content: "" !important;
+    position: absolute !important;
+    bottom: -1px !important;
+    left: 25% !important;
+    width: 50% !important;
+    height: 2px !important;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(59, 130, 246, 0.8) 20%,
+      rgba(139, 92, 246, 0.8) 50%,
+      rgba(59, 130, 246, 0.8) 80%,
+      transparent 100%
+    ) !important;
+    border-radius: 2px !important;
+  }
 
-.dark .nav-link {
-  background: rgba(255, 255, 255, 0.15) !important; /* More visible in dark mode */
-  border: 1.5px solid rgba(99, 102, 241, 0.3) !important; /* Thicker border */
-  color: #f1f5f9 !important; /* Lighter text for dark mode */
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3) !important;
-}
+  .dark .logo-wrapper {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+    background: rgba(15, 23, 42, 0.4) !important;
+  }
 
-/* Compact Icons for main menu - Enhanced visibility */
-.nav-link icon-menu-dashboard,
-.nav-link icon-menu-users,
-.nav-link icon-menu-notes,
-.nav-link icon-menu-elements,
-.nav-link icon-menu-charts,
-.nav-link icon-clipboard-text {
-  width: 18px !important; /* Slightly larger */
-  height: 18px !important;
-  color: #4f46e5 !important;
-  transition: all 0.25s ease !important;
-  flex-shrink: 0 !important;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1)) !important; /* Icon shadow */
-}
+  /* Logo Section with Blue-Purple Accent - Semi-transparent */
+  .logo-wrapper {
+    padding: 1.25rem 1rem 0.75rem !important;
+    text-align: center !important;
+    margin-bottom: 0.5rem !important;
+    position: relative !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+    background: rgba(255, 255, 255, 0.25) !important;
+    backdrop-filter: blur(10px) !important;
+    border-radius: 0 0 12px 12px !important;
+  }
 
-.dark .nav-link icon-menu-dashboard,
-.dark .nav-link icon-menu-users,
-.dark .nav-link icon-menu-notes,
-.dark .nav-link icon-menu-elements,
-.dark .nav-link icon-menu-charts,
-.dark .nav-link icon-clipboard-text {
-  color: #a78bfa !important;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3)) !important;
-}
+  .logo-wrapper::after {
+    content: "" !important;
+    position: absolute !important;
+    bottom: -1px !important;
+    left: 25% !important;
+    width: 50% !important;
+    height: 2px !important;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(59, 130, 246, 0.8) 20%,
+      rgba(139, 92, 246, 0.8) 50%,
+      rgba(59, 130, 246, 0.8) 80%,
+      transparent 100%
+    ) !important;
+    border-radius: 2px !important;
+  }
 
-/* Compact Hover Effects for main menu - Enhanced visibility */
-.nav-link:hover {
-  background: linear-gradient(135deg, 
-    rgba(59, 130, 246, 0.3) 0%, /* More opaque */
-    rgba(99, 102, 241, 0.25) 100%
-  ) !important;
-  transform: translateX(3px) !important;
-  color: #1e40af !important; /* Darker blue for better contrast */
-  border-color: rgba(59, 130, 246, 0.4) !important;
-  box-shadow: 
-    0 4px 18px rgba(59, 130, 246, 0.25), /* Stronger shadow */
-    0 2px 5px rgba(99, 102, 241, 0.2),
-    inset 0 0 20px rgba(255, 255, 255, 0.15) !important;
-  font-weight: 700 !important; /* Even bolder on hover */
-}
+  .dark .logo-wrapper {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+    background: rgba(15, 23, 42, 0.4) !important;
+  }
 
-.dark .nav-link:hover {
-  background: linear-gradient(135deg, 
-    rgba(59, 130, 246, 0.35) 0%,
-    rgba(99, 102, 241, 0.3) 100%
-  ) !important;
-  color: #60a5fa !important;
-  border-color: rgba(99, 102, 241, 0.4) !important;
-}
+  .sidebar-logo {
+    height: 60px !important; /* Increased size */
+    width: auto !important;
+    max-width: 200px !important; /* Increased size */
+    display: block !important;
+    margin: 0 auto !important;
+    transition: all 0.3s ease !important;
+    filter: drop-shadow(0 3px 8px rgba(59, 130, 246, 0.25))
+      drop-shadow(0 1px 3px rgba(99, 102, 241, 0.15)) brightness(1.05) !important;
+  }
 
-.nav-link:hover icon-menu-dashboard,
-.nav-link:hover icon-menu-users,
-.nav-link:hover icon-menu-notes,
-.nav-link:hover icon-menu-elements,
-.nav-link:hover icon-menu-charts,
-.nav-link:hover icon-clipboard-text {
-  color: #3b82f6 !important;
-  transform: scale(1.15) !important; /* More noticeable scale */
-}
+  .sidebar-logo:hover {
+    transform: scale(1.04) !important;
+    filter: drop-shadow(0 5px 15px rgba(99, 102, 241, 0.35))
+      drop-shadow(0 2px 6px rgba(139, 92, 246, 0.25)) brightness(1.1) !important;
+  }
 
-/* Compact Active State for main menu - Enhanced visibility */
-.nav-link.active {
-  background: linear-gradient(135deg, 
-    rgba(59, 130, 246, 0.35) 0%, /* More opaque */
-    rgba(99, 102, 241, 0.3) 100%
-  ) !important;
-  color: #1e3a8a !important; /* Much darker blue for maximum contrast */
-  font-weight: 700 !important; /* Bolder active state */
-  font-size: 0.875rem !important;
-  border: 2px solid rgba(59, 130, 246, 0.5) !important; /* Thicker border */
-  box-shadow: 
-    0 5px 25px rgba(59, 130, 246, 0.3), /* Stronger shadow */
-    0 3px 8px rgba(99, 102, 241, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 0 25px rgba(255, 255, 255, 0.15) !important;
-  transform: translateX(3px) !important;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7) !important;
-}
+  .dark .sidebar-logo {
+    filter: drop-shadow(0 3px 10px rgba(99, 102, 241, 0.3))
+      drop-shadow(0 1px 4px rgba(139, 92, 246, 0.2)) brightness(1.05) !important;
+  }
 
-.dark .nav-link.active {
-  background: linear-gradient(135deg, 
-    rgba(59, 130, 246, 0.45) 0%, /* More opaque in dark mode */
-    rgba(99, 102, 241, 0.4) 100%
-  ) !important;
-  color: #dbeafe !important; /* Very light blue for maximum contrast */
-  border: 2px solid rgba(99, 102, 241, 0.5) !important;
-  box-shadow: 
-    0 5px 30px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
-}
+  .dark .sidebar-logo:hover {
+    filter: drop-shadow(0 6px 20px rgba(139, 92, 246, 0.4))
+      drop-shadow(0 3px 10px rgba(99, 102, 241, 0.3)) brightness(1.12) !important;
+  }
 
-.nav-link.active icon-menu-dashboard,
-.nav-link.active icon-menu-users,
-.nav-link.active icon-menu-notes,
-.nav-link.active icon-menu-elements,
-.nav-link.active icon-menu-charts,
-.nav-link.active icon-clipboard-text {
-  color: #1e40af !important;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2)) !important;
-}
+  /* Update mobile responsive size */
+  @media (max-width: 768px) {
+    .sidebar-logo {
+      height: 52px !important;
+      max-width: 180px !important;
+    }
+  }
 
-.dark .nav-link.active icon-menu-dashboard,
-.dark .nav-link.active icon-menu-users,
-.dark .nav-link.active icon-menu-notes,
-.dark .nav-link.active icon-menu-elements,
-.dark .nav-link.active icon-menu-charts,
-.dark .nav-link.active icon-clipboard-text {
-  color: #dbeafe !important;
-}
+  /* Dark mode specific shadow */
+  .dark .sidebar-logo {
+    filter: drop-shadow(0 4px 15px rgba(99, 102, 241, 0.4))
+      drop-shadow(0 1px 4px rgba(139, 92, 246, 0.3)) brightness(1.05) !important;
+    box-shadow:
+      0 10px 30px rgba(0, 0, 0, 0.4),
+      0 5px 12px rgba(99, 102, 241, 0.25) !important;
+  }
 
-/* Compact Accordion Button - Enhanced visibility */
-.accordion-button {
-  padding-right: 2rem !important;
-  font-weight: 600 !important; /* Bolder text */
-}
+  .dark .sidebar-logo:hover {
+    filter: drop-shadow(0 10px 30px rgba(139, 92, 246, 0.6))
+      drop-shadow(0 4px 10px rgba(99, 102, 241, 0.4)) brightness(1.2) !important;
+    box-shadow:
+      0 20px 45px rgba(0, 0, 0, 0.6),
+      0 10px 20px rgba(139, 92, 246, 0.3),
+      inset 0 0 25px rgba(255, 255, 255, 0.08) !important;
+  }
 
-.accordion-button icon-caret-down {
-  position: absolute !important;
-  right: 0.75rem !important;
-  transition: all 0.3s ease !important;
-  width: 14px !important; /* Larger icon */
-  height: 14px !important;
-  color: #4b5563 !important;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1)) !important;
-}
+  /* Update mobile responsive size as well */
+  @media (max-width: 768px) {
+    .sidebar-logo {
+      height: 52px !important; /* Increased from 42px */
+      max-width: 180px !important;
+      filter: drop-shadow(0 3px 10px rgba(59, 130, 246, 0.3))
+        drop-shadow(0 1px 3px rgba(99, 102, 241, 0.2)) brightness(1.1) !important;
+      box-shadow:
+        0 8px 20px rgba(59, 130, 246, 0.15),
+        0 3px 8px rgba(99, 102, 241, 0.1) !important;
+    }
+  }
 
-.dark .accordion-button icon-caret-down {
-  color: #cbd5e1 !important;
-}
+  /* Compact Main Menu Container */
+  .sidebar .ng-scrollbar {
+    padding: 0 0.75rem 0.75rem !important;
+  }
 
-.accordion-button.active icon-caret-down {
-  transform: rotate(-180deg) !important;
-  color: #4f46e5 !important;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2)) !important;
-}
+  /* Compact Menu Items - More transparent for better background visibility */
+  .menu-item-wrapper {
+    margin: 0.125rem 0 !important;
+    position: relative !important;
+  }
 
-/* =========================================================
+  /* COMPACT NAV LINK - ENHANCED VISIBILITY */
+  .nav-link {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.625rem !important;
+    padding: 0.625rem 0.75rem !important;
+    margin: 0.125rem 0 !important;
+    border-radius: 10px !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    color: #1f2937 !important; /* Darker text for better visibility */
+    font-weight: 600 !important; /* Bolder font weight */
+    font-size: 0.875rem !important;
+    width: 100% !important;
+    background: rgba(
+      255,
+      255,
+      255,
+      0.7
+    ) !important; /* Less transparent for better visibility */
+    border: 1.5px solid rgba(59, 130, 246, 0.25) !important; /* Thicker border */
+    position: relative !important;
+    overflow: hidden !important;
+    backdrop-filter: blur(8px) !important;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5) !important; /* Text shadow for readability */
+  }
+
+  .dark .nav-link {
+    background: rgba(
+      255,
+      255,
+      255,
+      0.15
+    ) !important; /* More visible in dark mode */
+    border: 1.5px solid rgba(99, 102, 241, 0.3) !important; /* Thicker border */
+    color: #f1f5f9 !important; /* Lighter text for dark mode */
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  /* Compact Icons for main menu - Enhanced visibility */
+  .nav-link icon-menu-dashboard,
+  .nav-link icon-menu-users,
+  .nav-link icon-menu-notes,
+  .nav-link icon-menu-elements,
+  .nav-link icon-menu-charts,
+  .nav-link icon-clipboard-text {
+    width: 18px !important; /* Slightly larger */
+    height: 18px !important;
+    color: #4f46e5 !important;
+    transition: all 0.25s ease !important;
+    flex-shrink: 0 !important;
+    filter: drop-shadow(
+      0 1px 1px rgba(0, 0, 0, 0.1)
+    ) !important; /* Icon shadow */
+  }
+
+  .dark .nav-link icon-menu-dashboard,
+  .dark .nav-link icon-menu-users,
+  .dark .nav-link icon-menu-notes,
+  .dark .nav-link icon-menu-elements,
+  .dark .nav-link icon-menu-charts,
+  .dark .nav-link icon-clipboard-text {
+    color: #a78bfa !important;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3)) !important;
+  }
+
+  /* Compact Hover Effects for main menu - Enhanced visibility */
+  .nav-link:hover {
+    background: linear-gradient(
+      135deg,
+      rgba(59, 130, 246, 0.3) 0%,
+      /* More opaque */ rgba(99, 102, 241, 0.25) 100%
+    ) !important;
+    transform: translateX(3px) !important;
+    color: #1e40af !important; /* Darker blue for better contrast */
+    border-color: rgba(59, 130, 246, 0.4) !important;
+    box-shadow:
+      0 4px 18px rgba(59, 130, 246, 0.25),
+      /* Stronger shadow */ 0 2px 5px rgba(99, 102, 241, 0.2),
+      inset 0 0 20px rgba(255, 255, 255, 0.15) !important;
+    font-weight: 700 !important; /* Even bolder on hover */
+  }
+
+  .dark .nav-link:hover {
+    background: linear-gradient(
+      135deg,
+      rgba(59, 130, 246, 0.35) 0%,
+      rgba(99, 102, 241, 0.3) 100%
+    ) !important;
+    color: #60a5fa !important;
+    border-color: rgba(99, 102, 241, 0.4) !important;
+  }
+
+  .nav-link:hover icon-menu-dashboard,
+  .nav-link:hover icon-menu-users,
+  .nav-link:hover icon-menu-notes,
+  .nav-link:hover icon-menu-elements,
+  .nav-link:hover icon-menu-charts,
+  .nav-link:hover icon-clipboard-text {
+    color: #3b82f6 !important;
+    transform: scale(1.15) !important; /* More noticeable scale */
+  }
+
+  /* Compact Active State for main menu - Enhanced visibility */
+  .nav-link.active {
+    background: linear-gradient(
+      135deg,
+      rgba(59, 130, 246, 0.35) 0%,
+      /* More opaque */ rgba(99, 102, 241, 0.3) 100%
+    ) !important;
+    color: #1e3a8a !important; /* Much darker blue for maximum contrast */
+    font-weight: 700 !important; /* Bolder active state */
+    font-size: 0.875rem !important;
+    border: 2px solid rgba(59, 130, 246, 0.5) !important; /* Thicker border */
+    box-shadow:
+      0 5px 25px rgba(59, 130, 246, 0.3),
+      /* Stronger shadow */ 0 3px 8px rgba(99, 102, 241, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      inset 0 0 25px rgba(255, 255, 255, 0.15) !important;
+    transform: translateX(3px) !important;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7) !important;
+  }
+
+  .dark .nav-link.active {
+    background: linear-gradient(
+      135deg,
+      rgba(59, 130, 246, 0.45) 0%,
+      /* More opaque in dark mode */ rgba(99, 102, 241, 0.4) 100%
+    ) !important;
+    color: #dbeafe !important; /* Very light blue for maximum contrast */
+    border: 2px solid rgba(99, 102, 241, 0.5) !important;
+    box-shadow:
+      0 5px 30px rgba(0, 0, 0, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  .nav-link.active icon-menu-dashboard,
+  .nav-link.active icon-menu-users,
+  .nav-link.active icon-menu-notes,
+  .nav-link.active icon-menu-elements,
+  .nav-link.active icon-menu-charts,
+  .nav-link.active icon-clipboard-text {
+    color: #1e40af !important;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2)) !important;
+  }
+
+  .dark .nav-link.active icon-menu-dashboard,
+  .dark .nav-link.active icon-menu-users,
+  .dark .nav-link.active icon-menu-notes,
+  .dark .nav-link.active icon-menu-elements,
+  .dark .nav-link.active icon-menu-charts,
+  .dark .nav-link.active icon-clipboard-text {
+    color: #dbeafe !important;
+  }
+
+  /* Compact Accordion Button - Enhanced visibility */
+  .accordion-button {
+    padding-right: 2rem !important;
+    font-weight: 600 !important; /* Bolder text */
+  }
+
+  .accordion-button icon-caret-down {
+    position: absolute !important;
+    right: 0.75rem !important;
+    transition: all 0.3s ease !important;
+    width: 14px !important; /* Larger icon */
+    height: 14px !important;
+    color: #4b5563 !important;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1)) !important;
+  }
+
+  .dark .accordion-button icon-caret-down {
+    color: #cbd5e1 !important;
+  }
+
+  .accordion-button.active icon-caret-down {
+    transform: rotate(-180deg) !important;
+    color: #4f46e5 !important;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2)) !important;
+  }
+
+  /* =========================================================
  SUB-MENU STYLES - Enhanced visibility
  ========================================================= */
-.accordion-content {
-  overflow: hidden !important;
-}
-
-.sub-menu {
-  margin: 0.375rem 0 0.375rem 0.875rem !important;
-  padding-left: 0.75rem !important;
-  border-left: 3px solid rgba(99, 102, 241, 0.4) !important; /* Thicker border */
-  position: relative !important;
-}
-
-.sub-menu::before {
-  content: '' !important;
-  position: absolute !important;
-  left: -3px !important;
-  top: 0 !important;
-  height: 100% !important;
-  width: 3px !important;
-  background: linear-gradient(to bottom, 
-    transparent 0%,
-    rgba(139, 92, 246, 0.7) 20%, /* More opaque */
-    rgba(59, 130, 246, 0.7) 50%,
-    rgba(139, 92, 246, 0.7) 80%,
-    transparent 100%
-  ) !important;
-  opacity: 0.9 !important;
-}
-
-.dark .sub-menu {
-  border-left: 3px solid rgba(139, 92, 246, 0.5) !important;
-}
-
-.sub-menu li {
-  margin: 0.25rem 0 !important;
-}
-
-.sub-menu a {
-  padding: 0.625rem 0.875rem !important;
-  font-size: 0.875rem !important;
-  border-radius: 8px !important;
-  color: #374151 !important; /* Darker text for better visibility */
-  transition: all 0.2s ease !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 0.75rem !important;
-  background: rgba(255, 255, 255, 0.65) !important; /* Less transparent */
-  border: 1.5px solid rgba(59, 130, 246, 0.2) !important; /* Thicker border */
-  backdrop-filter: blur(8px) !important;
-  font-weight: 500 !important; /* Medium weight for submenus */
-  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5) !important;
-}
-
-.dark .sub-menu a {
-  background: rgba(255, 255, 255, 0.12) !important;
-  color: #e2e8f0 !important;
-  border: 1.5px solid rgba(99, 102, 241, 0.25) !important;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3) !important;
-}
-
-/* Larger Dot Indicator for sub-menu - Enhanced */
-.sub-menu a::before {
-  content: '' !important;
-  width: 7px !important; /* Slightly larger */
-  height: 7px !important;
-  background: #8b5cf6 !important;
-  border-radius: 50% !important;
-  opacity: 0.8 !important; /* More visible */
-  transition: all 0.2s ease !important;
-  flex-shrink: 0 !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
-}
-
-/* Hover for sub-menu - Enhanced */
-.sub-menu a:hover {
-  background: rgba(99, 102, 241, 0.25) !important; /* More opaque */
-  color: #4338ca !important; /* Darker purple for contrast */
-  padding-left: 1rem !important;
-  transform: translateX(2px) !important;
-  border-color: rgba(99, 102, 241, 0.35) !important;
-  box-shadow: 
-    0 3px 12px rgba(99, 102, 241, 0.2),
-    inset 0 0 15px rgba(255, 255, 255, 0.15) !important;
-  font-weight: 600 !important; /* Bolder on hover */
-}
-
-.dark .sub-menu a:hover {
-  background: rgba(139, 92, 246, 0.3) !important;
-  color: #a78bfa !important;
-}
-
-.sub-menu a:hover::before {
-  opacity: 1 !important;
-  background: #3b82f6 !important;
-  transform: scale(1.4) !important; /* More noticeable scale */
-}
-
-/* Active Sub-menu - Enhanced visibility */
-.sub-menu a.active {
-  background: linear-gradient(90deg, 
-    rgba(59, 130, 246, 0.35) 0%, /* More opaque */
-    rgba(99, 102, 241, 0.3) 100%
-  ) !important;
-  color: #312e81 !important; /* Very dark purple for maximum contrast */
-  font-weight: 700 !important; /* Bold active state */
-  font-size: 0.875rem !important;
-  border: 2px solid rgba(99, 102, 241, 0.45) !important; /* Thicker border */
-  padding-left: 1rem !important;
-  box-shadow: 
-    0 3px 15px rgba(99, 102, 241, 0.25),
-    inset 0 0 20px rgba(255, 255, 255, 0.2) !important;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6) !important;
-}
-
-.dark .sub-menu a.active {
-  background: linear-gradient(90deg, 
-    rgba(59, 130, 246, 0.45) 0%,
-    rgba(139, 92, 246, 0.4) 100%
-  ) !important;
-  color: #c7d2fe !important; /* Very light purple for contrast */
-  border: 2px solid rgba(139, 92, 246, 0.5) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
-}
-
-/* Blue-Purple Scrollbar */
-.ng-scrollbar .ng-scrollbar-track {
-  background: rgba(59, 130, 246, 0.15) !important; /* More visible */
-  width: 5px !important; /* Slightly wider */
-  border-radius: 8px !important;
-}
-
-.dark .ng-scrollbar .ng-scrollbar-track {
-  background: rgba(99, 102, 241, 0.2) !important;
-}
-
-.ng-scrollbar .ng-scrollbar-thumb {
-  background: linear-gradient(180deg, 
-    rgba(59, 130, 246, 0.7) 0%, /* More opaque */
-    rgba(139, 92, 246, 0.7) 100%
-  ) !important;
-  border-radius: 8px !important;
-  transition: all 0.3s ease !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
-}
-
-.ng-scrollbar .ng-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, 
-    rgba(37, 99, 235, 0.9) 0%,
-    rgba(124, 58, 237, 0.9) 100%
-  ) !important;
-}
-
-/* Student Sidebar - Blue Theme */
-.student-sidebar .nav-link.active {
-  background: linear-gradient(135deg, 
-    rgba(37, 99, 235, 0.35) 0%, /* More opaque */
-    rgba(59, 130, 246, 0.3) 100%
-  ) !important;
-  border: 2px solid rgba(37, 99, 235, 0.45) !important; /* Thicker border */
-}
-
-/* Animation */
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(-5px);
+  .accordion-content {
+    overflow: hidden !important;
   }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
 
-.menu-item-wrapper {
-  animation: slideInRight 0.3s ease forwards;
-  opacity: 0;
-}
+  .sub-menu {
+    margin: 0.375rem 0 0.375rem 0.875rem !important;
+    padding-left: 0.75rem !important;
+    border-left: 3px solid rgba(99, 102, 241, 0.4) !important; /* Thicker border */
+    position: relative !important;
+  }
 
-.menu-item-wrapper:nth-child(1) { animation-delay: 0.05s; }
-.menu-item-wrapper:nth-child(2) { animation-delay: 0.1s; }
-.menu-item-wrapper:nth-child(3) { animation-delay: 0.15s; }
-.menu-item-wrapper:nth-child(4) { animation-delay: 0.2s; }
-.menu-item-wrapper:nth-child(5) { animation-delay: 0.25s; }
-.menu-item-wrapper:nth-child(6) { animation-delay: 0.3s; }
+  .sub-menu::before {
+    content: "" !important;
+    position: absolute !important;
+    left: -3px !important;
+    top: 0 !important;
+    height: 100% !important;
+    width: 3px !important;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(139, 92, 246, 0.7) 20%,
+      /* More opaque */ rgba(59, 130, 246, 0.7) 50%,
+      rgba(139, 92, 246, 0.7) 80%,
+      transparent 100%
+    ) !important;
+    opacity: 0.9 !important;
+  }
 
-/* Mobile Responsiveness */
-@media (max-width: 768px) {
-  .sidebar {
-    box-shadow: 8px 0 30px rgba(99, 102, 241, 0.15) !important;
+  .dark .sub-menu {
+    border-left: 3px solid rgba(139, 92, 246, 0.5) !important;
   }
-  
-  .sidebar-logo {
-    height: 42px !important;
+
+  .sub-menu li {
+    margin: 0.25rem 0 !important;
   }
-  
-  .nav-link {
-    padding: 0.5rem 0.625rem !important;
-    font-size: 0.8125rem !important;
-    gap: 0.5rem !important;
-    font-weight: 700 !important; /* Even bolder on mobile */
-  }
-  
+
   .sub-menu a {
-    padding: 0.5rem 0.75rem !important;
-    font-size: 0.8125rem !important;
-    font-weight: 600 !important; /* Bolder on mobile */
+    padding: 0.625rem 0.875rem !important;
+    font-size: 0.875rem !important;
+    border-radius: 8px !important;
+    color: #374151 !important; /* Darker text for better visibility */
+    transition: all 0.2s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    background: rgba(255, 255, 255, 0.65) !important; /* Less transparent */
+    border: 1.5px solid rgba(59, 130, 246, 0.2) !important; /* Thicker border */
+    backdrop-filter: blur(8px) !important;
+    font-weight: 500 !important; /* Medium weight for submenus */
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5) !important;
   }
 
-  
-}
+  .dark .sub-menu a {
+    background: rgba(255, 255, 255, 0.12) !important;
+    color: #e2e8f0 !important;
+    border: 1.5px solid rgba(99, 102, 241, 0.25) !important;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  /* Larger Dot Indicator for sub-menu - Enhanced */
+  .sub-menu a::before {
+    content: "" !important;
+    width: 7px !important; /* Slightly larger */
+    height: 7px !important;
+    background: #8b5cf6 !important;
+    border-radius: 50% !important;
+    opacity: 0.8 !important; /* More visible */
+    transition: all 0.2s ease !important;
+    flex-shrink: 0 !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  /* Hover for sub-menu - Enhanced */
+  .sub-menu a:hover {
+    background: rgba(99, 102, 241, 0.25) !important; /* More opaque */
+    color: #4338ca !important; /* Darker purple for contrast */
+    padding-left: 1rem !important;
+    transform: translateX(2px) !important;
+    border-color: rgba(99, 102, 241, 0.35) !important;
+    box-shadow:
+      0 3px 12px rgba(99, 102, 241, 0.2),
+      inset 0 0 15px rgba(255, 255, 255, 0.15) !important;
+    font-weight: 600 !important; /* Bolder on hover */
+  }
+
+  .dark .sub-menu a:hover {
+    background: rgba(139, 92, 246, 0.3) !important;
+    color: #a78bfa !important;
+  }
+
+  .sub-menu a:hover::before {
+    opacity: 1 !important;
+    background: #3b82f6 !important;
+    transform: scale(1.4) !important; /* More noticeable scale */
+  }
+
+  /* Active Sub-menu - Enhanced visibility */
+  .sub-menu a.active {
+    background: linear-gradient(
+      90deg,
+      rgba(59, 130, 246, 0.35) 0%,
+      /* More opaque */ rgba(99, 102, 241, 0.3) 100%
+    ) !important;
+    color: #312e81 !important; /* Very dark purple for maximum contrast */
+    font-weight: 700 !important; /* Bold active state */
+    font-size: 0.875rem !important;
+    border: 2px solid rgba(99, 102, 241, 0.45) !important; /* Thicker border */
+    padding-left: 1rem !important;
+    box-shadow:
+      0 3px 15px rgba(99, 102, 241, 0.25),
+      inset 0 0 20px rgba(255, 255, 255, 0.2) !important;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6) !important;
+  }
+
+  .dark .sub-menu a.active {
+    background: linear-gradient(
+      90deg,
+      rgba(59, 130, 246, 0.45) 0%,
+      rgba(139, 92, 246, 0.4) 100%
+    ) !important;
+    color: #c7d2fe !important; /* Very light purple for contrast */
+    border: 2px solid rgba(139, 92, 246, 0.5) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  /* Blue-Purple Scrollbar */
+  .ng-scrollbar .ng-scrollbar-track {
+    background: rgba(59, 130, 246, 0.15) !important; /* More visible */
+    width: 5px !important; /* Slightly wider */
+    border-radius: 8px !important;
+  }
+
+  .dark .ng-scrollbar .ng-scrollbar-track {
+    background: rgba(99, 102, 241, 0.2) !important;
+  }
+
+  .ng-scrollbar .ng-scrollbar-thumb {
+    background: linear-gradient(
+      180deg,
+      rgba(59, 130, 246, 0.7) 0%,
+      /* More opaque */ rgba(139, 92, 246, 0.7) 100%
+    ) !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .ng-scrollbar .ng-scrollbar-thumb:hover {
+    background: linear-gradient(
+      180deg,
+      rgba(37, 99, 235, 0.9) 0%,
+      rgba(124, 58, 237, 0.9) 100%
+    ) !important;
+  }
+
+  /* Student Sidebar - Blue Theme */
+  .student-sidebar .nav-link.active {
+    background: linear-gradient(
+      135deg,
+      rgba(37, 99, 235, 0.35) 0%,
+      /* More opaque */ rgba(59, 130, 246, 0.3) 100%
+    ) !important;
+    border: 2px solid rgba(37, 99, 235, 0.45) !important; /* Thicker border */
+  }
+
+  /* Animation */
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(-5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .menu-item-wrapper {
+    animation: slideInRight 0.3s ease forwards;
+    opacity: 0;
+  }
+
+  .menu-item-wrapper:nth-child(1) {
+    animation-delay: 0.05s;
+  }
+  .menu-item-wrapper:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+  .menu-item-wrapper:nth-child(3) {
+    animation-delay: 0.15s;
+  }
+  .menu-item-wrapper:nth-child(4) {
+    animation-delay: 0.2s;
+  }
+  .menu-item-wrapper:nth-child(5) {
+    animation-delay: 0.25s;
+  }
+  .menu-item-wrapper:nth-child(6) {
+    animation-delay: 0.3s;
+  }
+
+  /* Mobile Responsiveness */
+  @media (max-width: 768px) {
+    .sidebar {
+      box-shadow: 8px 0 30px rgba(99, 102, 241, 0.15) !important;
+    }
+
+    .sidebar-logo {
+      height: 42px !important;
+    }
+
+    .nav-link {
+      padding: 0.5rem 0.625rem !important;
+      font-size: 0.8125rem !important;
+      gap: 0.5rem !important;
+      font-weight: 700 !important; /* Even bolder on mobile */
+    }
+
+    .sub-menu a {
+      padding: 0.5rem 0.75rem !important;
+      font-size: 0.8125rem !important;
+      font-weight: 600 !important; /* Bolder on mobile */
+    }
+  }
 </style>
 
 <div [ngClass]="{ 'dark text-white-dark': store.semidark }">
@@ -572,16 +596,16 @@
   >
     <div class="h-full">
       <!-- LOGO -->
-  <div class="logo-wrapper">
-  <a routerLink="/dashboard" class="main-logo inline-block">
-    <img
-      src="/assets/images/auth/vedik logo.png"
-      alt="Vedik Astrologer"
-      class="sidebar-logo"
-      style="height: 80px !important; max-width: 280px !important;"
-    />
-  </a>
-</div>
+      <div class="logo-wrapper">
+        <a routerLink="/dashboard" class="main-logo inline-block">
+          <img
+            src="/assets/images/auth/vedik logo.png"
+            alt="Vedik Astrologer"
+            class="sidebar-logo"
+            style="height: 80px !important; max-width: 280px !important"
+          />
+        </a>
+      </div>
 
       <!-- MENU -->
       <ng-scrollbar class="relative !h-[calc(100vh-90px)]" appearance="compact">
@@ -637,6 +661,11 @@
                 <li>
                   <a routerLink="/class-schedule" routerLinkActive="active"
                     >Class Schedule</a
+                  >
+                </li>
+                <li>
+                  <a routerLink="/add-topic" routerLinkActive="active"
+                    >Add Topic</a
                   >
                 </li>
                 <li>
@@ -807,15 +836,15 @@
       <div class="h-full">
         <!-- LOGO -->
         <div class="logo-wrapper">
-  <a routerLink="/dashboard" class="main-logo inline-block">
-    <img
-      src="/assets/images/auth/vedik logo.png"
-      alt="Vedik Astrologer"
-      class="sidebar-logo"
-      style="height: 80px !important; max-width: 280px !important;"
-    />
-  </a>
-</div>
+          <a routerLink="/dashboard" class="main-logo inline-block">
+            <img
+              src="/assets/images/auth/vedik logo.png"
+              alt="Vedik Astrologer"
+              class="sidebar-logo"
+              style="height: 80px !important; max-width: 280px !important"
+            />
+          </a>
+        </div>
 
         <!-- MENU -->
         <ng-scrollbar
@@ -836,7 +865,7 @@
               </a>
             </div>
 
-              <div>
+            <div>
               <a
                 routerLink="/student-study-materials"
                 routerLinkActive="active"
@@ -860,7 +889,6 @@
                 <span>Student Details</span>
               </a>
             </div>
-          
           </div>
         </ng-scrollbar>
       </div>

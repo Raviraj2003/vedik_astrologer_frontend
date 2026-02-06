@@ -1,4 +1,8 @@
 import {
+  DomSanitizer
+} from "./chunk-7AFCKYR5.js";
+import "./chunk-GUXEIMF7.js";
+import {
   CheckboxControlValueAccessor,
   DefaultValueAccessor,
   FormsModule,
@@ -8,18 +12,14 @@ import {
   NumberValueAccessor,
   SelectControlValueAccessor,
   ɵNgSelectMultipleOption
-} from "./chunk-IWZPZHC5.js";
-import {
-  DomSanitizer
-} from "./chunk-AVTWDUSW.js";
-import "./chunk-3FNW56RB.js";
+} from "./chunk-3VF27ZPB.js";
 import {
   CommonModule,
   NgClass,
   NgForOf,
   NgIf,
   NgTemplateOutlet
-} from "./chunk-PXHBKWKD.js";
+} from "./chunk-OACGOX5T.js";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -77,11 +77,8 @@ import {
   ɵɵtwoWayListener,
   ɵɵtwoWayProperty,
   ɵɵviewQuery
-} from "./chunk-B2EZWGCE.js";
-import "./chunk-KRWNQCUG.js";
-import "./chunk-S6XMESAY.js";
-import "./chunk-7CWD5REE.js";
-import "./chunk-YTN62GH5.js";
+} from "./chunk-SS62QQNN.js";
+import "./chunk-MJFKGM26.js";
 import "./chunk-4MWRP73S.js";
 
 // node_modules/@bhplugin/ng-datatable/fesm2020/bhplugin-ng-datatable.mjs

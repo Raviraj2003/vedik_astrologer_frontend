@@ -21,6 +21,7 @@ import { AssignMediaComponent } from './users/assign-media/assign-media.componen
 import { StudentStudyMaterialsComponent } from './student-study-materials/student-study-materials.component';
 import { AssignTopicComponent } from './assign-topic/assign-topic.component';
 import { UpgradeStudentBatchComponent } from './student/upgrade-student-batch/upgrade-student-batch.component';
+import { AddTopicComponent } from './pages/add-topic/add-topic.component';
 
 
 // widgets
@@ -83,6 +84,7 @@ export const routes: Routes = [
             { path: 'student-study-materials', component: StudentStudyMaterialsComponent, data: { title: 'Student Study Materials' } },
             { path: 'assign-topic', component: AssignTopicComponent, data: { title: 'Assign Topic' } },
             { path: 'upgrade-student-batch', component: UpgradeStudentBatchComponent, data: { title: 'Upgrade Student Batch' } },
+            { path: 'add-topic', component: AddTopicComponent, data: { title: 'Add Topic' } },
 
 
                        

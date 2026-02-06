@@ -405,6 +405,16 @@ export class ApiService {
     });
   }
 
+  addTopic(data: {
+    topic_name: string;
+    topic_description?: string;
+    created_by?: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/media/addTopic`, data, {
+      headers: this.getJsonHeaders(), // 🔐 Authorization
+    });
+  }
+
   // ======================================
   // 📚 TOPIC MEDIA
   // ======================================

@@ -1,0 +1,135 @@
+<div class="topic-container" [class.modal-open]="isModalOpen">
+  <!-- Header -->
+  <div class="header">
+    <h1 class="page-title">Topics Management</h1>
+    <p class="page-subtitle">Manage and organize your learning topics</p>
+  </div>
+  
+  <!-- Action Bar -->
+  <div class="action-bar">
+    <button class="btn-primary" (click)="openModal()">
+      <i class="icon-plus"></i>
+      Add New Topic
+    </button>
+    <div class="stats">
+      <span class="stat-item">
+        <i class="icon-book"></i>
+        {{ topics.length }} Topics
+      </span>
+    </div>
+  </div>
+  
+  <!-- Topics List -->
+  <div class="topics-list-container">
+    <div class="list-header">
+      <h2>Available Topics</h2>
+      <button class="btn-refresh" (click)="loadTopics()" [disabled]="isLoading">
+        <i class="icon-refresh" [class.spinning]="isLoading"></i>
+        Refresh
+      </button>
+    </div>
+    
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading topics...</p>
+    </div>
+    
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && topics.length === 0" class="empty-state">
+      <div class="empty-icon">
+        <i class="icon-book-open"></i>
+      </div>
+      <h3>No Topics Found</h3>
+      <p>Get started by adding your first topic</p>
+      <button class="btn-primary" (click)="openModal()">
+        <i class="icon-plus"></i>
+        Add Your First Topic
+      </button>
+    </div>
+    
+    <!-- Topics Grid -->
+    <div *ngIf="!isLoading && topics.length > 0" class="topics-grid">
+      <div *ngFor="let topic of topics" class="topic-card">
+        <div class="topic-card-header">
+          <div class="topic-id">#{{ topic.id }}</div>
+         
+        </div>
+        <div class="topic-content">
+          <h3 class="topic-name">{{ topic.topic_name }}</h3>
+          <p *ngIf="topic.topic_description" class="topic-description">
+            {{ topic.topic_description }}
+          </p>
+          <div class="topic-footer">
+            <span class="topic-category">
+              <i class="icon-folder"></i>
+              {{ topic.category || 'Uncategorized' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Overlay with blur -->
+  <div class="modal-overlay" [class.active]="isModalOpen" (click)="closeModal()"></div>
+  
+  <!-- Add Topic Modal -->
+  <div class="modal" [class.open]="isModalOpen">
+   
+    
+    <!-- Messages -->
+    <div *ngIf="successMessage" class="alert-success">
+      <i class="icon-check"></i>
+      {{ successMessage }}
+    </div>
+    
+    <div *ngIf="errorMessage" class="alert-error">
+      <i class="icon-alert"></i>
+      {{ errorMessage }}
+    </div>
+    
+    <form (ngSubmit)="onSubmit()" #topicForm="ngForm" class="modal-form">
+      <div class="form-group">
+        <label for="topicName">
+          Topic Name <span class="required">*</span>
+        </label>
+        <input
+          type="text"
+          id="topicName"
+          [(ngModel)]="newTopic.topic_name"
+          name="topicName"
+          placeholder="Enter topic name"
+          required
+          maxlength="100"
+        >
+        <small class="hint">Maximum 100 characters</small>
+      </div>
+      
+      <div class="form-group">
+        <label for="topicDescription">Description (Optional)</label>
+        <textarea
+          id="topicDescription"
+          [(ngModel)]="newTopic.topic_description"
+          name="topicDescription"
+          placeholder="Describe the topic..."
+          rows="3"
+          maxlength="500"
+        ></textarea>
+        <small class="hint">{{ newTopic.topic_description?.length || 0 }}/500 characters</small>
+      </div>
+      
+      
+      
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="closeModal()" [disabled]="isSubmitting">
+          Cancel
+        </button>
+        <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+          <span *ngIf="isSubmitting" class="spinner-small"></span>
+          <span *ngIf="!isSubmitting">Add Topic</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
