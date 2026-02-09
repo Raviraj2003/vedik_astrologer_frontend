@@ -22,6 +22,10 @@ import { StudentStudyMaterialsComponent } from './student-study-materials/studen
 import { AssignTopicComponent } from './assign-topic/assign-topic.component';
 import { UpgradeStudentBatchComponent } from './student/upgrade-student-batch/upgrade-student-batch.component';
 import { AddTopicComponent } from './pages/add-topic/add-topic.component';
+import { PaymentReceiptComponent } from './payment-receipt/payment-receipt.component';
+import { UploadCertificateComponent } from './upload-certificate/upload-certificate.component';
+import { StudentCertificatesComponent } from './student-certificates/student-certificates.component';
+import { StudentReceiptsComponent } from './student-receipts/student-receipts.component';
 
 
 // widgets
@@ -85,6 +89,10 @@ export const routes: Routes = [
             { path: 'assign-topic', component: AssignTopicComponent, data: { title: 'Assign Topic' } },
             { path: 'upgrade-student-batch', component: UpgradeStudentBatchComponent, data: { title: 'Upgrade Student Batch' } },
             { path: 'add-topic', component: AddTopicComponent, data: { title: 'Add Topic' } },
+            { path: 'payment-receipt', component: PaymentReceiptComponent, data: { title: 'Payment Receipt' } },
+            { path: 'upload-certificate', component: UploadCertificateComponent, data: { title: 'Upload Certificate' } },
+            { path: 'student-certificates', component: StudentCertificatesComponent, data: { title: 'Student Certificates' } },
+            { path: 'student-receipts', component: StudentReceiptsComponent, data: { title: 'Student Receipts' } },
 
 
                        

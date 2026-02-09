@@ -5,6 +5,7 @@ import {
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
+  Validators,
 } from "@angular/forms";
 import { Store } from "@ngrx/store";
 import { ApiService } from "../service/api.service";
@@ -26,8 +27,6 @@ export class AddAppointmentComponent implements OnInit {
   showPartnerModal = false;
   partnerModalType: "spouse" | "joint" = "spouse";
   showFriendModal = false;
-
-  // ✅ NEW: Online mode modal
   showOnlineModeModal = false;
 
   constructor(
@@ -43,22 +42,20 @@ export class AddAppointmentComponent implements OnInit {
     this.watchSource();
   }
 
-  // ================= FORM =================
   createForm() {
     this.appointmentForm = this.fb.group({
-      name: [""],
-      email: [""],
-      mobile_number: [""],
+      name: ["", Validators.required],
+      email: ["", [Validators.required, Validators.email]],
+      mobile_number: [
+        "",
+        [Validators.required, Validators.pattern(/^\d{10}$/)],
+      ],
       gender: [""],
       marital_status: [""],
-
-      // ✅ BOOLEAN DEFAULTS (FIX)
       is_twins: [false],
       is_appointment_conducted: [false],
-
       appointment_type: [""],
-      consultation_mode: [""], // ✅ NEW (Audio / Video)
-
+      consultation_mode: [""],
       date_of_birth: [""],
       time_of_birth: [""],
       country: ["India"],
@@ -70,17 +67,19 @@ export class AddAppointmentComponent implements OnInit {
       transaction_id: [""],
       appointment_date: [""],
       slot_range: [""],
-      friend_name: [""], // ✅ NEW
+      friend_name: [""],
 
-      // Partner details
-      partner_name: [""],
-      partner_date_of_birth: [""],
-      partner_time_of_birth: [""],
-      partner_place_of_birth: [""],
+      // ✅ Nested FormGroup for partner details
+      partner_details: this.fb.group({
+        name: [""],
+        date_of_birth: [""],
+        time_of_birth: [""],
+        place_of_birth: [""],
+        relation_type: [""], // 'spouse' or 'joint'
+      }),
     });
   }
 
-  // ================= ONLINE MODE WATCH =================
   watchAppointmentType() {
     this.appointmentForm
       .get("appointment_type")
@@ -105,7 +104,6 @@ export class AddAppointmentComponent implements OnInit {
     });
   }
 
-  // ================= THEME =================
   async initStore() {
     this.storeData
       .select((d) => d.index)
@@ -117,7 +115,6 @@ export class AddAppointmentComponent implements OnInit {
       });
   }
 
-  // ================= SLOTS =================
   onDateChange(event: any) {
     const date = event.target.value;
     if (!date) return;
@@ -132,61 +129,112 @@ export class AddAppointmentComponent implements OnInit {
     });
   }
 
-  // ================= SUBJECTS =================
   toggleSubject(subject: string, event: any) {
     const subjects = this.appointmentForm.value.subjects || [];
+    const checkbox = event.target;
+    const isChecked = checkbox.checked;
 
-    if (event.target.checked) {
+    if (isChecked) {
       subjects.push(subject);
 
       if (subject === "Joint property holder") {
         this.partnerModalType = "joint";
-        this.showPartnerModal = true;
+        this.openPartnerModal("joint");
       }
 
       if (["Divorce", "Child Birth"].includes(subject)) {
         this.partnerModalType = "spouse";
-        this.showPartnerModal = true;
+        this.openPartnerModal("spouse");
       }
     } else {
-      const i = subjects.indexOf(subject);
-      if (i >= 0) subjects.splice(i, 1);
+      const index = subjects.indexOf(subject);
+      if (index >= 0) {
+        subjects.splice(index, 1);
+      }
     }
 
     this.appointmentForm.patchValue({ subjects });
   }
 
+  openPartnerModal(type: "spouse" | "joint") {
+    this.partnerModalType = type;
+    this.showPartnerModal = true;
+
+    // Set relation type in partner details
+    this.appointmentForm.get("partner_details.relation_type")?.setValue(type);
+  }
+
   closePartnerModal() {
+    this.showPartnerModal = false;
+
+    // Clear partner details if modal is closed without saving
+    this.appointmentForm.get("partner_details")?.reset({
+      relation_type: this.partnerModalType,
+    });
+  }
+
+  savePartnerDetails() {
+    const partnerDetails = this.appointmentForm.get("partner_details")?.value;
+
+    // Basic validation
+    if (!partnerDetails.name || !partnerDetails.date_of_birth) {
+      alert(
+        `Please fill required ${this.partnerModalType === "joint" ? "co-owner" : "spouse"} details`,
+      );
+      return;
+    }
+
     this.showPartnerModal = false;
   }
 
   closeOnlineModeModal() {
     this.showOnlineModeModal = false;
   }
-  
+
   closeFriendModal() {
     this.showFriendModal = false;
   }
 
-  // ================= SUBMIT =================
   submitForm() {
+    if (this.appointmentForm.invalid) {
+      alert("Please fill all required fields correctly");
+      this.appointmentForm.markAllAsTouched();
+      return;
+    }
+
     const raw = this.appointmentForm.value;
+    const partner = raw.partner_details;
 
     const payload = {
-      ...raw,
-
-      // ✅ DATE FIELDS → NULL
-      date_of_birth: raw.date_of_birth || null,
-      appointment_date: raw.appointment_date || null,
-      partner_date_of_birth: raw.partner_date_of_birth || null,
-
-      // ✅ TIME FIELDS → NULL
-      time_of_birth: raw.time_of_birth || null,
-      partner_time_of_birth: raw.partner_time_of_birth || null,
-
-      // ✅ BOOLEAN SAFETY
+      // Main form fields
+      name: raw.name,
+      email: raw.email,
+      mobile_number: raw.mobile_number,
+      gender: raw.gender,
+      marital_status: raw.marital_status,
       is_twins: raw.is_twins === true,
       is_appointment_conducted: raw.is_appointment_conducted === true,
+      appointment_type: raw.appointment_type,
+      consultation_mode: raw.consultation_mode,
+      date_of_birth: raw.date_of_birth || null,
+      time_of_birth: raw.time_of_birth || null,
+      country: raw.country,
+      state: raw.state,
+      city: raw.city,
+      subjects: raw.subjects,
+      source: raw.source,
+      appointment_status: raw.appointment_status,
+      transaction_id: raw.transaction_id,
+      appointment_date: raw.appointment_date || null,
+      slot_range: raw.slot_range,
+      friend_name: raw.friend_name || null,
+
+      // Partner details (flattened for backend)
+      partner_name: partner?.name || null,
+      partner_date_of_birth: partner?.date_of_birth || null,
+      partner_time_of_birth: partner?.time_of_birth || null,
+      partner_place_of_birth: partner?.place_of_birth || null,
+      partner_relation_type: partner?.relation_type || null,
     };
 
     console.log("📦 FINAL PAYLOAD:", payload);
@@ -195,16 +243,21 @@ export class AddAppointmentComponent implements OnInit {
       next: () => {
         alert("✅ Appointment booked successfully!");
         this.appointmentForm.reset({
+          country: "India",
+          state: "Maharashtra",
           is_twins: false,
           is_appointment_conducted: false,
         });
         this.slots = [];
         this.showPartnerModal = false;
         this.showOnlineModeModal = false;
+        this.showFriendModal = false;
       },
       error: (err) => {
         console.error("❌ Error:", err);
-        alert("Failed to book appointment.");
+        alert(
+          "Failed to book appointment: " + (err.error?.message || err.message),
+        );
       },
     });
   }

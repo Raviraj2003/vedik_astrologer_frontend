@@ -714,6 +714,16 @@
                     >Assign Media</a
                   >
                 </li>
+                <li>
+                  <a routerLink="/upload-certificate" routerLinkActive="active"
+                    >Upload Certificate</a
+                  >
+                </li>
+                <li>
+                  <a routerLink="/payment-receipt" routerLinkActive="active"
+                    >Payment Receipt</a
+                  >
+                </li>
               </ul>
             </div>
           </div>
@@ -865,7 +875,7 @@
               </a>
             </div>
 
-            <div>
+            <!-- <div>
               <a
                 routerLink="/student-study-materials"
                 routerLinkActive="active"
@@ -875,7 +885,7 @@
                 <icon-clipboard-text />
                 <span>Supporting Documentation</span>
               </a>
-            </div>
+            </div> -->
 
             <!-- Student Details -->
             <div class="menu-item-wrapper">
@@ -887,6 +897,28 @@
               >
                 <icon-menu-charts />
                 <span>Student Details</span>
+              </a>
+            </div>
+            <div>
+              <a
+              routerLink="/student-certificates"
+              routerLinkActive="active"
+              (click)="toggleMobileMenu()"
+              class="nav-link"
+              >
+                <icon-menu-notes />
+                <span>My Certificates</span>
+              </a>
+            </div>
+            <div>
+              <a
+                routerLink="/student-receipts"
+                routerLinkActive="active"
+                (click)="toggleMobileMenu()"
+                class="nav-link"
+              >
+                <icon-menu-notes />
+                <span>My Receipts</span>
               </a>
             </div>
           </div>
