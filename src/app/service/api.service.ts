@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: "root",
 })
 export class ApiService {
-  private baseUrl = "http://192.168.1.12:5000/api";
+  private baseUrl = "http://192.168.1.14:5000/api";
 
   constructor(private http: HttpClient) {}
 
@@ -405,6 +405,16 @@ export class ApiService {
     });
   }
 
+  addTopic(data: {
+    topic_name: string;
+    topic_description?: string;
+    created_by?: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/media/addTopic`, data, {
+      headers: this.getJsonHeaders(), // 🔐 Authorization
+    });
+  }
+
   // ======================================
   // 📚 TOPIC MEDIA
   // ======================================
@@ -483,6 +493,102 @@ export class ApiService {
       `${this.baseUrl}/media/getStudentStudyMaterialsFromToken`,
       payload,
       { headers: this.getAuthHeaders() },
+    );
+  }
+
+  // ======================================
+  // 🎓 CERTIFICATE (ADMIN)
+  // ======================================
+
+  uploadStudentCertificate(formData: FormData): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/media/uploadStudentCertificate`,
+      formData,
+      {
+        headers: this.getAuthHeaders(), // ❗ NO Content-Type
+      },
+    );
+  }
+
+  publishStudentCertificate(certificateId: string): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/media/publishStudentCertificate`,
+      { certificate_id: certificateId },
+      {
+        headers: this.getJsonHeaders(),
+      },
+    );
+  }
+
+  // ======================================
+  // 🎓 CERTIFICATE (STUDENT)
+  // ======================================
+
+  getMyCertificates(): Observable<{
+    success: boolean;
+    total: number;
+    data: {
+      certificate_id: string;
+      certificate_no: string;
+      course_name: string;
+      issue_date: string;
+      file_path: string;
+    }[];
+  }> {
+    return this.http.post<{
+      success: boolean;
+      total: number;
+      data: any[];
+    }>(
+      `${this.baseUrl}/media/getMyCertificates`,
+      {},
+      {
+        headers: this.getJsonHeaders(),
+      },
+    );
+  }
+
+  // ======================================
+  // 👨‍💼 ADMIN → UPLOAD PAYMENT RECEIPT
+  // ======================================
+  uploadPaymentReceipt(formData: FormData): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/media/uploadPaymentReceipt`,
+      formData,
+      { headers: this.getAuthHeaders() }, // ❗ NO Content-Type
+    );
+  }
+
+  // ======================================
+  // 👨‍💼 ADMIN → PUBLISH PAYMENT RECEIPT
+  // ======================================
+  publishPaymentReceipt(receiptId: string): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/media/publishPaymentReceipt`,
+      { receipt_id: receiptId },
+      { headers: this.getJsonHeaders() },
+    );
+  }
+
+  // ======================================
+  // 💳 STUDENT → MY PAYMENT RECEIPTS
+  // ======================================
+  getMyReceipts(): Observable<any> {
+    return this.http.get(
+      `${this.baseUrl}/media/getMyReceipts`,
+      { headers: this.getJsonHeaders() }, // Bearer token
+    );
+  }
+
+  updateClassLinkBySlotId(data: {
+    slot_id: number;
+    class_link: string;
+    updated_by: string;
+  }): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/updateClassLinkBySlotId`,
+      data,
+      { headers: this.getJsonHeaders() }, // 🔐 Bearer token auto-added
     );
   }
 

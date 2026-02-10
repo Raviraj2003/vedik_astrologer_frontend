@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4 md:p-8 transition-all duration-300">
+<form [formGroup]="appointmentForm" (ngSubmit)="submitForm()" class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4 md:p-8 transition-all duration-300">
   <div class="max-w-4xl mx-auto">
     <!-- Header Card -->
     <div class="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-800 dark:to-indigo-800 rounded-t-2xl p-6 text-white shadow-lg">
@@ -28,7 +28,7 @@
         </div>
       </div>
 
-      <form [formGroup]="appointmentForm" class="space-y-8">
+      <div class="space-y-8">
         <!-- Personal Information Section -->
         <div class="border-l-4 border-blue-500 pl-4">
           <div class="flex items-center mb-4">
@@ -287,7 +287,7 @@
             <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Query Details</h2>
           </div>
 
-          <!-- Row 7: Query Topics - USING ORIGINAL toggleSubject METHOD -->
+          <!-- Row 7: Query Topics -->
           <div class="mb-6">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
               Do you have query regarding one of this? If not continue with next section.
@@ -408,7 +408,7 @@
             <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">How did you hear about us?</h2>
           </div>
 
-          <!-- Source Selection - USING ORIGINAL FORM CONTROL ONLY -->
+          <!-- Source Selection -->
           <div class="mb-6">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Source</label>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -573,8 +573,7 @@
               <p>Please review all information before submitting</p>
             </div>
             <button
-              type="button"
-              (click)="submitForm()"
+              type="submit"
               class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-3 px-8 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
             >
               <span class="flex items-center justify-center">
@@ -586,7 +585,7 @@
             </button>
           </div>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 
@@ -621,53 +620,60 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            {{ partnerModalType === 'joint' ? 'Co-owner Name' : 'Spouse Name' }}
-          </label>
-          <input
-            type="text"
-            formControlName="partner_name"
-            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-            [placeholder]="partnerModalType === 'joint' ? 'Enter co-owner name' : 'Enter spouse name'"
-          />
+      <!-- FORM INSIDE MODAL - Using nested form group -->
+      <div formGroupName="partner_details">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {{ partnerModalType === 'joint' ? 'Co-owner Name' : 'Spouse Name' }}
+              <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              formControlName="name"
+              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+              [placeholder]="partnerModalType === 'joint' ? 'Enter co-owner name' : 'Enter spouse name'"
+              required
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {{ partnerModalType === 'joint' ? 'Co-owner Date of Birth' : 'Spouse Date of Birth' }}
+              <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              formControlName="date_of_birth"
+              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+              required
+            />
+          </div>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            {{ partnerModalType === 'joint' ? 'Co-owner Date of Birth' : 'Spouse Date of Birth' }}
-          </label>
-          <input
-            type="date"
-            formControlName="partner_date_of_birth"
-            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-          />
-        </div>
-      </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {{ partnerModalType === 'joint' ? 'Co-owner Time of Birth' : 'Spouse Time of Birth' }}
+            </label>
+            <input
+              type="time"
+              formControlName="time_of_birth"
+              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+            />
+          </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            {{ partnerModalType === 'joint' ? 'Co-owner Time of Birth' : 'Spouse Time of Birth' }}
-          </label>
-          <input
-            type="time"
-            formControlName="partner_time_of_birth"
-            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-          />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            {{ partnerModalType === 'joint' ? 'Co-owner Place of Birth' : 'Spouse Place of Birth' }}
-          </label>
-          <input
-            type="text"
-            formControlName="partner_place_of_birth"
-            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-            [placeholder]="partnerModalType === 'joint' ? 'City, State, Country' : 'City, State, Country'"
-          />
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {{ partnerModalType === 'joint' ? 'Co-owner Place of Birth' : 'Spouse Place of Birth' }}
+            </label>
+            <input
+              type="text"
+              formControlName="place_of_birth"
+              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+              placeholder="City, State, Country"
+            />
+          </div>
         </div>
       </div>
 
@@ -681,7 +687,7 @@
         </button>
         <button
           type="button"
-          (click)="closePartnerModal()"
+          (click)="savePartnerDetails()"
           class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg transition-colors"
         >
           Save Details
@@ -841,7 +847,7 @@
       </div>
     </div>
   </div>
-</div>
+</form>
 
 <!-- Add this CSS for animations and enhanced styling -->
 <style>

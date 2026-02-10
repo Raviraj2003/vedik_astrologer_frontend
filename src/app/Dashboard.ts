@@ -30,6 +30,11 @@ export class DashboardComponent implements OnInit {
   filteredAppointments: any[] = [];
   totalEmptySlots: number = 0;
 
+  // Add this property for all-time collection data
+  allConductedAppointments: any[] = [];
+  totalCollectionAmount: number = 0;
+  isTotalCollectionLoading: boolean = true;
+
   // 🔹 Modals
   selectedAppointment: any = null;
 
@@ -58,6 +63,41 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.loadAppointments();
     this.calculateInitialStats();
+    // Load all-time collection on initialization
+    this.loadAllConductedAppointmentsForTotal();
+  }
+
+  // ===============================
+  // 🔹 LOAD ALL CONDUCTED APPOINTMENTS FOR TOTAL COLLECTION
+  // ===============================
+  loadAllConductedAppointmentsForTotal() {
+    this.isTotalCollectionLoading = true;
+    this.api.getByConductStatus().subscribe({
+      next: (res: any) => {
+        console.log("All conducted appointments response:", res);
+        this.allConductedAppointments = res?.data || [];
+
+        // Calculate total collection from ALL conducted appointments
+        const conductedWithPrice = this.allConductedAppointments.filter(
+          (appt) => appt.is_appointment_conducted && appt.price,
+        );
+
+        console.log("Conducted appointments with price:", conductedWithPrice);
+
+        this.totalCollectionAmount = conductedWithPrice.reduce((sum, appt) => {
+          const price = Number(appt.price) || 0;
+          return sum + price;
+        }, 0);
+
+        console.log("Total collection amount:", this.totalCollectionAmount);
+        this.isTotalCollectionLoading = false;
+      },
+      error: (err) => {
+        console.error("❌ Failed to load all conducted appointments:", err);
+        this.totalCollectionAmount = 0;
+        this.isTotalCollectionLoading = false;
+      },
+    });
   }
 
   // ===============================
@@ -186,6 +226,18 @@ export class DashboardComponent implements OnInit {
     this.priceModal.price = appt.price || 1500;
   }
 
+  // ===============================
+  // 🔹 OPEN PRICE MODAL
+  // ===============================
+  openPriceModal(appointment: any) {
+    this.priceModal = {
+      show: true,
+      appointment: appointment,
+      price: appointment.price || 0,
+      newStatus: !appointment.is_appointment_conducted,
+    };
+  }
+
   confirmPriceUpdate() {
     const appt = this.priceModal.appointment;
     const price = Number(this.priceModal.price);
@@ -206,6 +258,35 @@ export class DashboardComponent implements OnInit {
           appt.is_appointment_conducted = newStatus;
           appt.price = price;
           appt.appointment_status = newStatus ? "conducted" : "pending";
+
+          // Update the total collection if appointment is conducted
+          if (newStatus) {
+            // Add to allConductedAppointments if not already there
+            const existingIndex = this.allConductedAppointments.findIndex(
+              (a) => a.appointment_code === appt.appointment_code,
+            );
+
+            if (existingIndex === -1) {
+              this.allConductedAppointments.push(appt);
+            } else {
+              this.allConductedAppointments[existingIndex] = appt;
+            }
+
+            // Update total collection amount
+            this.totalCollectionAmount += price;
+          } else {
+            // Remove from collection if appointment is un-conducted
+            const index = this.allConductedAppointments.findIndex(
+              (a) => a.appointment_code === appt.appointment_code,
+            );
+
+            if (index !== -1) {
+              this.totalCollectionAmount -=
+                this.allConductedAppointments[index].price || 0;
+              this.allConductedAppointments.splice(index, 1);
+            }
+          }
+
           this.isLoading = false;
           this.showToast(
             `Appointment ${appt.appointment_code} updated successfully`,
@@ -258,16 +339,33 @@ export class DashboardComponent implements OnInit {
   }
 
   // ===============================
-  // 🔹 FORMAT CURRENCY
+  // 🔹 FORMAT CURRENCY - FIXED VERSION
   // ===============================
-  formatCurrency(amount: number | undefined): string {
-    if (!amount) return "-";
+  formatCurrency(amount: number | undefined | null): string {
+    // Check if amount is undefined, null, or NaN
+    if (amount === undefined || amount === null) {
+      return "₹0";
+    }
+
+    // Check if amount is NaN
+    if (isNaN(amount)) {
+      console.warn("formatCurrency received NaN:", amount);
+      return "₹0";
+    }
+
+    // Ensure it's a number
+    const numAmount = Number(amount);
+
+    if (isNaN(numAmount) || numAmount === 0) {
+      return "₹0";
+    }
+
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency: "INR",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(amount);
+    }).format(numAmount);
   }
 
   // ===============================
@@ -290,9 +388,86 @@ export class DashboardComponent implements OnInit {
   }
 
   // ===============================
+  // 🔹 PAYMENT CALCULATIONS - ALL TIME
+  // ===============================
+
+  // Get ALL-TIME collection (from all conducted appointments ever)
+  getTotalCollection(): string {
+    if (this.isTotalCollectionLoading) {
+      return "Loading...";
+    }
+    return this.formatCurrency(this.totalCollectionAmount);
+  }
+
+  // Get count of ALL conducted appointments (all-time)
+  getConductedCount(): number {
+    return this.allConductedAppointments.length;
+  }
+
+  // Get average fee from ALL conducted appointments (all-time)
+  getAverageFee(): string {
+    const conductedWithPrice = this.allConductedAppointments.filter(
+      (appt) => appt.is_appointment_conducted && appt.price,
+    );
+
+    if (conductedWithPrice.length === 0) return "₹0";
+
+    const total = conductedWithPrice.reduce((sum, appt) => {
+      const price = Number(appt.price) || 0;
+      return sum + price;
+    }, 0);
+    const avg = Math.round(total / conductedWithPrice.length);
+    return this.formatCurrency(avg);
+  }
+
+  // Today's collection (for reference - optional)
+  getTodayCollection(): string {
+    const today = new Date().toDateString();
+    const total = this.appointments
+      .filter((appt) => {
+        if (!appt.is_appointment_conducted || !appt.price) return false;
+        const apptDate = new Date(
+          appt.updated_at || appt.created_at,
+        ).toDateString();
+        return apptDate === today;
+      })
+      .reduce((sum, appt) => {
+        const price = Number(appt.price) || 0;
+        return sum + price;
+      }, 0);
+    return this.formatCurrency(total);
+  }
+
+  // Pending payments calculation (for reference - optional)
+  getPendingCollection(): string {
+    const pendingCount = this.appointments.filter(
+      (appt) => !appt.is_appointment_conducted,
+    ).length;
+    const avgFee = this.getAverageFeeNumber();
+    const total = pendingCount * avgFee;
+    return this.formatCurrency(total);
+  }
+
+  // Helper method to get average fee as number
+  getAverageFeeNumber(): number {
+    const conductedWithPrice = this.appointments.filter(
+      (appt) => appt.is_appointment_conducted && appt.price,
+    );
+
+    if (conductedWithPrice.length === 0) return 1500;
+
+    const total = conductedWithPrice.reduce((sum, appt) => {
+      const price = Number(appt.price) || 0;
+      return sum + price;
+    }, 0);
+    return Math.round(total / conductedWithPrice.length);
+  }
+
+  // ===============================
   // 🔹 STORE INIT
   // ===============================
   initStore() {
     this.storeData.select((d) => d.index).subscribe((d) => (this.store = d));
   }
 }
+  

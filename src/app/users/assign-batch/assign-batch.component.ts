@@ -98,25 +98,52 @@ export class AssignBatchComponent implements OnInit {
 
     this.loading = true;
 
-    const payload = {
-      batch_code: this.selectedBatchCode,
-      student_ref_codes: Array.from(this.selectedStudents),
-    };
+    const studentCodes = Array.from(this.selectedStudents);
+    let completed = 0;
+    let failed = 0;
 
-    this.apiService.assignStudentsToBatch(payload).subscribe({
-      next: (res: any) => {
-        Swal.fire(
-          "Success",
-          res.message || "Students assigned successfully",
-          "success",
-        );
-        this.selectedStudents.clear();
-        this.loadEligibleStudents();
-      },
-      error: (err) => {
-        Swal.fire("Error", err?.error?.message || "Assignment failed", "error");
-      },
-      complete: () => (this.loading = false),
+    studentCodes.forEach((stu_ref_code) => {
+      const payload = {
+        stu_ref_code: stu_ref_code,
+        batch_code: this.selectedBatchCode,
+      };
+
+      this.apiService.upgradeStudentBatch(payload).subscribe({
+        next: (res: any) => {
+          completed++;
+          if (completed + failed === studentCodes.length) {
+            this.loading = false;
+            if (failed === 0) {
+              Swal.fire(
+                "Success",
+                "All students assigned successfully",
+                "success",
+              );
+              this.selectedStudents.clear();
+              this.loadEligibleStudents();
+            } else {
+              Swal.fire(
+                "Warning",
+                `${completed} assigned, ${failed} failed`,
+                "warning",
+              );
+              this.selectedStudents.clear();
+              this.loadEligibleStudents();
+            }
+          }
+        },
+        error: (err) => {
+          failed++;
+          if (completed + failed === studentCodes.length) {
+            this.loading = false;
+            Swal.fire(
+              "Error",
+              err?.error?.message || "Assignment failed",
+              "error",
+            );
+          }
+        },
+      });
     });
   }
 }

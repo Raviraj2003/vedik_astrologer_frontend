@@ -13,6 +13,9 @@ interface ClassItem {
   room_no?: string;
   start_time?: string;
   end_time?: string;
+  class_link?: string; // Added class_link property
+  class_name?: string;
+  schedule_id?: number;
 }
 
 interface StudyMaterial {
@@ -28,7 +31,7 @@ interface TopicObject {
   title?: string;
   topic_name?: string;
   topic?: string;
-  [key: string]: any; // Allow any other properties
+  [key: string]: any;
 }
 
 @Component({
@@ -85,6 +88,57 @@ export class StudentDashboardComponent implements OnInit {
     });
   }
 
+  /* ================= CHECK IF CLASS HAS LINK ================= */
+  hasClassLink(slot: ClassItem): boolean {
+    return !!(
+      slot.class_link &&
+      slot.class_link.trim() !== "" &&
+      slot.class_link !== "null"
+    );
+  }
+
+  /* ================= JOIN CLASS ================= */
+  joinClass(slot: ClassItem): void {
+    if (this.hasClassLink(slot)) {
+      // Open class link in new tab
+      window.open(slot.class_link, "_blank");
+
+      // Optional: Track join event
+      this.trackClassJoin(slot);
+    }
+  }
+
+  /* ================= TRACK CLASS JOIN (OPTIONAL) ================= */
+  private trackClassJoin(slot: ClassItem): void {
+    console.log("Joining class:", {
+      slot_id: slot.slot_id,
+      class_date: slot.class_date,
+      time: new Date().toISOString(),
+    });
+
+    // You can add API call here to track attendance
+    // this.api.trackClassAttendance(slot.slot_id).subscribe(...)
+  }
+
+  /* ================= GET CLASS LINK DISPLAY TEXT ================= */
+  getClassLinkDisplay(link: string | undefined): string {
+    if (!link) return "No link available";
+
+    try {
+      const url = new URL(link);
+      // For Google Meet links
+      if (url.hostname.includes("meet.google.com")) {
+        return "Google Meet: " + url.pathname.replace("/", "");
+      }
+      // For other links, show domain
+      const displayPath = url.pathname.length > 20 ? "..." : url.pathname;
+      return url.hostname + displayPath;
+    } catch {
+      // If not a valid URL, truncate it
+      return link.length > 40 ? link.substring(0, 40) + "..." : link;
+    }
+  }
+
   /* ================= VIEW STUDY MATERIAL ================= */
   viewStudyMaterials(slot: ClassItem): void {
     this.selectedSlot = slot;
@@ -100,7 +154,7 @@ export class StudentDashboardComponent implements OnInit {
 
     this.api.getStudentStudyMaterialsFromToken({ slot_id: slotId }).subscribe({
       next: (res: any) => {
-        console.log("Study materials API response:", res); // Debug log
+        console.log("Study materials API response:", res);
 
         // Extract topic from the response - handle object case
         let topic = "No topic specified";
@@ -110,7 +164,6 @@ export class StudentDashboardComponent implements OnInit {
           if (typeof res.topic === "string") {
             topic = res.topic;
           } else if (res.topic && typeof res.topic === "object") {
-            // If topic is an object, try to get its name/title property
             const topicObj = res.topic as TopicObject;
             topic =
               topicObj.name ||
@@ -143,7 +196,7 @@ export class StudentDashboardComponent implements OnInit {
         }
 
         this.studyTopicBySlot[slotId] = topic;
-        console.log("Extracted topic:", topic); // Debug log
+        console.log("Extracted topic:", topic);
 
         // Extract media from the response
         let media: StudyMaterial[] = [];
@@ -159,7 +212,7 @@ export class StudentDashboardComponent implements OnInit {
         }
 
         this.studyMediaBySlot[slotId] = media;
-        console.log("Extracted media:", media); // Debug log
+        console.log("Extracted media:", media);
 
         this.isMaterialLoading = false;
       },
