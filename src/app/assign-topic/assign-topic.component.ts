@@ -11,13 +11,16 @@ import { ApiService } from "../service/api.service";
 })
 export class AssignTopicComponent implements OnInit {
   /* ================= MASTER ================= */
+  standards: any[] = [];
   batches: any[] = [];
   topics: any[] = [];
 
   /* ================= CLASS GROUPS ================= */
   classes: any[] = [];
 
+  selectedStandardId: number | "" = "";
   selectedBatchCode = "";
+
   isLoading = false;
   isAssigning = false;
   assigningSlotId: string | null = null;
@@ -28,13 +31,31 @@ export class AssignTopicComponent implements OnInit {
   constructor(private api: ApiService) {}
 
   ngOnInit(): void {
-    this.loadBatches();
+    this.loadStandards();
     this.loadTopics();
   }
 
-  /* ================= LOAD BATCHES ================= */
-  loadBatches(): void {
-    this.api.getAllBatches().subscribe({
+  /* ================= LOAD STANDARDS ================= */
+  loadStandards(): void {
+    this.api.getStandards().subscribe({
+      next: (res: any) => {
+        this.standards = res?.data || [];
+      },
+      error: () => {
+        this.showError("❌ Failed to load standards");
+      },
+    });
+  }
+
+  /* ================= STANDARD CHANGE ================= */
+  onStandardChange(): void {
+    this.selectedBatchCode = "";
+    this.batches = [];
+    this.classes = [];
+
+    if (!this.selectedStandardId) return;
+
+    this.api.getBatchesByStandard(Number(this.selectedStandardId)).subscribe({
       next: (res: any) => {
         this.batches = res?.data || [];
       },
@@ -76,7 +97,7 @@ export class AssignTopicComponent implements OnInit {
 
           if (!grouped[key]) {
             grouped[key] = {
-              class_id: key, // Unique identifier for the slot
+              class_id: key,
               class_date: row.class_date,
               display_date: new Date(row.class_date).toLocaleDateString(
                 "en-IN",
@@ -90,19 +111,18 @@ export class AssignTopicComponent implements OnInit {
               schedule_id: row.schedule_id,
               slot_ids: [],
               slot_times: [],
-              class_links: {}, // Store class links for each slot_id
+              class_links: {},
               selectedTopicId: null,
               topicMedia: [],
-              isAssigning: false, // Individual slot loading state
-              loadingMedia: false, // Media loading state
-              isUpdatingLink: false, // Link update loading state
-              editingLinkSlotId: null, // Which slot is being edited
+              isAssigning: false,
+              loadingMedia: false,
+              isUpdatingLink: false,
+              editingLinkSlotId: null,
             };
           }
 
           grouped[key].slot_ids.push(Number(row.slot_id));
           grouped[key].slot_times.push(row.slot_time);
-          // Initialize class link for each slot
           grouped[key].class_links[row.slot_id] = row.class_link || "";
         }
 

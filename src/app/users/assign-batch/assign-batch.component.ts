@@ -11,29 +11,53 @@ import { ApiService } from "../../service/api.service";
   templateUrl: "./assign-batch.component.html",
 })
 export class AssignBatchComponent implements OnInit {
+  /* ================= STATE ================= */
+
+  standardsList: any[] = [];
   batchList: any[] = [];
   studentList: any[] = [];
 
+  selectedStandardId: number | "" = "";
   selectedBatchCode = "";
-  selectedStudents: Set<string> = new Set();
 
+  selectedStudents: Set<string> = new Set();
   loading = false;
 
   constructor(private apiService: ApiService) {}
 
+  /* ================= INIT ================= */
+
   ngOnInit(): void {
-    this.loadBatches();
+    this.loadStandards();
     this.loadEligibleStudents();
   }
 
   /* ================= LOAD DATA ================= */
 
-  loadBatches(): void {
-    this.apiService.getAllBatches().subscribe({
+  loadStandards(): void {
+    this.apiService.getStandards().subscribe({
+      next: (res: any) => {
+        this.standardsList = Array.isArray(res?.data) ? res.data : [];
+      },
+      error: () => (this.standardsList = []),
+    });
+  }
+
+  onStandardChange(): void {
+    this.selectedBatchCode = "";
+    this.batchList = [];
+
+    if (!this.selectedStandardId) {
+      return;
+    }
+
+    this.apiService.getBatchesByStandard(this.selectedStandardId).subscribe({
       next: (res: any) => {
         this.batchList = Array.isArray(res?.data) ? res.data : [];
       },
-      error: () => (this.batchList = []),
+      error: () => {
+        this.batchList = [];
+      },
     });
   }
 
@@ -58,12 +82,6 @@ export class AssignBatchComponent implements OnInit {
     return this.selectedStudents.has(code);
   }
 
-  /* ================= NEW METHODS FOR TEMPLATE ================= */
-
-  getSelectedCount(): number {
-    return this.selectedStudents.size;
-  }
-
   areAllSelected(): boolean {
     return (
       this.studentList.length > 0 &&
@@ -73,19 +91,26 @@ export class AssignBatchComponent implements OnInit {
 
   toggleSelectAll(): void {
     if (this.areAllSelected()) {
-      // Deselect all
       this.selectedStudents.clear();
     } else {
-      // Select all
       this.studentList.forEach((student) => {
         this.selectedStudents.add(student.stu_ref_code);
       });
     }
   }
 
+  getSelectedCount(): number {
+    return this.selectedStudents.size;
+  }
+
   /* ================= ASSIGN ================= */
 
   assignBatch(): void {
+    if (!this.selectedStandardId) {
+      Swal.fire("Warning", "Please select a standard", "warning");
+      return;
+    }
+
     if (!this.selectedBatchCode) {
       Swal.fire("Warning", "Please select a batch", "warning");
       return;
@@ -104,46 +129,46 @@ export class AssignBatchComponent implements OnInit {
 
     studentCodes.forEach((stu_ref_code) => {
       const payload = {
-        stu_ref_code: stu_ref_code,
+        stu_ref_code,
         batch_code: this.selectedBatchCode,
       };
 
       this.apiService.upgradeStudentBatch(payload).subscribe({
-        next: (res: any) => {
+        next: () => {
           completed++;
           if (completed + failed === studentCodes.length) {
-            this.loading = false;
-            if (failed === 0) {
-              Swal.fire(
-                "Success",
-                "All students assigned successfully",
-                "success",
-              );
-              this.selectedStudents.clear();
-              this.loadEligibleStudents();
-            } else {
-              Swal.fire(
-                "Warning",
-                `${completed} assigned, ${failed} failed`,
-                "warning",
-              );
-              this.selectedStudents.clear();
-              this.loadEligibleStudents();
-            }
+            this.finishAssignment(completed, failed);
           }
         },
         error: (err) => {
           failed++;
           if (completed + failed === studentCodes.length) {
-            this.loading = false;
             Swal.fire(
               "Error",
               err?.error?.message || "Assignment failed",
               "error",
             );
+            this.loading = false;
           }
         },
       });
     });
+  }
+
+  finishAssignment(completed: number, failed: number): void {
+    this.loading = false;
+
+    if (failed === 0) {
+      Swal.fire("Success", "All students assigned successfully", "success");
+    } else {
+      Swal.fire(
+        "Warning",
+        `${completed} assigned, ${failed} failed`,
+        "warning",
+      );
+    }
+
+    this.selectedStudents.clear();
+    this.loadEligibleStudents();
   }
 }

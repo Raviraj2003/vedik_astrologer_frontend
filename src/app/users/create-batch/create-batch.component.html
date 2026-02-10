@@ -1,7 +1,8 @@
 <div class="p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
-
   <!-- ================= HEADER ================= -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+  <div
+    class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4"
+  >
     <div>
       <h2 class="text-2xl font-bold text-gray-800">Batch Management</h2>
       <p class="text-gray-600 mt-1">Create and manage all training batches</p>
@@ -10,31 +11,48 @@
     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
       <!-- Search Input -->
       <div class="relative">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        <div
+          class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+        >
+          <svg
+            class="w-5 h-5 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
           </svg>
         </div>
         <input
           type="text"
           placeholder="Search batches..."
-          class="border border-gray-300 rounded-xl pl-10 pr-4 py-3 w-full sm:w-72
-                 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                 transition-all duration-200 bg-white shadow-sm"
+          class="border border-gray-300 rounded-xl pl-10 pr-4 py-3 w-full sm:w-72 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white shadow-sm"
           [(ngModel)]="searchText"
         />
       </div>
 
       <!-- Add Batch Button -->
       <button
-        class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700
-               text-white px-6 py-3 rounded-xl flex items-center gap-2
-               transition-all duration-200 shadow-md hover:shadow-lg
-               transform hover:-translate-y-0.5 font-medium"
+        class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl flex items-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 font-medium"
         (click)="openAddBatch()"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4v16m8-8H4"
+          />
         </svg>
         Add New Batch
       </button>
@@ -42,13 +60,19 @@
   </div>
 
   <!-- ================= BATCHES CARD ================= -->
-  <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+  <div
+    class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200"
+  >
     <!-- Card Header -->
-    <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+    <div
+      class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white"
+    >
       <div class="flex items-center justify-between">
         <div>
           <h3 class="text-lg font-semibold text-gray-800">All Batches</h3>
-          <p class="text-sm text-gray-600 mt-1">{{ filteredBatchList.length }} batches found</p>
+          <p class="text-sm text-gray-600 mt-1">
+            {{ filteredBatchList.length }} batches found
+          </p>
         </div>
         <div class="flex items-center gap-2">
           <span class="h-2 w-2 rounded-full bg-blue-500 animate-pulse"></span>
@@ -58,53 +82,106 @@
     </div>
 
     <!-- Batches Table -->
-    <div *ngIf="filteredBatchList.length > 0; else noBatch" class="overflow-x-auto">
+    <div
+      *ngIf="filteredBatchList.length > 0; else noBatch"
+      class="overflow-x-auto"
+    >
       <table class="w-full">
         <thead class="bg-gray-50">
           <tr>
-            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+            <th
+              class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+            >
               <div class="flex items-center gap-2">
                 <span>Batch Name</span>
-                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                <svg
+                  class="w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+                  />
                 </svg>
               </div>
             </th>
-            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+            <th
+              class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+            >
+              Standard
+            </th>
+
+            <th
+              class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+            >
               Status
             </th>
           </tr>
         </thead>
 
         <tbody class="divide-y divide-gray-100">
-          <tr *ngFor="let batch of filteredBatchList" 
-              class="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-white transition-all duration-150">
+          <tr
+            *ngFor="let batch of filteredBatchList"
+            class="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-white transition-all duration-150"
+          >
             <td class="px-6 py-4">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
-                  <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                <div
+                  class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center"
+                >
+                  <svg
+                    class="w-5 h-5 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                    />
                   </svg>
                 </div>
                 <div>
-                  <div class="font-medium text-gray-900">{{ batch.batch_name }}</div>
+                  <div class="font-medium text-gray-900">
+                    {{ batch.batch_name }}
+                  </div>
                   <div class="text-sm text-gray-500">Created recently</div>
                 </div>
               </div>
             </td>
             <td class="px-6 py-4">
+              <span
+                class="px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-indigo-100 to-blue-100 text-indigo-700 border border-indigo-200"
+              >
+                {{ batch.standard_name || "—" }}
+              </span>
+            </td>
+
+            <td class="px-6 py-4">
               <div class="flex items-center">
                 <span
                   class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200"
                   [ngClass]="{
-                    'bg-gradient-to-r from-green-100 to-emerald-100 text-emerald-700 border border-green-200': batch.is_active === 'Y',
-                    'bg-gradient-to-r from-red-100 to-rose-100 text-rose-700 border border-red-200': batch.is_active !== 'Y'
+                    'bg-gradient-to-r from-green-100 to-emerald-100 text-emerald-700 border border-green-200':
+                      batch.is_active === 'Y',
+                    'bg-gradient-to-r from-red-100 to-rose-100 text-rose-700 border border-red-200':
+                      batch.is_active !== 'Y',
                   }"
                 >
                   <span class="flex items-center gap-2">
-                    <span class="h-2 w-2 rounded-full" 
-                          [ngClass]="batch.is_active === 'Y' ? 'bg-green-500' : 'bg-red-500'"></span>
-                    {{ batch.is_active === 'Y' ? 'Active' : 'Inactive' }}
+                    <span
+                      class="h-2 w-2 rounded-full"
+                      [ngClass]="
+                        batch.is_active === 'Y' ? 'bg-green-500' : 'bg-red-500'
+                      "
+                    ></span>
+                    {{ batch.is_active === "Y" ? "Active" : "Inactive" }}
                   </span>
                 </span>
               </div>
@@ -117,21 +194,45 @@
     <ng-template #noBatch>
       <div class="text-center py-16">
         <div class="max-w-md mx-auto">
-          <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          <div
+            class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center"
+          >
+            <svg
+              class="w-12 h-12 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
             </svg>
           </div>
-          <h3 class="text-xl font-semibold text-gray-700 mb-2">No batches found</h3>
-          <p class="text-gray-500 mb-6">Get started by creating your first batch</p>
+          <h3 class="text-xl font-semibold text-gray-700 mb-2">
+            No batches found
+          </h3>
+          <p class="text-gray-500 mb-6">
+            Get started by creating your first batch
+          </p>
           <button
             (click)="openAddBatch()"
-            class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700
-                   text-white px-6 py-3 rounded-xl inline-flex items-center gap-2
-                   transition-all duration-200 shadow-md hover:shadow-lg"
+            class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl inline-flex items-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg"
           >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4v16m8-8H4"
+              />
             </svg>
             Create First Batch
           </button>
@@ -144,45 +245,127 @@
   <ngx-custom-modal #addBatchModal class="no-footer">
     <ng-template #modalHeader>
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
-          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        <div
+          class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center"
+        >
+          <svg
+            class="w-5 h-5 text-blue-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
           </svg>
         </div>
         <div>
           <span class="text-xl font-bold text-gray-800">Create New Batch</span>
-          <p class="text-sm text-gray-600 mt-1">Add a new batch to your training program</p>
+          <p class="text-sm text-gray-600 mt-1">
+            Add a new batch to your training program
+          </p>
         </div>
       </div>
     </ng-template>
 
     <ng-template #modalBody>
-      <form [formGroup]="batchForm" (ngSubmit)="saveBatch()" class="space-y-6 py-2">
+      <form
+        [formGroup]="batchForm"
+        (ngSubmit)="saveBatch()"
+        class="space-y-6 py-2"
+      >
+        <!-- ================= STANDARD DROPDOWN ================= -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Standard
+            <span class="text-red-500 ml-1">*</span>
+          </label>
+
+       <select
+  formControlName="standard_id"
+  class="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white
+         focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 shadow-sm"
+  [class.border-red-300]="
+    batchForm.get('standard_id')?.invalid &&
+    batchForm.get('standard_id')?.touched
+  "
+>
+  <!-- ✅ Reactive Forms placeholder -->
+  <option value="" disabled hidden>
+    -- Select Standard --
+  </option>
+
+  <option *ngFor="let s of standardsList" [value]="s.standard_id">
+    {{ s.standard_name }}
+  </option>
+</select>
+
+
+          <div
+            class="mt-2 flex items-center gap-2 text-red-500 text-sm"
+            *ngIf="
+              batchForm.get('standard_id')?.invalid &&
+              batchForm.get('standard_id')?.touched
+            "
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            Standard is required
+          </div>
+        </div>
+
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Batch Name
             <span class="text-red-500 ml-1">*</span>
           </label>
           <input
-            class="w-full px-4 py-3 rounded-xl border border-gray-300 
-                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                   transition-all duration-200 shadow-sm
-                   placeholder:text-gray-400"
+            class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 shadow-sm placeholder:text-gray-400"
             placeholder="Enter batch name (e.g., 'Spring 2024')"
             formControlName="batch_name"
-            [class.border-red-300]="batchForm.get('batch_name')?.invalid && batchForm.get('batch_name')?.touched"
+            [class.border-red-300]="
+              batchForm.get('batch_name')?.invalid &&
+              batchForm.get('batch_name')?.touched
+            "
           />
 
           <div
             class="mt-2 flex items-center gap-2 text-red-500 text-sm"
-            *ngIf="batchForm.get('batch_name')?.invalid && batchForm.get('batch_name')?.touched"
+            *ngIf="
+              batchForm.get('batch_name')?.invalid &&
+              batchForm.get('batch_name')?.touched
+            "
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             Batch name is required
           </div>
-          
+
           <p class="mt-2 text-sm text-gray-500">
             Use a descriptive name that identifies the batch period or cohort
           </p>
@@ -191,9 +374,7 @@
         <div class="flex justify-end gap-3 pt-6 border-t border-gray-100">
           <button
             type="button"
-            class="px-6 py-3 border border-gray-300 rounded-xl text-gray-700 font-medium
-                   hover:bg-gray-50 transition-all duration-200
-                   hover:border-gray-400"
+            class="px-6 py-3 border border-gray-300 rounded-xl text-gray-700 font-medium hover:bg-gray-50 transition-all duration-200 hover:border-gray-400"
             (click)="addBatchModal.close()"
           >
             Cancel
@@ -201,22 +382,29 @@
 
           <button
             type="submit"
-            class="px-6 py-3 rounded-xl font-medium transition-all duration-200
-                   bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700
-                   text-white shadow-md hover:shadow-lg
-                   disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-600 disabled:hover:to-indigo-600"
+            class="px-6 py-3 rounded-xl font-medium transition-all duration-200 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-600 disabled:hover:to-indigo-600"
             [disabled]="loading"
           >
             <span class="flex items-center gap-2">
-              <svg *ngIf="loading" class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              <svg
+                *ngIf="loading"
+                class="w-5 h-5 animate-spin"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
               </svg>
-              <span>{{ loading ? 'Creating...' : 'Create Batch' }}</span>
+              <span>{{ loading ? "Creating..." : "Create Batch" }}</span>
             </span>
           </button>
         </div>
       </form>
     </ng-template>
   </ngx-custom-modal>
-
 </div>
