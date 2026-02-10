@@ -100,12 +100,30 @@ export class StudentDashboardComponent implements OnInit {
   /* ================= JOIN CLASS ================= */
   joinClass(slot: ClassItem): void {
     if (this.hasClassLink(slot)) {
+      // Mark attendance first
+      this.markAttendance(slot.slot_id);
+
       // Open class link in new tab
       window.open(slot.class_link, "_blank");
 
       // Optional: Track join event
       this.trackClassJoin(slot);
     }
+  }
+
+  /* ================= MARK ATTENDANCE ================= */
+  private markAttendance(slotId: number): void {
+    this.api.markAttendanceOnJoin({ slot_id: slotId }).subscribe({
+      next: (res: any) => {
+        console.log("Attendance marked successfully:", res);
+        // Optional: Show success message to user
+      },
+      error: (error) => {
+        console.error("Error marking attendance:", error);
+        // Optional: Show error message to user
+        // Note: Even if attendance fails, still open the class link
+      },
+    });
   }
 
   /* ================= TRACK CLASS JOIN (OPTIONAL) ================= */

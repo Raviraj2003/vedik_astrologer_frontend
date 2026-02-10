@@ -1,41 +1,43 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ApiService } from 'src/app/service/api.service';
+import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { ApiService } from "src/app/service/api.service";
 
 @Component({
-  selector: 'app-class-schedule',
+  selector: "app-class-schedule",
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './class-schedule.component.html',
+  templateUrl: "./class-schedule.component.html",
 })
 export class ClassScheduleComponent implements OnInit {
-
   // Days dropdown
   days: string[] = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday',
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
   ];
 
-  // Batch list
+  // Standards & Batches
+  standardsList: any[] = [];
   batchList: any[] = [];
+
+  selectedStandardId: number | "" = "";
 
   // Form model
   form: any = {
-    class_name: '',
-    batch_code: '',
-    from_date: '',
-    to_date: '',
+    standard_id: "",
+    batch_code: "",
+    from_date: "",
+    to_date: "",
     schedules: [
       {
-        day_name: '',
-        start_time: '',
-        end_time: '',
+        day_name: "",
+        start_time: "",
+        end_time: "",
         slot_interval: 30,
       },
     ],
@@ -46,33 +48,46 @@ export class ClassScheduleComponent implements OnInit {
   constructor(private api: ApiService) {}
 
   ngOnInit(): void {
-    this.loadBatches();
+    this.loadStandards();
   }
 
-  /* ================= LOAD BATCHES ================= */
-  loadBatches(): void {
-    this.api.getAllBatches().subscribe({
+  /* ================= LOAD STANDARDS ================= */
+  loadStandards(): void {
+    this.api.getStandards().subscribe({
       next: (res: any) => {
-        this.batchList = Array.isArray(res?.data) ? res.data : [];
+        this.standardsList = Array.isArray(res?.data) ? res.data : [];
       },
-      error: (err) => {
-        console.error('Get batches error:', err);
-        this.batchList = [];
-      },
+      error: () => (this.standardsList = []),
     });
   }
 
-  /* ================= ADD DAY ================= */
+  /* ================= STANDARD CHANGE ================= */
+  onStandardChange(): void {
+    this.form.batch_code = "";
+    this.batchList = [];
+
+    if (!this.form.standard_id) return;
+
+    const standardId = Number(this.form.standard_id);
+
+    this.api.getBatchesByStandard(standardId).subscribe({
+      next: (res: any) => {
+        this.batchList = Array.isArray(res?.data) ? res.data : [];
+      },
+      error: () => (this.batchList = []),
+    });
+  }
+
+  /* ================= ADD / REMOVE DAY ================= */
   addSchedule(): void {
     this.form.schedules.push({
-      day_name: '',
-      start_time: '',
-      end_time: '',
+      day_name: "",
+      start_time: "",
+      end_time: "",
       slot_interval: 30,
     });
   }
 
-  /* ================= REMOVE DAY ================= */
   removeSchedule(index: number): void {
     if (this.form.schedules.length > 1) {
       this.form.schedules.splice(index, 1);
@@ -82,7 +97,7 @@ export class ClassScheduleComponent implements OnInit {
   /* ================= VALIDATION ================= */
   isFormValid(): boolean {
     if (
-      !this.form.class_name ||
+      !this.form.standard_id ||
       !this.form.batch_code ||
       !this.form.from_date ||
       !this.form.to_date
@@ -90,22 +105,22 @@ export class ClassScheduleComponent implements OnInit {
       return false;
     }
 
-    return this.form.schedules.every((s: any) =>
-      s.day_name && s.start_time && s.end_time && s.slot_interval
+    return this.form.schedules.every(
+      (s: any) => s.day_name && s.start_time && s.end_time && s.slot_interval,
     );
   }
 
   /* ================= SUBMIT ================= */
   submit(): void {
     if (!this.isFormValid()) {
-      alert('Please fill all required fields');
+      alert("Please fill all required fields");
       return;
     }
 
     this.loading = true;
 
     const payload = {
-      class_name: this.form.class_name,
+      standard_id: this.form.standard_id,
       batch_code: this.form.batch_code,
       from_date: this.form.from_date,
       to_date: this.form.to_date,
@@ -114,13 +129,12 @@ export class ClassScheduleComponent implements OnInit {
 
     this.api.saveClassSchedule(payload).subscribe({
       next: () => {
-        alert('Class schedule saved successfully');
+        alert("Class schedule saved successfully");
         this.resetForm();
         this.loading = false;
       },
       error: (err) => {
-        console.error(err);
-        alert(err?.error?.message || 'Failed to save schedule');
+        alert(err?.error?.message || "Failed to save schedule");
         this.loading = false;
       },
     });
@@ -129,18 +143,19 @@ export class ClassScheduleComponent implements OnInit {
   /* ================= RESET ================= */
   resetForm(): void {
     this.form = {
-      class_name: '',
-      batch_code: '',
-      from_date: '',
-      to_date: '',
+      standard_id: "",
+      batch_code: "",
+      from_date: "",
+      to_date: "",
       schedules: [
         {
-          day_name: '',
-          start_time: '',
-          end_time: '',
+          day_name: "",
+          start_time: "",
+          end_time: "",
           slot_interval: 30,
         },
       ],
     };
+    this.batchList = [];
   }
 }

@@ -11,9 +11,13 @@ import { ApiService } from "../../service/api.service";
   templateUrl: "./upgrade-student-batch.component.html",
 })
 export class UpgradeStudentBatchComponent implements OnInit {
+  /* ================= MASTER ================= */
+  standards: any[] = [];
   batchList: any[] = [];
   studentList: any[] = [];
 
+  /* ================= SELECTION ================= */
+  selectedStandardId: number | "" = "";
   selectedBatchCode: string = "";
   selectedStudentCode: string | null = null;
 
@@ -22,22 +26,38 @@ export class UpgradeStudentBatchComponent implements OnInit {
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
-    this.loadBatches();
+    this.loadStandards();
     this.loadStudentsWithBatch();
   }
 
-  /* ================= LOAD DATA ================= */
-
-  loadBatches(): void {
-    this.apiService.getAllBatches().subscribe({
+  /* ================= LOAD STANDARDS ================= */
+  loadStandards(): void {
+    this.apiService.getStandards().subscribe({
       next: (res: any) => {
-        this.batchList = Array.isArray(res?.data) ? res.data : [];
+        this.standards = Array.isArray(res?.data) ? res.data : [];
       },
-      error: () => (this.batchList = []),
+      error: () => (this.standards = []),
     });
   }
 
-  // Students who ALREADY have at least one batch
+  /* ================= STANDARD CHANGE ================= */
+  onStandardChange(): void {
+    this.selectedBatchCode = "";
+    this.batchList = [];
+
+    if (!this.selectedStandardId) return;
+
+    this.apiService
+      .getBatchesByStandard(Number(this.selectedStandardId))
+      .subscribe({
+        next: (res: any) => {
+          this.batchList = Array.isArray(res?.data) ? res.data : [];
+        },
+        error: () => (this.batchList = []),
+      });
+  }
+
+  /* ================= LOAD STUDENTS ================= */
   loadStudentsWithBatch(): void {
     this.apiService.getAllStudents().subscribe({
       next: (res: any) => {
@@ -48,7 +68,6 @@ export class UpgradeStudentBatchComponent implements OnInit {
   }
 
   /* ================= SELECT STUDENT ================= */
-
   selectStudent(code: string): void {
     this.selectedStudentCode = code;
   }
@@ -57,13 +76,13 @@ export class UpgradeStudentBatchComponent implements OnInit {
     return this.selectedStudentCode === code;
   }
 
-  getSelectedCount(): number {
-    return this.selectedStudentCode ? 1 : 0;
-  }
-
-  /* ================= UPGRADE BATCH ================= */
-
+  /* ================= UPGRADE ================= */
   upgradeBatch(): void {
+    if (!this.selectedStandardId) {
+      Swal.fire("Warning", "Please select a standard", "warning");
+      return;
+    }
+
     if (!this.selectedBatchCode) {
       Swal.fire("Warning", "Please select a batch", "warning");
       return;

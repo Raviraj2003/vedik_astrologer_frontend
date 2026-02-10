@@ -73,7 +73,30 @@
       
       <!-- Left Panel - Compact -->
       <div class="lg:col-span-2 space-y-4">
-        
+        <!-- Standard Selection -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+  <div class="flex items-center gap-2 mb-3">
+    <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M12 4v16m8-8H4" />
+    </svg>
+    <h3 class="font-semibold text-gray-800 text-sm">Select Standard</h3>
+  </div>
+
+  <select
+    [(ngModel)]="selectedStandardId"
+    (change)="onStandardChange()"
+    class="w-full px-3 py-2.5 rounded-lg border border-gray-300
+           focus:outline-none focus:ring-2 focus:ring-purple-500
+           transition-all duration-150 text-sm bg-white"
+  >
+    <option value="" disabled>Select standard...</option>
+    <option *ngFor="let s of standards" [value]="s.standard_id">
+      {{ s.standard_name }}
+    </option>
+  </select>
+</div>
+
         <!-- Batch Selection Card -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
           <div class="flex items-center gap-2 mb-3">

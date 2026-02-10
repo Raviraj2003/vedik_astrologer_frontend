@@ -592,6 +592,96 @@ export class ApiService {
     );
   }
 
+  markAttendanceOnJoin(data: { slot_id: number }) {
+    return this.http.post(`${this.baseUrl}/markAttendanceOnJoin`, data, {
+      headers: this.getJsonHeaders(),
+    });
+  }
+
+  getMyAttendanceFromToken(): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/getMyAttendanceFromToken`,
+      {}, // ❌ no body
+      { headers: this.getJsonHeaders() }, // 🔐 Bearer token
+    );
+  }
+
+  getAttendanceByBatch(batchCode: string): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/getAttendanceByBatch`,
+      { batch_code: batchCode },
+      { headers: this.getJsonHeaders() }, // 🔐 Authorization + JSON
+    );
+  }
+
+  // ======================================
+  // 📘 STANDARD MASTER
+  // ======================================
+
+  getStandards(): Observable<{
+    success: boolean;
+    message: string;
+    data: {
+      standard_id: number;
+      standard_name: string;
+      standard_description: string;
+    }[];
+  }> {
+    return this.http.post<{
+      success: boolean;
+      message: string;
+      data: {
+        standard_id: number;
+        standard_name: string;
+        standard_description: string;
+      }[];
+    }>(
+      `${this.baseUrl}/getStandards`,
+      {}, // ✅ POST body is EMPTY as per Postman
+      {
+        headers: this.getJsonHeaders(), // 🔐 Bearer token auto-added
+      },
+    );
+  }
+
+  // ======================================
+  // 📦 BATCH → FILTER BY STANDARD
+  // ======================================
+
+  getBatchesByStandard(standardId: number): Observable<{
+    success: boolean;
+    total: number;
+    data: {
+      batch_code: string;
+      batch_name: string;
+      standard_id: number;
+      standard_name: string;
+      is_active: string;
+      created_at: string;
+    }[];
+  }> {
+    return this.http.post<{
+      success: boolean;
+      total: number;
+      data: {
+        batch_code: string;
+        batch_name: string;
+        standard_id: number;
+        standard_name: string;
+        is_active: string;
+        created_at: string;
+      }[];
+    }>(
+      `${this.baseUrl}/batches/getBatchesByStandard`,
+      {
+        standard_id: standardId, // ✅ matches Postman body
+      },
+      {
+        headers: this.getJsonHeaders(), // 🔐 Bearer token auto-added
+      },
+    );
+  }
+
   // ======================================
   // 🧰 HELPERS
   // ======================================

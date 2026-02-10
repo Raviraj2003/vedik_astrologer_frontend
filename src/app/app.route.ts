@@ -26,6 +26,7 @@ import { PaymentReceiptComponent } from './payment-receipt/payment-receipt.compo
 import { UploadCertificateComponent } from './upload-certificate/upload-certificate.component';
 import { StudentCertificatesComponent } from './student-certificates/student-certificates.component';
 import { StudentReceiptsComponent } from './student-receipts/student-receipts.component';
+import { AttendanceComponent } from './pages/attendance/attendance.component';
 
 
 // widgets
@@ -93,6 +94,7 @@ export const routes: Routes = [
             { path: 'upload-certificate', component: UploadCertificateComponent, data: { title: 'Upload Certificate' } },
             { path: 'student-certificates', component: StudentCertificatesComponent, data: { title: 'Student Certificates' } },
             { path: 'student-receipts', component: StudentReceiptsComponent, data: { title: 'Student Receipts' } },
+            { path: 'attendance', component: AttendanceComponent, data: { title: 'Attendance' } },
 
 
                        

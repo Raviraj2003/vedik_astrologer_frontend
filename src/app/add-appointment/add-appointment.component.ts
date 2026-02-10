@@ -42,6 +42,8 @@ export class AddAppointmentComponent implements OnInit {
     this.watchSource();
   }
 
+  /* ================= FORM ================= */
+
   createForm() {
     this.appointmentForm = this.fb.group({
       name: ["", Validators.required],
@@ -69,16 +71,17 @@ export class AddAppointmentComponent implements OnInit {
       slot_range: [""],
       friend_name: [""],
 
-      // ✅ Nested FormGroup for partner details
       partner_details: this.fb.group({
         name: [""],
         date_of_birth: [""],
         time_of_birth: [""],
         place_of_birth: [""],
-        relation_type: [""], // 'spouse' or 'joint'
+        relation_type: [""],
       }),
     });
   }
+
+  /* ================= WATCHERS ================= */
 
   watchAppointmentType() {
     this.appointmentForm
@@ -115,42 +118,84 @@ export class AddAppointmentComponent implements OnInit {
       });
   }
 
-  onDateChange(event: any) {
-    const date = event.target.value;
-    if (!date) return;
+  /* ================= SLOT LOGIC (UPDATED) ================= */
 
-    this.api.getSlotsByDate(date).subscribe({
+  onDateChange(event: any) {
+    const selectedDate = event.target.value;
+    if (!selectedDate) return;
+
+    const today = new Date();
+    const pickedDate = new Date(selectedDate);
+
+    this.api.getSlotsByDate(selectedDate).subscribe({
       next: (res) => {
-        this.slots = Array.isArray(res?.slots)
-          ? res.slots.filter((s: any) => !s.is_booked)
-          : [];
+        let slots = Array.isArray(res?.slots) ? res.slots : [];
+
+        // ❌ Remove booked slots
+        slots = slots.filter((s: any) => !s.is_booked);
+
+        // ⏰ If today → remove expired time slots
+        if (this.isSameDate(today, pickedDate)) {
+          const now = new Date();
+          slots = slots.filter((slot: any) =>
+            this.isSlotFuture(slot.slot_range, now),
+          );
+        }
+
+        this.slots = slots;
       },
       error: () => alert("Failed to load slots"),
     });
   }
 
+  isSameDate(d1: Date, d2: Date): boolean {
+    return (
+      d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate()
+    );
+  }
+
+  isSlotFuture(slotRange: string, now: Date): boolean {
+    // Example: "10:00 AM - 11:00 AM"
+    const endTime = slotRange.split("-")[1]?.trim();
+    if (!endTime) return false;
+
+    const slotEndTime = this.convertTimeToDate(endTime, now);
+    return slotEndTime.getTime() > now.getTime();
+  }
+
+  convertTimeToDate(timeStr: string, baseDate: Date): Date {
+    const [time, meridian] = timeStr.split(" ");
+    let [hours, minutes] = time.split(":").map(Number);
+
+    if (meridian === "PM" && hours < 12) hours += 12;
+    if (meridian === "AM" && hours === 12) hours = 0;
+
+    const date = new Date(baseDate);
+    date.setHours(hours, minutes, 0, 0);
+    return date;
+  }
+
+  /* ================= SUBJECT / MODALS ================= */
+
   toggleSubject(subject: string, event: any) {
     const subjects = this.appointmentForm.value.subjects || [];
-    const checkbox = event.target;
-    const isChecked = checkbox.checked;
+    const isChecked = event.target.checked;
 
     if (isChecked) {
       subjects.push(subject);
 
       if (subject === "Joint property holder") {
-        this.partnerModalType = "joint";
         this.openPartnerModal("joint");
       }
 
       if (["Divorce", "Child Birth"].includes(subject)) {
-        this.partnerModalType = "spouse";
         this.openPartnerModal("spouse");
       }
     } else {
       const index = subjects.indexOf(subject);
-      if (index >= 0) {
-        subjects.splice(index, 1);
-      }
+      if (index >= 0) subjects.splice(index, 1);
     }
 
     this.appointmentForm.patchValue({ subjects });
@@ -159,31 +204,22 @@ export class AddAppointmentComponent implements OnInit {
   openPartnerModal(type: "spouse" | "joint") {
     this.partnerModalType = type;
     this.showPartnerModal = true;
-
-    // Set relation type in partner details
     this.appointmentForm.get("partner_details.relation_type")?.setValue(type);
   }
 
   closePartnerModal() {
     this.showPartnerModal = false;
-
-    // Clear partner details if modal is closed without saving
     this.appointmentForm.get("partner_details")?.reset({
       relation_type: this.partnerModalType,
     });
   }
 
   savePartnerDetails() {
-    const partnerDetails = this.appointmentForm.get("partner_details")?.value;
-
-    // Basic validation
-    if (!partnerDetails.name || !partnerDetails.date_of_birth) {
-      alert(
-        `Please fill required ${this.partnerModalType === "joint" ? "co-owner" : "spouse"} details`,
-      );
+    const p = this.appointmentForm.get("partner_details")?.value;
+    if (!p.name || !p.date_of_birth) {
+      alert("Please fill required partner details");
       return;
     }
-
     this.showPartnerModal = false;
   }
 
@@ -194,6 +230,8 @@ export class AddAppointmentComponent implements OnInit {
   closeFriendModal() {
     this.showFriendModal = false;
   }
+
+  /* ================= SUBMIT ================= */
 
   submitForm() {
     if (this.appointmentForm.invalid) {
@@ -206,38 +244,16 @@ export class AddAppointmentComponent implements OnInit {
     const partner = raw.partner_details;
 
     const payload = {
-      // Main form fields
-      name: raw.name,
-      email: raw.email,
-      mobile_number: raw.mobile_number,
-      gender: raw.gender,
-      marital_status: raw.marital_status,
+      ...raw,
       is_twins: raw.is_twins === true,
       is_appointment_conducted: raw.is_appointment_conducted === true,
-      appointment_type: raw.appointment_type,
-      consultation_mode: raw.consultation_mode,
-      date_of_birth: raw.date_of_birth || null,
-      time_of_birth: raw.time_of_birth || null,
-      country: raw.country,
-      state: raw.state,
-      city: raw.city,
-      subjects: raw.subjects,
-      source: raw.source,
-      appointment_status: raw.appointment_status,
-      transaction_id: raw.transaction_id,
-      appointment_date: raw.appointment_date || null,
-      slot_range: raw.slot_range,
-      friend_name: raw.friend_name || null,
 
-      // Partner details (flattened for backend)
       partner_name: partner?.name || null,
       partner_date_of_birth: partner?.date_of_birth || null,
       partner_time_of_birth: partner?.time_of_birth || null,
       partner_place_of_birth: partner?.place_of_birth || null,
       partner_relation_type: partner?.relation_type || null,
     };
-
-    console.log("📦 FINAL PAYLOAD:", payload);
 
     this.api.addAppointment(payload).subscribe({
       next: () => {
@@ -254,7 +270,6 @@ export class AddAppointmentComponent implements OnInit {
         this.showFriendModal = false;
       },
       error: (err) => {
-        console.error("❌ Error:", err);
         alert(
           "Failed to book appointment: " + (err.error?.message || err.message),
         );
