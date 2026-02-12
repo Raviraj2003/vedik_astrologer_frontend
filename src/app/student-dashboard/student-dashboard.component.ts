@@ -257,11 +257,15 @@ export class StudentDashboardComponent implements OnInit {
 
   /* ================= OPEN FILE ================= */
   openFile(path: string | undefined): void {
-    if (path) {
-      window.open(path, "_blank");
-    } else {
+    if (!path) {
       console.warn("No file path provided");
+      return;
     }
+
+    const baseUrl = "https://vediknode.vedikastrologer.com"; // Ensure this matches your API base URL
+    const fullUrl = path.startsWith("http") ? path : baseUrl + path;
+
+    window.open(fullUrl, "_blank");
   }
 
   /* ================= TAB HANDLERS ================= */
