@@ -1,5 +1,11 @@
 import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from "@angular/forms";
 import { ApiService } from "../service/api.service";
 
 type ScheduleTab = "today" | "upcoming" | "all";
@@ -13,7 +19,7 @@ interface ClassItem {
   room_no?: string;
   start_time?: string;
   end_time?: string;
-  class_link?: string; // Added class_link property
+  class_link?: string;
   class_name?: string;
   schedule_id?: number;
 }
@@ -37,11 +43,19 @@ interface TopicObject {
 @Component({
   selector: "app-student-dashboard",
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: "./student-dashboard.component.html",
   styleUrl: "./student-dashboard.component.css",
 })
 export class StudentDashboardComponent implements OnInit {
+  /* ================= REGISTRATION MODAL ================= */
+  showRegistrationModal = false;
+  registrationForm!: FormGroup;
+  isSubmittingRegistration = false;
+  registrationSuccess = false;
+  registrationError = "";
+  isStudentRegistered = false;
+
   /* ================= TABS ================= */
   tabs: ScheduleTab[] = ["today", "upcoming", "all"];
   activeTab: ScheduleTab = "today";
@@ -63,11 +77,110 @@ export class StudentDashboardComponent implements OnInit {
   isLoading = true;
   todayStr = "";
 
-  constructor(private api: ApiService) {}
+  constructor(
+    private api: ApiService,
+    private fb: FormBuilder,
+  ) {}
 
   ngOnInit(): void {
     this.todayStr = this.formatDate(new Date());
-    this.loadSchedule();
+    this.initRegistrationForm();
+    this.checkStudentRegistrationStatus();
+  }
+
+  /* ================= REGISTRATION FORM INIT ================= */
+  initRegistrationForm(): void {
+    this.registrationForm = this.fb.group({
+      full_name: ["", Validators.required],
+      phone_no: ["", Validators.required],
+      email: ["", [Validators.required, Validators.email]],
+      address: ["", Validators.required],
+      birth_date: ["", Validators.required],
+      birth_time: ["", Validators.required],
+      whatsapp_group: ["", Validators.required],
+      qualification: ["", Validators.required],
+      studied_astrology: ["", Validators.required],
+      computer_knowledge: ["", Validators.required],
+      class_mode: ["", Validators.required],
+    });
+  }
+
+  /* ================= CHECK STUDENT REGISTRATION STATUS ================= */
+  checkStudentRegistrationStatus(): void {
+    this.isLoading = true;
+
+    console.log("Checking registration status...");
+
+    this.api.checkStudentRegistration().subscribe({
+      next: (res: any) => {
+        console.log("Registration check response:", res);
+
+        // Your API returns { success: true, isRegistered: false } for new students
+        this.isStudentRegistered = res?.isRegistered === true;
+
+        if (this.isStudentRegistered) {
+          console.log("Student is registered - loading dashboard");
+          this.showRegistrationModal = false;
+          this.loadSchedule();
+        } else {
+          console.log("Student is NOT registered - showing registration form");
+          this.isStudentRegistered = false;
+          this.showRegistrationModal = true;
+          this.isLoading = false;
+        }
+      },
+      error: (error) => {
+        console.error("Error checking registration status:", error);
+        // On error, show registration form to be safe
+        this.isStudentRegistered = false;
+        this.showRegistrationModal = true;
+        this.isLoading = false;
+      },
+    });
+  }
+
+  /* ================= SUBMIT REGISTRATION ================= */
+  submitRegistration(): void {
+    if (this.registrationForm.invalid) {
+      this.registrationError = "Please fill all required fields.";
+
+      Object.keys(this.registrationForm.controls).forEach((key) => {
+        this.registrationForm.get(key)?.markAsTouched();
+      });
+      return;
+    }
+
+    this.isSubmittingRegistration = true;
+    this.registrationError = "";
+
+    this.api.updateStudentDetails(this.registrationForm.value).subscribe({
+      next: (res: any) => {
+        this.isSubmittingRegistration = false;
+        this.registrationSuccess = true;
+        this.isStudentRegistered = true;
+
+        // Show success message and then load dashboard
+        setTimeout(() => {
+          this.showRegistrationModal = false;
+          this.registrationSuccess = false;
+          this.loadSchedule();
+        }, 2000);
+      },
+      error: (err) => {
+        this.isSubmittingRegistration = false;
+        this.registrationError =
+          err.error?.message || "Registration failed. Please try again.";
+      },
+    });
+  }
+
+  /* ================= CLOSE REGISTRATION MODAL (NOT ALLOWED) ================= */
+  closeRegistrationModal(): void {
+    // Do nothing - modal cannot be closed without registration
+    if (!this.isStudentRegistered) {
+      this.registrationError =
+        "You must complete registration to access the dashboard.";
+    }
   }
 
   /* ================= LOAD CLASSES ================= */
@@ -80,7 +193,8 @@ export class StudentDashboardComponent implements OnInit {
         this.applyFilter();
         this.isLoading = false;
       },
-      error: () => {
+      error: (err) => {
+        console.error("Error loading classes:", err);
         this.rawClasses = [];
         this.groupedSchedules = [];
         this.isLoading = false;
@@ -100,14 +214,8 @@ export class StudentDashboardComponent implements OnInit {
   /* ================= JOIN CLASS ================= */
   joinClass(slot: ClassItem): void {
     if (this.hasClassLink(slot)) {
-      // Mark attendance first
       this.markAttendance(slot.slot_id);
-
-      // Open class link in new tab
       window.open(slot.class_link, "_blank");
-
-      // Optional: Track join event
-      this.trackClassJoin(slot);
     }
   }
 
@@ -116,45 +224,11 @@ export class StudentDashboardComponent implements OnInit {
     this.api.markAttendanceOnJoin({ slot_id: slotId }).subscribe({
       next: (res: any) => {
         console.log("Attendance marked successfully:", res);
-        // Optional: Show success message to user
       },
       error: (error) => {
         console.error("Error marking attendance:", error);
-        // Optional: Show error message to user
-        // Note: Even if attendance fails, still open the class link
       },
     });
-  }
-
-  /* ================= TRACK CLASS JOIN (OPTIONAL) ================= */
-  private trackClassJoin(slot: ClassItem): void {
-    console.log("Joining class:", {
-      slot_id: slot.slot_id,
-      class_date: slot.class_date,
-      time: new Date().toISOString(),
-    });
-
-    // You can add API call here to track attendance
-    // this.api.trackClassAttendance(slot.slot_id).subscribe(...)
-  }
-
-  /* ================= GET CLASS LINK DISPLAY TEXT ================= */
-  getClassLinkDisplay(link: string | undefined): string {
-    if (!link) return "No link available";
-
-    try {
-      const url = new URL(link);
-      // For Google Meet links
-      if (url.hostname.includes("meet.google.com")) {
-        return "Google Meet: " + url.pathname.replace("/", "");
-      }
-      // For other links, show domain
-      const displayPath = url.pathname.length > 20 ? "..." : url.pathname;
-      return url.hostname + displayPath;
-    } catch {
-      // If not a valid URL, truncate it
-      return link.length > 40 ? link.substring(0, 40) + "..." : link;
-    }
   }
 
   /* ================= VIEW STUDY MATERIAL ================= */
@@ -162,23 +236,17 @@ export class StudentDashboardComponent implements OnInit {
     this.selectedSlot = slot;
     const slotId = slot.slot_id;
 
-    // Reset the modal state
     this.showMaterialModal = true;
     this.isMaterialLoading = true;
 
-    // Clear any previous data for this slot to force reload
     delete this.studyMediaBySlot[slotId];
     delete this.studyTopicBySlot[slotId];
 
     this.api.getStudentStudyMaterialsFromToken({ slot_id: slotId }).subscribe({
       next: (res: any) => {
-        console.log("Study materials API response:", res);
-
-        // Extract topic from the response - handle object case
         let topic = "No topic specified";
 
         if (res) {
-          // Check different possible structures
           if (typeof res.topic === "string") {
             topic = res.topic;
           } else if (res.topic && typeof res.topic === "object") {
@@ -208,15 +276,12 @@ export class StudentDashboardComponent implements OnInit {
           }
         }
 
-        // If still no topic, use the slot's topic name
         if (topic === "No topic specified" && this.selectedSlot?.topic_name) {
           topic = this.selectedSlot.topic_name;
         }
 
         this.studyTopicBySlot[slotId] = topic;
-        console.log("Extracted topic:", topic);
 
-        // Extract media from the response
         let media: StudyMaterial[] = [];
 
         if (res?.media && Array.isArray(res.media)) {
@@ -230,14 +295,11 @@ export class StudentDashboardComponent implements OnInit {
         }
 
         this.studyMediaBySlot[slotId] = media;
-        console.log("Extracted media:", media);
-
         this.isMaterialLoading = false;
       },
       error: (error) => {
         console.error("Error loading study materials:", error);
 
-        // Fallback to slot's topic name if available
         const fallbackTopic =
           this.selectedSlot?.topic_name ||
           "Failed to load topic. Please try again.";
@@ -262,7 +324,7 @@ export class StudentDashboardComponent implements OnInit {
       return;
     }
 
-    const baseUrl = "https://vediknode.vedikastrologer.com"; // Ensure this matches your API base URL
+    const baseUrl = "https://vediknode.vedikastrologer.com";
     const fullUrl = path.startsWith("http") ? path : baseUrl + path;
 
     window.open(fullUrl, "_blank");
@@ -330,7 +392,6 @@ export class StudentDashboardComponent implements OnInit {
   /* ================= GET FILE ICON ================= */
   getFileIcon(mimeType: string | undefined): string {
     if (!mimeType) return "📎";
-
     const mime = mimeType.toLowerCase();
     if (mime.includes("pdf")) return "📄";
     if (mime.includes("image")) return "🖼️";
@@ -346,28 +407,14 @@ export class StudentDashboardComponent implements OnInit {
   /* ================= GET CURRENT TOPIC ================= */
   getCurrentTopic(): string {
     if (!this.selectedSlot) return "No topic specified";
-
     const slotId = this.selectedSlot.slot_id;
     const topic = this.studyTopicBySlot[slotId];
-
-    // Ensure topic is a string, not an object
-    if (topic && typeof topic === "object") {
-      const topicObj = topic as unknown as TopicObject;
-      return (
-        topicObj.name ||
-        topicObj.title ||
-        topicObj.topic_name ||
-        JSON.stringify(topic)
-      );
-    }
-
     return topic || this.selectedSlot.topic_name || "No topic specified";
   }
 
   /* ================= GET CURRENT MEDIA ================= */
   getCurrentMedia(): StudyMaterial[] {
     if (!this.selectedSlot) return [];
-
     const slotId = this.selectedSlot.slot_id;
     return this.studyMediaBySlot[slotId] || [];
   }
@@ -375,11 +422,15 @@ export class StudentDashboardComponent implements OnInit {
   /* ================= FORMAT FILE SIZE ================= */
   formatFileSize(bytes: number | undefined): string {
     if (!bytes) return "Size unknown";
-
     const sizes = ["Bytes", "KB", "MB", "GB"];
     if (bytes === 0) return "0 Byte";
-
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
     return Math.round(bytes / Math.pow(1024, i)) + " " + sizes[i];
+  }
+
+  /* ================= LOGOUT ================= */
+  logout(): void {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
   }
 }

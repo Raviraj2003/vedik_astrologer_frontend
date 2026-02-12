@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: "root",
 })
 export class ApiService {
-  private baseUrl = "https://vediknode.vedikastrologer.com/api"; // ✅ BASE URL
+  private baseUrl = "http://192.168.1.27:5000/api"; // ✅ BASE URL
 
   constructor(private http: HttpClient) {}
 
@@ -675,6 +675,70 @@ export class ApiService {
       `${this.baseUrl}/batches/getBatchesByStandard`,
       {
         standard_id: standardId, // ✅ matches Postman body
+      },
+      {
+        headers: this.getJsonHeaders(), // 🔐 Bearer token auto-added
+      },
+    );
+  }
+
+  // ======================================
+  // 🎓 STUDENT → CHECK REGISTRATION
+  // ======================================
+
+  checkStudentRegistration(): Observable<{
+    success: boolean;
+    isRegistered: boolean;
+    data: any;
+  }> {
+    return this.http.post<{
+      success: boolean;
+      isRegistered: boolean;
+      data: any;
+    }>(
+      `${this.baseUrl}/student/checkStudentRegistration`,
+      {}, // ✅ EMPTY BODY (important)
+      { headers: this.getJsonHeaders() }, // 🔐 Bearer token auto-added
+    );
+  }
+
+  // ======================================
+  // 👨‍💼 ADMIN → GET ALL STUDENT DETAILS
+  // ======================================
+
+  getAllStudentDetails(): Observable<{
+    success: boolean;
+    count: number;
+    data: any[];
+  }> {
+    return this.http.post<{
+      success: boolean;
+      count: number;
+      data: any[];
+    }>(
+      `${this.baseUrl}/student/getAllStudentDetails`,
+      {}, // ✅ empty body (as per Postman)
+      { headers: this.getJsonHeaders() }, // 🔐 Bearer token auto-added
+    );
+  }
+
+  // ======================================
+  // 👨‍💼 ADMIN → DELETE STUDENT DETAILS
+  // ======================================
+
+  deleteStudentDetails(userRefCode: string): Observable<{
+    success: boolean;
+    message: string;
+    deleted_user_ref_code?: string;
+  }> {
+    return this.http.post<{
+      success: boolean;
+      message: string;
+      deleted_user_ref_code?: string;
+    }>(
+      `${this.baseUrl}/student/deleteStudentDetails`,
+      {
+        user_ref_code: userRefCode, // ✅ matches backend
       },
       {
         headers: this.getJsonHeaders(), // 🔐 Bearer token auto-added

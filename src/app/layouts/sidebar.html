@@ -685,6 +685,11 @@
                     >Student Attendance</a
                   >
                 </li>
+                <li>
+                  <a routerLink="/all-students" routerLinkActive="active"
+                    >Registered Students</a
+                  >
+                </li>
               </ul>
             </div>
           </div>
@@ -892,18 +897,7 @@
               </a>
             </div> -->
 
-            <!-- Student Details -->
-            <div class="menu-item-wrapper">
-              <a
-                routerLink="/student-details"
-                routerLinkActive="active"
-                (click)="toggleMobileMenu()"
-                class="nav-link"
-              >
-                <icon-menu-charts />
-                <span>Student Details</span>
-              </a>
-            </div>
+            
             <div>
               <a
               routerLink="/student-certificates"

@@ -7,7 +7,6 @@ import { FinanceComponent } from "./finance";
 import { CryptoComponent } from "./crypto";
 import { AddStudentComponent } from "./users/addstudent/addstudent.component";
 import { StudentDashboardComponent } from "./student-dashboard/student-dashboard.component";
-import { StudentDetailsComponent } from "./student-details/student-details.component";
 import { AddAppointmentComponent } from "./add-appointment/add-appointment.component";
 import { AddMediaComponent } from "./add-media.component";
 import { CloseslotsComponent } from "./closeslots";
@@ -28,6 +27,7 @@ import { StudentCertificatesComponent } from "./student-certificates/student-cer
 import { StudentReceiptsComponent } from "./student-receipts/student-receipts.component";
 import { AttendanceComponent } from "./pages/attendance/attendance.component";
 import { CustomerAppointmentComponent } from "./customer-appointment/customer-appointment.component";
+import { AllStudentsComponent } from "./admin/all-students/all-students.component";
 
 // widgets
 import { WidgetsComponent } from "./widgets";
@@ -107,11 +107,7 @@ export const routes: Routes = [
         component: StudentDashboardComponent,
         data: { title: "Student Dashboard" },
       },
-      {
-        path: "student-details",
-        component: StudentDetailsComponent,
-        data: { title: "Student Details" },
-      },
+     
       {
         path: "shedules",
         component: ShedulesComponent,
@@ -191,6 +187,12 @@ export const routes: Routes = [
         path: "payment-receipt",
         component: PaymentReceiptComponent,
         data: { title: "Payment Receipt" },
+      },
+
+      {
+        path: "all-students",
+        component: AllStudentsComponent,
+        data: { title: "All Students" },
       },
       {
         path: "upload-certificate",
