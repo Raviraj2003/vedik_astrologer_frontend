@@ -1,135 +1,893 @@
-<div class="topic-container" [class.modal-open]="isModalOpen">
-  <!-- Header -->
-  <div class="header">
-    <h1 class="page-title">Topics Management</h1>
-    <p class="page-subtitle">Manage and organize your learning topics</p>
-  </div>
+<div class="topics-management" [class.modal-open]="isModalOpen">
   
-  <!-- Action Bar -->
-  <div class="action-bar">
-    <button class="btn-primary" (click)="openModal()">
-      <i class="icon-plus"></i>
-      Add New Topic
-    </button>
-    <div class="stats">
-      <span class="stat-item">
-        <i class="icon-book"></i>
-        {{ topics.length }} Topics
-      </span>
+  <!-- HERO HEADER - Compact -->
+  <div class="hero-header">
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="chip">📘 knowledge base</div>
+        <h1 class="page-title">Topics</h1>
+        <p class="page-subtitle">Manage your learning topics</p>
+      </div>
+      <div class="hero-action">
+        <button class="btn-primary" (click)="openModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>New topic</span>
+        </button>
+        <div class="stats-badge">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+          </svg>
+          <span>{{ topics.length }} total</span>
+        </div>
+      </div>
     </div>
   </div>
-  
-  <!-- Topics List -->
-  <div class="topics-list-container">
+
+  <!-- ========== MODAL OVERLAY - SCROLLABLE BODY ========== -->
+  <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      
+      <!-- Modal Header - Compact -->
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <div class="modal-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <h2 class="modal-title">Create topic</h2>
+            <p class="modal-subtitle">Add a new topic to your library</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" (click)="closeModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Alert Messages - Compact -->
+      <div *ngIf="successMessage" class="alert success">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        <span>{{ successMessage }}</span>
+      </div>
+      
+      <div *ngIf="errorMessage" class="alert error">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01" />
+        </svg>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <!-- Form - Compact -->
+      <form (ngSubmit)="onSubmit()" #topicForm="ngForm" class="modal-form">
+        <div class="form-group">
+          <label for="topicName">
+            Topic name <span class="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="topicName"
+            [(ngModel)]="newTopic.topic_name"
+            name="topicName"
+            placeholder="e.g. Artificial Intelligence"
+            required
+            maxlength="100"
+            autocomplete="off"
+          />
+          <div class="char-hint">
+            <span>{{ newTopic.topic_name?.length || 0 }}/100</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="topicDescription">
+            Description <span class="optional">(optional)</span>
+          </label>
+          <textarea
+            id="topicDescription"
+            [(ngModel)]="newTopic.topic_description"
+            name="topicDescription"
+            placeholder="Brief description of the topic..."
+            rows="2"
+            maxlength="500"
+          ></textarea>
+          <div class="char-hint">
+            <span>{{ newTopic.topic_description?.length || 0 }}/500</span>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="closeModal()" [disabled]="isSubmitting">
+            Cancel
+          </button>
+          <button type="submit" class="btn-primary" [disabled]="isSubmitting || !topicForm.valid">
+            <span *ngIf="!isSubmitting">Add topic</span>
+            <span *ngIf="isSubmitting" class="spinner"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MAIN CARD - Topics List - Compact -->
+  <div class="main-card">
+    
+    <!-- List Header - Compact -->
     <div class="list-header">
-      <h2>Available Topics</h2>
+      <div class="list-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+        </svg>
+        <h2>Topic library</h2>
+      </div>
       <button class="btn-refresh" (click)="loadTopics()" [disabled]="isLoading">
-        <i class="icon-refresh" [class.spinning]="isLoading"></i>
-        Refresh
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" [class.rotate]="isLoading">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        <span>Refresh</span>
       </button>
     </div>
-    
-    <!-- Loading State -->
-    <div *ngIf="isLoading" class="loading-state">
+
+    <!-- Loading State - Compact -->
+    <div *ngIf="isLoading" class="state-container loading">
       <div class="spinner"></div>
       <p>Loading topics...</p>
     </div>
-    
-    <!-- Empty State -->
-    <div *ngIf="!isLoading && topics.length === 0" class="empty-state">
+
+    <!-- Empty State - Compact -->
+    <div *ngIf="!isLoading && topics.length === 0" class="state-container empty">
       <div class="empty-icon">
-        <i class="icon-book-open"></i>
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+        </svg>
       </div>
-      <h3>No Topics Found</h3>
-      <p>Get started by adding your first topic</p>
+      <h3>No topics yet</h3>
+      <p>Create your first topic to get started</p>
       <button class="btn-primary" (click)="openModal()">
-        <i class="icon-plus"></i>
-        Add Your First Topic
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        Create topic
       </button>
     </div>
-    
-    <!-- Topics Grid -->
+
+    <!-- Topics Grid - Compact Cards -->
     <div *ngIf="!isLoading && topics.length > 0" class="topics-grid">
       <div *ngFor="let topic of topics" class="topic-card">
-        <div class="topic-card-header">
-          <div class="topic-id">#{{ topic.id }}</div>
-         
+        <div class="card-header">
+          <span class="topic-id">#{{ topic.id }}</span>
+          <span class="topic-category">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+            </svg>
+            {{ topic.category || 'Uncategorized' }}
+          </span>
         </div>
-        <div class="topic-content">
-          <h3 class="topic-name">{{ topic.topic_name }}</h3>
-          <p *ngIf="topic.topic_description" class="topic-description">
-            {{ topic.topic_description }}
-          </p>
-          <div class="topic-footer">
-            <span class="topic-category">
-              <i class="icon-folder"></i>
-              {{ topic.category || 'Uncategorized' }}
-            </span>
-          </div>
+        <h3 class="topic-title">{{ topic.topic_name }}</h3>
+        <p *ngIf="topic.topic_description" class="topic-desc">
+          {{ topic.topic_description }}
+        </p>
+        <p *ngIf="!topic.topic_description" class="topic-desc empty">
+          No description
+        </p>
+        <div class="card-footer">
+          <span class="status">
+            <span class="dot"></span>
+            Active
+          </span>
         </div>
       </div>
     </div>
   </div>
-  
-  <!-- Modal Overlay with blur -->
-  <div class="modal-overlay" [class.active]="isModalOpen" (click)="closeModal()"></div>
-  
-  <!-- Add Topic Modal -->
-  <div class="modal" [class.open]="isModalOpen">
-   
-    
-    <!-- Messages -->
-    <div *ngIf="successMessage" class="alert-success">
-      <i class="icon-check"></i>
-      {{ successMessage }}
-    </div>
-    
-    <div *ngIf="errorMessage" class="alert-error">
-      <i class="icon-alert"></i>
-      {{ errorMessage }}
-    </div>
-    
-    <form (ngSubmit)="onSubmit()" #topicForm="ngForm" class="modal-form">
-      <div class="form-group">
-        <label for="topicName">
-          Topic Name <span class="required">*</span>
-        </label>
-        <input
-          type="text"
-          id="topicName"
-          [(ngModel)]="newTopic.topic_name"
-          name="topicName"
-          placeholder="Enter topic name"
-          required
-          maxlength="100"
-        >
-        <small class="hint">Maximum 100 characters</small>
-      </div>
-      
-      <div class="form-group">
-        <label for="topicDescription">Description (Optional)</label>
-        <textarea
-          id="topicDescription"
-          [(ngModel)]="newTopic.topic_description"
-          name="topicDescription"
-          placeholder="Describe the topic..."
-          rows="3"
-          maxlength="500"
-        ></textarea>
-        <small class="hint">{{ newTopic.topic_description?.length || 0 }}/500 characters</small>
-      </div>
-      
-      
-      
-      <div class="modal-footer">
-        <button type="button" class="btn-secondary" (click)="closeModal()" [disabled]="isSubmitting">
-          Cancel
-        </button>
-        <button type="submit" class="btn-primary" [disabled]="isSubmitting">
-          <span *ngIf="isSubmitting" class="spinner-small"></span>
-          <span *ngIf="!isSubmitting">Add Topic</span>
-        </button>
-      </div>
-    </form>
-  </div>
+
+  <!-- Background Decoration -->
+  <div class="bg-decoration"></div>
 </div>
+
+<style>
+/* ---------------------------------------------------------
+   TOPICS MANAGEMENT - COMPACT MODAL, SCROLLABLE PAGE
+   --------------------------------------------------------- */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.topics-management {
+  position: relative;
+  min-height: 100vh;
+  background: #f8fafc;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  padding: 1.5rem;
+}
+
+.dark .topics-management {
+  background: #0f172a;
+}
+
+/* ========== HERO HEADER - COMPACT ========== */
+.hero-header {
+  max-width: 1200px;
+  margin: 0 auto 1.5rem;
+}
+
+.hero-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hero-text .chip {
+  display: inline-block;
+  background: #e6f0ff;
+  color: #2563eb;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.8rem;
+  border-radius: 30px;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dark .hero-text .chip {
+  background: #1e293b;
+  color: #93c5fd;
+}
+
+.page-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.2;
+  margin-bottom: 0.25rem;
+}
+
+.dark .page-title {
+  color: #fff;
+}
+
+.page-subtitle {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.dark .page-subtitle {
+  color: #94a3b8;
+}
+
+.hero-action {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37,99,235,0.2);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.stats-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: white;
+  padding: 0.4rem 1rem;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #1e293b;
+  border: 1px solid #e2e8f0;
+}
+
+.dark .stats-badge {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-color: #334155;
+}
+
+/* ========== MODAL OVERLAY - SCROLLABLE PAGE ========== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-container {
+  background: white;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 500px;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dark .modal-container {
+  background: #0f172a;
+  border: 1px solid #334155;
+}
+
+/* Modal Content - Compact */
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.dark .modal-header {
+  border-bottom-color: #334155;
+}
+
+.modal-header-left {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.modal-icon {
+  background: #dbeafe;
+  padding: 0.5rem;
+  border-radius: 12px;
+  color: #2563eb;
+}
+
+.dark .modal-icon {
+  background: #1e293b;
+  color: #60a5fa;
+}
+
+.modal-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.dark .modal-title {
+  color: white;
+}
+
+.modal-subtitle {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 0.1rem;
+}
+
+.dark .modal-subtitle {
+  color: #94a3b8;
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.dark .modal-close-btn:hover {
+  background: #1e293b;
+  color: white;
+}
+
+/* Alert Messages - Compact */
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  margin: 1rem 1.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.alert.success {
+  background: #e6f7e6;
+  color: #0b5e42;
+  border: 1px solid #b3e0b3;
+}
+
+.dark .alert.success {
+  background: #1a2e1a;
+  color: #a7f0a7;
+}
+
+.alert.error {
+  background: #fee9e7;
+  color: #a12b2b;
+  border: 1px solid #fbc5c5;
+}
+
+.dark .alert.error {
+  background: #2a1c1c;
+  color: #fbb;
+}
+
+/* Form - Compact */
+.modal-form {
+  padding: 1.25rem 1.5rem 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.dark .form-group label {
+  color: #cbd5e1;
+}
+
+.required {
+  color: #ef4444;
+  font-size: 0.7rem;
+}
+
+.optional {
+  color: #64748b;
+  font-size: 0.7rem;
+  font-weight: 400;
+  text-transform: lowercase;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  font-size: 0.85rem;
+  color: #0f172a;
+  transition: all 0.2s;
+}
+
+.dark .form-group input,
+.dark .form-group textarea {
+  background: #1e293b;
+  border-color: #334155;
+  color: white;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #2563eb;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  background: white;
+}
+
+.dark .form-group input:focus,
+.dark .form-group textarea:focus {
+  background: #0f172a;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+.char-hint {
+  text-align: right;
+  font-size: 0.65rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+/* Modal Actions */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1.5px solid #e2e8f0;
+  padding: 0.5rem 1.2rem;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #f1f5f9;
+}
+
+.dark .btn-secondary {
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+.dark .btn-secondary:hover {
+  background: #1e293b;
+}
+
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ========== MAIN CARD - COMPACT ========== */
+.main-card {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 24px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.03);
+  border: 1px solid #f1f5f9;
+}
+
+.dark .main-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+/* List Header - Compact */
+.list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.list-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.list-title svg {
+  color: #2563eb;
+}
+
+.list-title h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.dark .list-title h2 {
+  color: white;
+}
+
+.btn-refresh {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  padding: 0.4rem 1rem;
+  border-radius: 30px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-refresh:hover {
+  background: white;
+  border-color: #94a3b8;
+}
+
+.dark .btn-refresh {
+  border-color: #475569;
+  color: #cbd5e1;
+}
+
+.dark .btn-refresh:hover {
+  background: #0f172a;
+}
+
+.rotate {
+  animation: spin 1s linear infinite;
+}
+
+/* State Containers - Compact */
+.state-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  background: #f8fafc;
+  border-radius: 20px;
+}
+
+.dark .state-container {
+  background: #0f172a;
+}
+
+.state-container.loading .spinner {
+  width: 30px;
+  height: 30px;
+  border-width: 3px;
+  margin-bottom: 0.75rem;
+}
+
+.state-container p {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.dark .state-container p {
+  color: #94a3b8;
+}
+
+.empty-icon {
+  color: #94a3b8;
+  margin-bottom: 0.75rem;
+}
+
+.state-container h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 0.25rem;
+}
+
+.dark .state-container h3 {
+  color: white;
+}
+
+.state-container .btn-primary {
+  margin-top: 1rem;
+  padding: 0.4rem 1.2rem;
+  font-size: 0.8rem;
+}
+
+/* Topics Grid - Compact Cards */
+.topics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.topic-card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.25rem;
+  border: 1px solid #f1f5f9;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.dark .topic-card {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.topic-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.04);
+  border-color: #b1d0ff;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.topic-id {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 0.15rem 0.6rem;
+  border-radius: 20px;
+}
+
+.dark .topic-id {
+  background: #1e293b;
+  color: #94a3b8;
+}
+
+.topic-category {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.65rem;
+  color: #475569;
+  background: #f1f5f9;
+  padding: 0.15rem 0.6rem;
+  border-radius: 20px;
+}
+
+.dark .topic-category {
+  background: #1e293b;
+  color: #cbd5e1;
+}
+
+.topic-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.dark .topic-title {
+  color: white;
+}
+
+.topic-desc {
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dark .topic-desc {
+  color: #94a3b8;
+}
+
+.topic-desc.empty {
+  font-style: italic;
+  opacity: 0.6;
+}
+
+.card-footer {
+  border-top: 1px solid #f1f5f9;
+  padding-top: 0.75rem;
+  margin-top: auto;
+}
+
+.dark .card-footer {
+  border-top-color: #334155;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.65rem;
+  color: #2563eb;
+  font-weight: 500;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background: #2563eb;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Background Decoration */
+.bg-decoration {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 0% 30%, rgba(37,99,235,0.02) 0%, transparent 50%),
+              radial-gradient(circle at 100% 80%, rgba(139,92,246,0.02) 0%, transparent 50%);
+  z-index: -1;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .topics-management {
+    padding: 1rem;
+  }
+  
+  .hero-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .hero-action {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .modal-container {
+    max-width: 95%;
+  }
+  
+  .topics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
