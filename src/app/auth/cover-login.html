@@ -1,120 +1,171 @@
 <div>
-  <!-- Background Image -->
+  <!-- Background Image with Glassmorphic Blur -->
   <div class="absolute inset-0">
     <img
       src="/assets/images/r/background.jpg"
       alt="Background"
       class="h-full w-full object-cover"
     />
+    <!-- Subtle blur overlay -->
+    <div class="absolute inset-0 backdrop-blur-[4px]"></div>
   </div>
 
   <!-- Main Wrapper -->
-  <div class="relative flex min-h-screen items-center justify-center px-6 py-10">
+  <div
+    class="relative flex min-h-screen items-center justify-center px-6 py-10"
+  >
     <div
-      class="relative flex w-full max-w-[1000px] flex-col overflow-hidden rounded-2xl bg-white/60 
-             backdrop-blur-lg border border-white/20 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.3)] 
+      class="relative flex w-full max-w-[1000px] flex-col overflow-hidden rounded-2xl bg-white/40 
+             backdrop-blur-sm border border-white/30 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.3)] 
              lg:min-h-[550px] lg:flex-row lg:gap-10 xl:gap-0"
     >
-     <div
-  class="relative hidden w-full items-center justify-center bg-cover bg-center p-5 
-         lg:inline-flex lg:max-w-[450px]"
-  style="background-image: url('/assets/images/r/cardimg.jpg');"
->
-  <div
-    class="absolute inset-y-0 w-8 from-primary/10 via-transparent to-transparent 
-           ltr:-right-10 ltr:bg-gradient-to-r rtl:-left-10 rtl:bg-gradient-to-l 
-           xl:w-16 ltr:xl:-right-20 rtl:xl:-left-20"
-  ></div>
+      <div
+        class="relative hidden w-full items-center justify-center bg-cover bg-center p-5 
+               lg:inline-flex lg:max-w-[450px]"
+        style="background-image: url('/assets/images/r/cardimg.jpg')"
+      >
+        <!-- Gradient Overlay -->
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-primary/50 via-purple-500/40 to-secondary/50"
+        ></div>
 
-  <div class="text-center px-6">
-  <div
-    class="inline-flex items-center justify-center bg-black/40 backdrop-blur-lg border border-white/20 rounded-full p-8 w-60 h-60 mx-auto"
-  >
-    <img
-      src="/assets/images/r/logo.png"
-      alt="Logo"
-      class="w-40 max-w-full"
-    />
-  </div>
-</div>
+        <div
+          class="absolute inset-y-0 w-8 from-white/20 via-transparent to-transparent 
+                 ltr:-right-10 ltr:bg-gradient-to-r rtl:-left-10 rtl:bg-gradient-to-l 
+                 xl:w-16 ltr:xl:-right-20 rtl:xl:-left-20"
+        ></div>
 
-</div>
-
+        <div class="text-center px-6 relative z-10">
+          <div
+            class="inline-flex items-center justify-center bg-white/20 backdrop-blur-md border border-white/30 rounded-full p-8 w-60 h-60 mx-auto shadow-2xl"
+          >
+            <div
+              class="absolute inset-0 rounded-full bg-gradient-to-r from-primary/30 to-secondary/30 animate-pulse"
+            ></div>
+            <img
+              src="/assets/images/r/logo.png"
+              alt="Logo"
+              class="w-40 max-w-full relative z-10 drop-shadow-2xl"
+            />
+          </div>
+        </div>
+      </div>
 
       <!-- RIGHT SIDE (Login Form) -->
       <div
         class="relative flex w-full flex-col items-center justify-center gap-6 px-6 pb-16 pt-10 
                sm:px-8 lg:max-w-[550px]"
       >
-        <div class="w-full max-w-[400px] lg:mt-10">
+        <!-- Decorative Elements -->
+        <div
+          class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full blur-3xl"
+        ></div>
+        <div
+          class="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-secondary/20 to-primary/20 rounded-full blur-3xl"
+        ></div>
+
+        <div class="w-full max-w-[400px] lg:mt-10 relative z-10">
           <!-- Heading -->
           <div class="mb-8 text-center">
-            <h1 class="text-3xl font-extrabold uppercase text-primary md:text-4xl">Login</h1>
-            <p class="text-base font-bold text-gray-600 mt-2">
+            <h1
+              class="text-3xl font-extrabold uppercase bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent md:text-4xl animate-gradient"
+            >
+              Login
+            </h1>
+            <p class="text-base font-bold text-gray-700 mt-2">
               Enter your email and password to login
             </p>
           </div>
 
           <!-- Login Form -->
-         <form class="space-y-5" (submit)="login(); $event.preventDefault()">
-    
-    <!-- Email -->
-    <div>
-      <label class="block text-gray-700 font-medium mb-1">Email</label>
-      <div class="relative text-gray-500">
-        <input
-          type="email"
-          placeholder="Enter Email"
-          [(ngModel)]="email"
-          name="email"
-          class="w-full border border-gray-300 rounded-lg bg-white/70 ps-10 py-3 
-                 shadow-sm placeholder:text-gray-400 focus:ring-2 
-                 focus:ring-[#76a8da]/30 focus:border-[#76a8da]"
-        />
-        <span class="absolute start-4 top-1/2 -translate-y-1/2">
-          <icon-mail [fill]="true"></icon-mail>
-        </span>
-      </div>
-    </div>
+          <form
+            class="space-y-5"
+            (submit)="login(); $event.preventDefault()"
+          >
+            <!-- Email -->
+            <div>
+              <label class="block text-gray-700 font-medium mb-1"
+                >Email</label
+              >
+              <div class="relative text-gray-600">
+                <input
+                  type="email"
+                  placeholder="Enter Email"
+                  [(ngModel)]="email"
+                  name="email"
+                  class="w-full border border-gray-300 rounded-lg bg-white/80 ps-10 py-3 
+                         shadow-md placeholder:text-gray-500 focus:ring-2 
+                         focus:ring-primary/30 focus:border-primary/50 text-gray-800"
+                />
+                <span
+                  class="absolute start-4 top-1/2 -translate-y-1/2 text-primary"
+                >
+                  <icon-mail [fill]="true" class="w-5 h-5"></icon-mail>
+                </span>
+              </div>
+            </div>
 
-    <!-- Password -->
-    <div>
-      <label class="block text-gray-700 font-medium mb-1">Password</label>
-      <div class="relative text-gray-500">
-        <input
-          type="password"
-          placeholder="Enter Password"
-          [(ngModel)]="password"
-          name="password"
-          class="w-full border border-gray-300 rounded-lg bg-white/70 ps-10 py-3 
-                 shadow-sm placeholder:text-gray-400 focus:ring-2 
-                 focus:ring-[#76a8da]/30 focus:border-[#76a8da]"
-        />
-        <span class="absolute start-4 top-1/2 -translate-y-1/2">
-          <icon-lock-dots [fill]="true"></icon-lock-dots>
-        </span>
-      </div>
-    </div>
+            <!-- Password -->
+            <div>
+              <label class="block text-gray-700 font-medium mb-1"
+                >Password</label
+              >
+              <div class="relative text-gray-600">
+                <input
+                  type="password"
+                  placeholder="Enter Password"
+                  [(ngModel)]="password"
+                  name="password"
+                  class="w-full border border-gray-300 rounded-lg bg-white/80 ps-10 py-3 
+                         shadow-md placeholder:text-gray-500 focus:ring-2 
+                         focus:ring-primary/30 focus:border-primary/50 text-gray-800"
+                />
+                <span
+                  class="absolute start-4 top-1/2 -translate-y-1/2 text-primary"
+                >
+                  <icon-lock-dots [fill]="true" class="w-5 h-5"></icon-lock-dots>
+                </span>
+              </div>
+            </div>
 
-    <!-- Sign-in Button -->
-    <button
-      type="submit"
-      class="!mt-6 w-full uppercase text-white rounded-lg py-3.5 bg-gradient-to-r 
-             from-primary to-secondary hover:from-secondary hover:to-primary 
-             shadow-md transition-all duration-300 font-bold"
-    >
-      Sign in
-    </button>
-</form>
-
-
+            <!-- Sign-in Button -->
+            <button
+              type="submit"
+              class="!mt-6 w-full uppercase text-white rounded-lg py-3.5 bg-gradient-to-r 
+                     from-primary to-secondary hover:from-secondary hover:to-primary 
+                     shadow-md hover:shadow-lg transition-all duration-300 font-bold"
+            >
+              Sign in
+            </button>
+          </form>
         </div>
 
         <!-- Footer -->
-        <p class="absolute bottom-6 w-full text-center text-gray-500 text-sm">
+        <p
+          class="absolute bottom-6 w-full text-center text-gray-600 text-sm"
+        >
           © {{ currYear }}. MI Tech All Rights Reserved.
         </p>
       </div>
     </div>
   </div>
 </div>
+
+<style>
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 3s ease infinite;
+  }
+</style>
