@@ -45,22 +45,24 @@
       </div>
     </div>
 
-    <!-- TABS NAVIGATION -->
-    <div class="mb-6">
-      <div class="inline-flex bg-white dark:bg-gray-800 rounded-xl shadow-sm p-1 border border-gray-200 dark:border-gray-700">
-        <button
-          *ngFor="let tab of tabs"
-          (click)="switchTab(tab)"
-          [ngClass]="{
-            'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md': activeTab === tab,
-            'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700': activeTab !== tab
-          }"
-          class="px-6 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 whitespace-nowrap"
-        >
-          {{ tab === 'INDIVIDUAL' ? '👤 Individual Students' : '👥 Batch Students' }}
-        </button>
-      </div>
-    </div>
+   <!-- TABS NAVIGATION -->
+<!-- TABS NAVIGATION -->
+<div class="mb-6">
+  <div class="inline-flex bg-white dark:bg-gray-800 rounded-xl shadow-sm p-1 border border-gray-200 dark:border-gray-700">
+    <button
+      *ngFor="let tab of tabs"
+      (click)="switchTab(tab)"
+      [ngClass]="{
+        'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md': activeTab === tab,
+        'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700': activeTab !== tab
+      }"
+      class="px-6 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 whitespace-nowrap"
+    >
+      <!-- Show correct label based on tab value -->
+      {{ tab === 'BATCH' ? '👥 Batch Students' : '👤 Individual Students' }}
+    </button>
+  </div>
+</div>
 
     <!-- STUDENTS CARD -->
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
