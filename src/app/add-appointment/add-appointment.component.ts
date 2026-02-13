@@ -6,6 +6,7 @@ import {
   FormsModule,
   ReactiveFormsModule,
   Validators,
+  FormArray,
 } from "@angular/forms";
 import { Store } from "@ngrx/store";
 import { ApiService } from "../service/api.service";
@@ -20,12 +21,17 @@ import { ApiService } from "../service/api.service";
 export class AddAppointmentComponent implements OnInit {
   store: any;
   isDark = false;
-  isLoading = true;
+  isLoading = false;
+  isSubmitting = false;
+  showSuccessMessage = false;
+  bookingReference: string = "";
 
   slots: any[] = [];
   appointmentForm!: FormGroup;
+
   showPartnerModal = false;
   partnerModalType: "spouse" | "joint" = "spouse";
+
   showFriendModal = false;
   showOnlineModeModal = false;
 
@@ -40,6 +46,19 @@ export class AddAppointmentComponent implements OnInit {
     this.createForm();
     this.watchAppointmentType();
     this.watchSource();
+  }
+
+  /* ================= STORE ================= */
+
+  async initStore() {
+    this.storeData
+      .select((d) => d.index)
+      .subscribe((d) => {
+        this.store = d;
+        this.isDark = this.store.theme === "dark" || this.store.isDarkMode;
+        document.body.classList.toggle("dark", this.isDark);
+        this.isLoading = false;
+      });
   }
 
   /* ================= FORM ================= */
@@ -67,18 +86,29 @@ export class AddAppointmentComponent implements OnInit {
       source: [""],
       appointment_status: [""],
       transaction_id: [""],
-      appointment_date: [""],
-      slot_range: [""],
+      appointment_date: ["", Validators.required],
+      slot_range: ["", Validators.required],
       friend_name: [""],
 
-      partner_details: this.fb.group({
+      partner_details: this.fb.array([]),
+
+      partner_details_temp: this.fb.group({
         name: [""],
         date_of_birth: [""],
         time_of_birth: [""],
         place_of_birth: [""],
-        relation_type: [""],
       }),
     });
+  }
+
+  /* ================= GETTERS ================= */
+
+  get partnerDetailsArray(): FormArray {
+    return this.appointmentForm.get("partner_details") as FormArray;
+  }
+
+  get partnerTempGroup(): FormGroup {
+    return this.appointmentForm.get("partner_details_temp") as FormGroup;
   }
 
   /* ================= WATCHERS ================= */
@@ -107,77 +137,27 @@ export class AddAppointmentComponent implements OnInit {
     });
   }
 
-  async initStore() {
-    this.storeData
-      .select((d) => d.index)
-      .subscribe((d) => {
-        this.store = d;
-        this.isDark = this.store.theme === "dark" || this.store.isDarkMode;
-        document.body.classList.toggle("dark", this.isDark);
-        this.isLoading = false;
-      });
-  }
-
-  /* ================= SLOT LOGIC (UPDATED) ================= */
+  /* ================= SLOT ================= */
 
   onDateChange(event: any) {
     const selectedDate = event.target.value;
-    if (!selectedDate) return;
-
-    const today = new Date();
-    const pickedDate = new Date(selectedDate);
+    if (!selectedDate) {
+      this.slots = [];
+      return;
+    }
 
     this.api.getSlotsByDate(selectedDate).subscribe({
-      next: (res) => {
-        let slots = Array.isArray(res?.slots) ? res.slots : [];
-
-        // ❌ Remove booked slots
-        slots = slots.filter((s: any) => !s.is_booked);
-
-        // ⏰ If today → remove expired time slots
-        if (this.isSameDate(today, pickedDate)) {
-          const now = new Date();
-          slots = slots.filter((slot: any) =>
-            this.isSlotFuture(slot.slot_range, now),
-          );
-        }
-
-        this.slots = slots;
+      next: (res: any) => {
+        this.slots = (res?.slots || []).filter((s: any) => !s.is_booked);
       },
-      error: () => alert("Failed to load slots"),
+      error: () => {
+        this.slots = [];
+        alert("Failed to load available slots.");
+      },
     });
   }
 
-  isSameDate(d1: Date, d2: Date): boolean {
-    return (
-      d1.getFullYear() === d2.getFullYear() &&
-      d1.getMonth() === d2.getMonth() &&
-      d1.getDate() === d2.getDate()
-    );
-  }
-
-  isSlotFuture(slotRange: string, now: Date): boolean {
-    // Example: "10:00 AM - 11:00 AM"
-    const endTime = slotRange.split("-")[1]?.trim();
-    if (!endTime) return false;
-
-    const slotEndTime = this.convertTimeToDate(endTime, now);
-    return slotEndTime.getTime() > now.getTime();
-  }
-
-  convertTimeToDate(timeStr: string, baseDate: Date): Date {
-    const [time, meridian] = timeStr.split(" ");
-    let [hours, minutes] = time.split(":").map(Number);
-
-    if (meridian === "PM" && hours < 12) hours += 12;
-    if (meridian === "AM" && hours === 12) hours = 0;
-
-    const date = new Date(baseDate);
-    date.setHours(hours, minutes, 0, 0);
-    return date;
-  }
-
-  /* ================= SUBJECT / MODALS ================= */
+  /* ================= SUBJECT ================= */
 
   toggleSubject(subject: string, event: any) {
     const subjects = this.appointmentForm.value.subjects || [];
@@ -201,26 +181,50 @@ export class AddAppointmentComponent implements OnInit {
     this.appointmentForm.patchValue({ subjects });
   }
 
+  /* ================= PARTNER MODAL ================= */
+
   openPartnerModal(type: "spouse" | "joint") {
     this.partnerModalType = type;
     this.showPartnerModal = true;
-    this.appointmentForm.get("partner_details.relation_type")?.setValue(type);
+    this.partnerTempGroup.reset();
   }
 
   closePartnerModal() {
     this.showPartnerModal = false;
-    this.appointmentForm.get("partner_details")?.reset({
-      relation_type: this.partnerModalType,
-    });
+    this.partnerTempGroup.reset();
   }
 
   savePartnerDetails() {
-    const p = this.appointmentForm.get("partner_details")?.value;
-    if (!p.name || !p.date_of_birth) {
+    const temp = this.partnerTempGroup;
+    temp.markAllAsTouched();
+
+    if (temp.invalid) {
       alert("Please fill required partner details");
       return;
     }
+
+    this.partnerDetailsArray.push(
+      this.fb.group({
+        name: temp.value.name,
+        date_of_birth: temp.value.date_of_birth,
+        time_of_birth: temp.value.time_of_birth || null,
+        place_of_birth: temp.value.place_of_birth || null,
+        relation_type: this.partnerModalType,
+      }),
+    );
+
+    temp.reset();
     this.showPartnerModal = false;
+  }
+
+  /* ================= ONLINE / FRIEND MODAL ================= */
+
+  confirmConsultationMode() {
+    if (!this.appointmentForm.value.consultation_mode) {
+      alert("Please select consultation mode");
+      return;
+    }
+    this.showOnlineModeModal = false;
   }
 
   closeOnlineModeModal() {
@@ -235,45 +239,71 @@ export class AddAppointmentComponent implements OnInit {
 
   submitForm() {
     if (this.appointmentForm.invalid) {
+      this.markFormGroupTouched(this.appointmentForm);
       alert("Please fill all required fields correctly");
-      this.appointmentForm.markAllAsTouched();
       return;
     }
 
-    const raw = this.appointmentForm.value;
-    const partner = raw.partner_details;
+    if (
+      this.appointmentForm.value.appointment_type === "Online" &&
+      !this.appointmentForm.value.consultation_mode
+    ) {
+      alert("Please select consultation mode");
+      return;
+    }
+
+    if (!this.appointmentForm.value.slot_range) {
+      alert("Please select a time slot");
+      return;
+    }
+
+    this.isSubmitting = true;
 
     const payload = {
-      ...raw,
-      is_twins: raw.is_twins === true,
-      is_appointment_conducted: raw.is_appointment_conducted === true,
-
-      partner_name: partner?.name || null,
-      partner_date_of_birth: partner?.date_of_birth || null,
-      partner_time_of_birth: partner?.time_of_birth || null,
-      partner_place_of_birth: partner?.place_of_birth || null,
-      partner_relation_type: partner?.relation_type || null,
+      ...this.appointmentForm.value,
+      is_twins: this.appointmentForm.value.is_twins === true,
+      is_appointment_conducted: false,
+      booked_by: "customer",
     };
 
     this.api.addAppointment(payload).subscribe({
-      next: () => {
-        alert("✅ Appointment booked successfully!");
+      next: (response: any) => {
+        this.isSubmitting = false;
+        this.showSuccessMessage = true;
+        this.bookingReference =
+          response.appointment_code || `APP-${Date.now()}`;
+
         this.appointmentForm.reset({
           country: "India",
           state: "Maharashtra",
           is_twins: false,
           is_appointment_conducted: false,
         });
+
         this.slots = [];
-        this.showPartnerModal = false;
-        this.showOnlineModeModal = false;
-        this.showFriendModal = false;
       },
       error: (err) => {
-        alert(
-          "Failed to book appointment: " + (err.error?.message || err.message),
-        );
+        this.isSubmitting = false;
+        alert(err.error?.message || "Failed to book appointment");
       },
     });
+  }
+
+  markFormGroupTouched(formGroup: FormGroup) {
+    Object.values(formGroup.controls).forEach((control: any) => {
+      control.markAsTouched();
+      if (control.controls) {
+        this.markFormGroupTouched(control);
+      }
+    });
+  }
+
+  closeSuccessMessage() {
+    this.showSuccessMessage = false;
+  }
+
+  bookAnotherAppointment() {
+    this.showSuccessMessage = false;
+    this.bookingReference = "";
   }
 }
