@@ -747,6 +747,28 @@ export class ApiService {
   }
 
   // ======================================
+  // 🗑️ DELETE BATCH (SOFT DELETE)
+  // ======================================
+
+  deleteBatch(batchCode: string): Observable<{
+    success: boolean;
+    message: string;
+  }> {
+    return this.http.post<{
+      success: boolean;
+      message: string;
+    }>(
+      `${this.baseUrl}/batches/deleteBatch`,
+      {
+        batch_code: batchCode, // ✅ matches backend body
+      },
+      {
+        headers: this.getJsonHeaders(), // 🔐 Bearer token auto-added
+      },
+    );
+  }
+
+  // ======================================
   // 🧰 HELPERS
   // ======================================
 
