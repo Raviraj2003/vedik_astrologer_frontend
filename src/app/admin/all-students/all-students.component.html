@@ -304,9 +304,10 @@
             </svg>
           </div>
           <h3 class="text-lg font-semibold text-gray-800 mb-2">Are you absolutely sure?</h3>
-          <p class="text-gray-600 text-sm">
-            You are about to delete student <span class="font-mono font-bold text-red-600">{{ studentToDelete?.user_ref_code }}</span>
-          </p>
+<span class="font-mono font-bold text-red-600">
+  {{ studentToDelete?.name }}
+</span>
+
           <p class="text-gray-500 text-sm mt-2">
             This will permanently remove all data associated with this student.
           </p>

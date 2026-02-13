@@ -152,7 +152,6 @@
                  class="p-2.5 rounded-lg border border-gray-200 hover:border-blue-300 
                         transition-all duration-150 bg-gray-50 hover:bg-blue-50/50">
               <div class="font-medium text-gray-800 text-sm truncate">{{ topic.topic_name || 'Unnamed Topic' }}</div>
-              <div class="text-xs text-gray-500 mt-0.5 truncate">ID: {{ topic.topic_id || topic.id }}</div>
             </div>
           </div>
         </div>
@@ -212,9 +211,7 @@
                             <span class="px-2.5 py-1 rounded-lg text-xs bg-blue-100 border border-blue-200 text-blue-700 font-medium">
                               {{ time }}
                             </span>
-                            <span class="text-xs text-gray-500">
-                              Slot ID: {{ slot.slot_ids[timeIndex] }}
-                            </span>
+                           
                           </div>
                           
                           <!-- Class Link Display/Edit -->
