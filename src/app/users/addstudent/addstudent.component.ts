@@ -44,9 +44,8 @@ export class AddStudentComponent implements OnInit {
   itemsPerPage = 10;
   totalPages = 0;
 
-  activeTab: TabType = "INDIVIDUAL";
-  tabs: TabType[] = ["INDIVIDUAL", "BATCH"];
-
+  activeTab: TabType = "BATCH";
+  tabs: TabType[] = ["BATCH", "INDIVIDUAL"];
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService,
