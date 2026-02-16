@@ -475,21 +475,25 @@
               Birth Details
               <span
                 class="block text-sm font-normal text-gray-600 dark:text-gray-300"
-                >जन्म तपशील</span
               >
+                जन्म तपशील
+              </span>
             </h2>
           </div>
 
-          <!-- Row 5: Date of Birth & Time of Birth -->
+          <!-- Date of Birth & Time -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- ================= DATE OF BIRTH ================= -->
             <div>
               <label
                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >Date of Birth</label
               >
-              <span class="block text-xs text-gray-500 dark:text-gray-400 mb-2"
-                >जन्म तारीख</span
-              >
+                Date of Birth
+              </label>
+              <span class="block text-xs text-gray-500 dark:text-gray-400 mb-2">
+                जन्म तारीख
+              </span>
+
               <div class="relative">
                 <div
                   class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
@@ -509,22 +513,51 @@
                     />
                   </svg>
                 </div>
+
                 <input
                   type="date"
                   formControlName="date_of_birth"
+                  [max]="maxDobDate"
+                  onkeydown="return false"
                   class="pl-10 w-full rounded-lg border border-gray-300 dark:border-gray-600 p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
                 />
               </div>
+
+              <!-- Required Error -->
+              <div
+                *ngIf="
+                  appointmentForm.get('date_of_birth')?.errors?.['required'] &&
+                  appointmentForm.get('date_of_birth')?.touched
+                "
+                class="text-red-500 text-sm mt-2"
+              >
+                Date of birth is required.
+              </div>
+
+              <!-- Future Date Error -->
+              <div
+                *ngIf="
+                  appointmentForm.get('date_of_birth')?.errors?.[
+                    'futureDate'
+                  ] && appointmentForm.get('date_of_birth')?.touched
+                "
+                class="text-red-500 text-sm mt-1"
+              >
+                Future date is not allowed.
+              </div>
             </div>
 
+            <!-- ================= TIME OF BIRTH ================= -->
             <div>
               <label
                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >Time of Birth</label
               >
-              <span class="block text-xs text-gray-500 dark:text-gray-400 mb-2"
-                >जन्म वेळ</span
-              >
+                Time of Birth
+              </label>
+              <span class="block text-xs text-gray-500 dark:text-gray-400 mb-2">
+                जन्म वेळ
+              </span>
+
               <div class="relative">
                 <div
                   class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
@@ -544,125 +577,64 @@
                     />
                   </svg>
                 </div>
+
                 <input
                   type="time"
                   formControlName="time_of_birth"
                   class="pl-10 w-full rounded-lg border border-gray-300 dark:border-gray-600 p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
                 />
               </div>
+
+              <!-- Required Error -->
+              <div
+                *ngIf="
+                  appointmentForm.get('time_of_birth')?.invalid &&
+                  appointmentForm.get('time_of_birth')?.touched
+                "
+                class="text-red-500 text-sm mt-2"
+              >
+                Time of birth is required.
+              </div>
             </div>
           </div>
 
-          <!-- Row 6: Country, State, City -->
+          <!-- Place of Birth -->
           <div>
             <label
               class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >Place of Birth</label
             >
-            <span class="block text-xs text-gray-500 dark:text-gray-400 mb-4"
-              >जन्मस्थळ</span
-            >
+              Place of Birth
+            </label>
+            <span class="block text-xs text-gray-500 dark:text-gray-400 mb-4">
+              जन्मस्थळ
+            </span>
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <div class="relative">
-                  <div
-                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-5 w-5 text-gray-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                  </div>
-                  <input
-                    type="text"
-                    formControlName="country"
-                    class="pl-10 w-full rounded-lg border border-gray-300 dark:border-gray-600 p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
-                    placeholder="Country"
-                  />
-                  <span class="absolute -bottom-5 left-0 text-xs text-gray-500"
-                    >देश</span
-                  >
-                </div>
+                <input
+                  type="text"
+                  formControlName="country"
+                  class="w-full rounded-lg border border-gray-300 dark:border-gray-600 p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
+                  placeholder="Country / देश"
+                />
               </div>
 
               <div>
-                <div class="relative">
-                  <div
-                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-5 w-5 text-gray-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                      />
-                    </svg>
-                  </div>
-                  <input
-                    type="text"
-                    formControlName="state"
-                    class="pl-10 w-full rounded-lg border border-gray-300 dark:border-gray-600 p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
-                    placeholder="State"
-                  />
-                  <span class="absolute -bottom-5 left-0 text-xs text-gray-500"
-                    >राज्य</span
-                  >
-                </div>
+                <input
+                  type="text"
+                  formControlName="state"
+                  class="w-full rounded-lg border border-gray-300 dark:border-gray-600 p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
+                  placeholder="State / राज्य"
+                />
               </div>
 
               <div>
-                <div class="relative">
-                  <div
-                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-5 w-5 text-gray-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                      />
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                  </div>
-                  <input
-                    type="text"
-                    formControlName="city"
-                    class="pl-10 w-full rounded-lg border border-gray-300 dark:border-gray-600 p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
-                    placeholder="City"
-                  />
-                  <span class="absolute -bottom-5 left-0 text-xs text-gray-500"
-                    >शहर</span
-                  >
-                </div>
+                <input
+                  type="text"
+                  formControlName="city"
+                  class="w-full rounded-lg border border-gray-300 dark:border-gray-600 p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
+                  placeholder="City / शहर"
+                />
               </div>
             </div>
           </div>
@@ -707,7 +679,7 @@
                 तुमच्या प्रश्नामध्ये खालीलपैकी विषय असल्यास त्यावर क्लिक करा;
                 अन्य प्रश्नांसाठी त्यावर क्लिक करण्याची गरज नाही.
               </span>
-            </label>  
+            </label>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
               <label
                 class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-purple-50 dark:hover:bg-gray-600 transition-colors"
@@ -1336,196 +1308,208 @@
   </div>
 
   <!-- Partner Modal (for Divorce/Joint Property) -->
- <!-- Partner Modal -->
-<div
-  *ngIf="showPartnerModal"
-  class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 animate-fadeIn"
->
+  <!-- Partner Modal -->
   <div
-    class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 w-full max-w-2xl relative animate-slideUp"
+    *ngIf="showPartnerModal"
+    class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 animate-fadeIn"
   >
-    <!-- Close Button -->
-    <button
-      type="button"
-      (click)="closePartnerModal()"
-      class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white text-2xl"
+    <div
+      class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 w-full max-w-2xl relative animate-slideUp"
     >
-      ✕
-    </button>
+      <!-- Close Button -->
+      <button
+        type="button"
+        (click)="closePartnerModal()"
+        class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white text-2xl"
+      >
+        ✕
+      </button>
 
-    <!-- Header -->
-    <div class="flex items-center mb-6">
-      <div class="bg-blue-100 dark:bg-blue-900 p-3 rounded-xl mr-4">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6 text-blue-600 dark:text-blue-300"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857"
-          />
-        </svg>
-      </div>
-
-      <div>
-        <h3 class="text-xl font-bold text-gray-800 dark:text-gray-200">
-          {{
-            partnerModalType === "joint"
-              ? "Joint Property Holder Details"
-              : "Spouse Details"
-          }}
-        </h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          {{
-            partnerModalType === "joint"
-              ? "Enter co-owner information"
-              : "Enter spouse information"
-          }}
-        </p>
-      </div>
-    </div>
-
-    <!-- FORM -->
-<div [formGroup]="partnerTempGroup">
-
-      <!-- Name + DOB -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-        <!-- Name -->
-       <div>
-  <label class="block text-sm font-medium mb-2">
-    {{
-      partnerModalType === "joint"
-        ? "Co-owner Full Name"
-        : "Spouse Full Name"
-    }}
-    <span class="text-red-500">*</span>
-  </label>
-
- <div class="relative">
-  <!-- Icon -->
-  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      class="h-5 w-5 text-gray-400"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-      />
-    </svg>
-  </div>
-
-  <!-- Input -->
-  <input
-    type="text"
-    formControlName="name"
-    class="pl-10 w-full rounded-lg border border-gray-300 dark:border-gray-600 p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500"
-    placeholder="Enter spouse full name"
-  />
-</div>
-
-
-  <p
-    *ngIf="partnerTempGroup.get('name')?.invalid &&
-            partnerTempGroup.get('name')?.touched"
-    class="text-red-500 text-xs mt-1"
-  >
-    Name is required
-  </p>
-</div>
-
-
-        <!-- Date of Birth -->
-        <div>
-          <label class="block text-sm font-medium mb-2">
-            Date of Birth <span class="text-red-500">*</span>
-          </label>
-
-          <input
-            type="date"
-            formControlName="date_of_birth"
-            class="w-full rounded-lg border p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500"
-          />
-
-          <p
-            *ngIf="appointmentForm.get('partner_details_temp.date_of_birth')?.invalid &&
-                    appointmentForm.get('partner_details_temp.date_of_birth')?.touched"
-            class="text-red-500 text-xs mt-1"
+      <!-- Header -->
+      <div class="flex items-center mb-6">
+        <div class="bg-blue-100 dark:bg-blue-900 p-3 rounded-xl mr-4">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 text-blue-600 dark:text-blue-300"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
           >
-            Date of birth is required
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857"
+            />
+          </svg>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-bold text-gray-800 dark:text-gray-200">
+            {{
+              partnerModalType === "joint"
+                ? "Joint Property Holder Details"
+                : "Spouse Details"
+            }}
+          </h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            {{
+              partnerModalType === "joint"
+                ? "Enter co-owner information"
+                : "Enter spouse information"
+            }}
           </p>
         </div>
       </div>
 
-      <!-- Time + Place -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      <!-- FORM -->
+      <div [formGroup]="partnerTempGroup">
+        <!-- Name + DOB -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Name -->
+          <div>
+            <label class="block text-sm font-medium mb-2">
+              {{
+                partnerModalType === "joint"
+                  ? "Co-owner Full Name"
+                  : "Spouse Full Name"
+              }}
+              <span class="text-red-500">*</span>
+            </label>
 
-        <!-- Time -->
-        <div>
-          <label class="block text-sm font-medium mb-2">
-            Time of Birth
-          </label>
+            <div class="relative">
+              <!-- Icon -->
+              <div
+                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+              </div>
 
-          <input
-            type="time"
-            formControlName="time_of_birth"
-            class="w-full rounded-lg border p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500"
-          />
+              <!-- Input -->
+              <input
+                type="text"
+                formControlName="name"
+                class="pl-10 w-full rounded-lg border border-gray-300 dark:border-gray-600 p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter spouse full name"
+              />
+            </div>
 
-        
+            <p
+              *ngIf="
+                partnerTempGroup.get('name')?.invalid &&
+                partnerTempGroup.get('name')?.touched
+              "
+              class="text-red-500 text-xs mt-1"
+            >
+              Name is required
+            </p>
+          </div>
+
+          <!-- Date of Birth -->
+         <div>
+  <label class="block text-sm font-medium mb-2">
+    Date of Birth <span class="text-red-500">*</span>
+  </label>
+
+  <input
+    type="date"
+    formControlName="date_of_birth"
+    [max]="maxDobDate"
+    onkeydown="return false"
+    class="w-full rounded-lg border p-3 
+           dark:bg-gray-700 dark:text-white 
+           focus:ring-2 focus:ring-blue-500"
+  />
+
+  <!-- Required Error -->
+  <p
+    *ngIf="
+      partnerTempGroup.get('date_of_birth')?.errors?.['required'] &&
+      partnerTempGroup.get('date_of_birth')?.touched
+    "
+    class="text-red-500 text-xs mt-1"
+  >
+    Date of birth is required.
+  </p>
+
+  <!-- Future Date Error -->
+  <p
+    *ngIf="
+      partnerTempGroup.get('date_of_birth')?.errors?.['futureDate'] &&
+      partnerTempGroup.get('date_of_birth')?.touched
+    "
+    class="text-red-500 text-xs mt-1"
+  >
+    Future date is not allowed.
+  </p>
+</div>
+
         </div>
 
-        <!-- Place -->
-        <div>
-          <label class="block text-sm font-medium mb-2">
-            Place of Birth
-          </label>
+        <!-- Time + Place -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <!-- Time -->
+          <div>
+            <label class="block text-sm font-medium mb-2">
+              Time of Birth
+            </label>
 
-          <input
-            type="text"
-            formControlName="place_of_birth"
-            class="w-full rounded-lg border p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500"
-            placeholder="City, State, Country"
-          />
+            <input
+              type="time"
+              formControlName="time_of_birth"
+              class="w-full rounded-lg border p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
-        
+          <!-- Place -->
+          <div>
+            <label class="block text-sm font-medium mb-2">
+              Place of Birth
+            </label>
+
+            <input
+              type="text"
+              formControlName="place_of_birth"
+              class="w-full rounded-lg border p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500"
+              placeholder="City, State, Country"
+            />
+          </div>
         </div>
       </div>
 
-    </div>
+      <!-- Buttons -->
+      <div class="flex justify-end gap-3 mt-8">
+        <button
+          type="button"
+          (click)="closePartnerModal()"
+          class="px-5 py-2.5 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+        >
+          Cancel
+        </button>
 
-    <!-- Buttons -->
-    <div class="flex justify-end gap-3 mt-8">
-      <button
-        type="button"
-        (click)="closePartnerModal()"
-        class="px-5 py-2.5 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
-      >
-        Cancel
-      </button>
-
-      <button
-        type="button"
-        (click)="savePartnerDetails()"
-        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg"
-      >
-        Save Partner
-      </button>
+        <button
+          type="button"
+          (click)="savePartnerDetails()"
+          class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg"
+        >
+          Save Partner
+        </button>
+      </div>
     </div>
   </div>
-</div>
-
 
   <!-- Online Consultation Modal -->
   <div
@@ -1536,7 +1520,7 @@
       class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 w-full max-w-md relative animate-slideUp"
     >
       <button
-(click)="confirmConsultationMode()"
+        (click)="confirmConsultationMode()"
         class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100 text-2xl"
       >
         ✕

@@ -33,6 +33,9 @@ export class CustomerAppointmentComponent implements OnInit {
   showFriendModal = false;
   showOnlineModeModal = false;
 
+  maxDobDate: string = this.formatDate(new Date()); // today
+  minAppointmentDate: string = this.formatDate(new Date()); // today only or future
+
   constructor(
     private api: ApiService,
     private fb: FormBuilder,
@@ -60,7 +63,7 @@ export class CustomerAppointmentComponent implements OnInit {
       is_appointment_conducted: [false],
       appointment_type: [""],
       consultation_mode: [""],
-      date_of_birth: [""],
+      date_of_birth: ["", [Validators.required, this.noFutureDateValidator()]],
       time_of_birth: [""],
       country: ["India"],
       state: ["Maharashtra"],
@@ -77,7 +80,10 @@ export class CustomerAppointmentComponent implements OnInit {
 
       partner_details_temp: this.fb.group({
         name: [""],
-        date_of_birth: [""],
+        date_of_birth: [
+          "",
+          [ this.noFutureDateValidator()],
+        ],
         time_of_birth: [""],
         place_of_birth: [""],
       }),
@@ -138,6 +144,16 @@ export class CustomerAppointmentComponent implements OnInit {
         alert("Failed to load available slots.");
       },
     });
+  }
+
+  private formatDate(date: Date): string {
+    return (
+      date.getFullYear() +
+      "-" +
+      String(date.getMonth() + 1).padStart(2, "0") +
+      "-" +
+      String(date.getDate()).padStart(2, "0")
+    );
   }
 
   /* ================= SUBJECT ================= */
@@ -216,6 +232,30 @@ export class CustomerAppointmentComponent implements OnInit {
 
   closeFriendModal() {
     this.showFriendModal = false;
+  }
+
+  noFutureDateValidator() {
+    return (control: any) => {
+      if (!control.value) return null;
+
+      const selectedDate = new Date(control.value);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      return selectedDate > today ? { futureDate: true } : null;
+    };
+  }
+
+  noPastDateValidator() {
+    return (control: any) => {
+      if (!control.value) return null;
+
+      const selected = new Date(control.value);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      return selected < today ? { pastDate: true } : null;
+    };
   }
 
   /* ================= SUBMIT ================= */
