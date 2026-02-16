@@ -76,6 +76,7 @@ export class StudentDashboardComponent implements OnInit {
 
   isLoading = true;
   todayStr = "";
+  maxBirthDate: string = "2004-12-31";
 
   constructor(
     private api: ApiService,
@@ -95,7 +96,10 @@ export class StudentDashboardComponent implements OnInit {
       phone_no: ["", Validators.required],
       email: ["", [Validators.required, Validators.email]],
       address: ["", Validators.required],
-      birth_date: ["", Validators.required],
+      birth_date: [
+        "",
+        [Validators.required, this.maxDateValidator("2004-12-31")],
+      ],
       birth_time: ["", Validators.required],
       whatsapp_group: ["", Validators.required],
       qualification: ["", Validators.required],
@@ -172,6 +176,21 @@ export class StudentDashboardComponent implements OnInit {
           err.error?.message || "Registration failed. Please try again.";
       },
     });
+  }
+
+  maxDateValidator(maxDate: string) {
+    return (control: any) => {
+      if (!control.value) return null;
+
+      const selectedDate = new Date(control.value);
+      const max = new Date(maxDate);
+
+      if (selectedDate > max) {
+        return { maxDate: true };
+      }
+
+      return null;
+    };
   }
 
   /* ================= CLOSE REGISTRATION MODAL (NOT ALLOWED) ================= */
