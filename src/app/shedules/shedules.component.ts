@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Store } from "@ngrx/store";
@@ -26,12 +26,26 @@ interface ScheduleData {
   imports: [CommonModule, FormsModule],
   templateUrl: "./shedules.component.html",
 })
-export class ShedulesComponent implements OnInit {
+export class ShedulesComponent implements OnInit, OnDestroy {
   store: any;
   fromDate: string = "";
   toDate: string = "";
   slotDuration: number = 45;
   bufferTime: number = 15;
+
+  // Loader properties
+  isSaving: boolean = false;
+  saveProgress: number = 0;
+  saveStatus: string = "Preparing to save...";
+  currentStep: number = 0;
+  saveSteps: string[] = [
+    "Validating schedule data...",
+    "Generating time slots...",
+    "Preparing payload...",
+    "Saving to server...",
+    "Finalizing changes...",
+  ];
+  private saveInterval: any;
 
   workingHours: WorkingDay[] = [
     { day: "Monday", startTime: "", endTime: "", slots: [], slotInterval: 45 },
@@ -77,6 +91,13 @@ export class ShedulesComponent implements OnInit {
 
   ngOnInit() {
     this.loadFromStorage();
+  }
+
+  ngOnDestroy() {
+    this.saveToStorage();
+    if (this.saveInterval) {
+      clearInterval(this.saveInterval);
+    }
   }
 
   // Save data to localStorage
@@ -250,9 +271,36 @@ export class ShedulesComponent implements OnInit {
 
   saveSchedule() {
     if (!this.fromDate || !this.toDate) {
-      alert("⚠️ Please select From & To dates");
+      this.showNotification("⚠️ Please select From & To dates", "warning");
       return;
     }
+
+    // Check if at least one day has slots
+    const hasSlots = this.workingHours.some((day) => day.slots.length > 0);
+    if (!hasSlots) {
+      this.showNotification(
+        "⚠️ Please configure at least one day with working hours",
+        "warning",
+      );
+      return;
+    }
+
+    // Show loader
+    this.isSaving = true;
+    this.saveProgress = 0;
+    this.currentStep = 0;
+    this.saveStatus = this.saveSteps[0];
+
+    // Simulate progress steps
+    let step = 0;
+    this.saveInterval = setInterval(() => {
+      if (step < this.saveSteps.length - 1) {
+        step++;
+        this.currentStep = step;
+        this.saveStatus = this.saveSteps[step];
+        this.saveProgress = (step + 1) * 20; // 20% per step
+      }
+    }, 800);
 
     const payload = {
       from_date: this.fromDate,
@@ -270,15 +318,70 @@ export class ShedulesComponent implements OnInit {
     this.api.saveSchedules(payload).subscribe({
       next: (res) => {
         console.log("✅ Saved:", res);
-        alert("✅ Schedule saved successfully!");
-        // Optionally clear storage after successful save to server
-        // this.clearStorage();
+        this.completeSave();
       },
       error: (err) => {
         console.error("❌ Error:", err);
-        alert("❌ Failed to save schedule");
+        this.handleSaveError(err);
       },
     });
+  }
+
+  completeSave() {
+    clearInterval(this.saveInterval);
+    this.saveProgress = 100;
+    this.currentStep = 4;
+    this.saveStatus = "Schedule saved successfully! ✨";
+
+    // Show success state briefly before closing
+    setTimeout(() => {
+      this.isSaving = false;
+      this.saveProgress = 0;
+      this.currentStep = 0;
+      this.showNotification("✅ Schedule saved successfully!", "success");
+    }, 1500);
+  }
+
+  handleSaveError(error: any) {
+    clearInterval(this.saveInterval);
+    this.saveStatus = "❌ Error saving schedule. Please try again.";
+    this.saveProgress = 100;
+
+    // Change progress bar color to red (you'll need to add a CSS class for this)
+
+    setTimeout(() => {
+      this.isSaving = false;
+      this.saveProgress = 0;
+      this.currentStep = 0;
+      this.showNotification(
+        "❌ Failed to save schedule. Please try again.",
+        "error",
+      );
+    }, 2000);
+  }
+
+  cancelSave() {
+    if (this.saveInterval) {
+      clearInterval(this.saveInterval);
+    }
+    this.isSaving = false;
+    this.saveProgress = 0;
+    this.currentStep = 0;
+    this.showNotification("⏸️ Save operation cancelled", "info");
+  }
+
+  private showNotification(
+    message: string,
+    type: "success" | "error" | "warning" | "info",
+  ) {
+    // You can implement a toast notification here
+    // For now, we'll use alert as fallback
+    if (type === "error" || type === "warning") {
+      alert(message);
+    } else {
+      console.log(message);
+      // You could also use a snackbar or toast service here
+    }
   }
 
   cancel() {
@@ -301,12 +404,7 @@ export class ShedulesComponent implements OnInit {
 
       // Clear localStorage when canceling
       this.clearStorage();
-      alert("❌ All changes cleared.");
+      this.showNotification("❌ All changes cleared.", "info");
     }
-  }
-
-  // Optional: Add ngOnDestroy to save when component is destroyed
-  ngOnDestroy() {
-    this.saveToStorage();
   }
 }
