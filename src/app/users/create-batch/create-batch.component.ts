@@ -27,6 +27,10 @@ export class CreateBatchComponent implements OnInit {
   deleteLoading = false;
   standardsList: any[] = [];
 
+  // New properties for edit functionality
+  isEditMode = false;
+  currentBatchCode: string | null = null;
+
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService,
@@ -95,6 +99,8 @@ export class CreateBatchComponent implements OnInit {
   }
 
   openAddBatch(): void {
+    this.isEditMode = false;
+    this.currentBatchCode = null;
     this.batchForm.reset();
     this.addBatchModal.open();
   }
@@ -107,27 +113,60 @@ export class CreateBatchComponent implements OnInit {
 
     this.loading = true;
 
-    this.apiService.createBatch(this.batchForm.value).subscribe({
-      next: (res: any) => {
-        Swal.fire({
-          icon: "success",
-          title: "Success!",
-          text: res.message || "Batch created successfully",
-          timer: 2000,
-          showConfirmButton: false,
-        });
-        this.addBatchModal.close();
-        this.loadBatches(); // Refresh the list
-      },
-      error: (err) => {
-        Swal.fire({
-          icon: "error",
-          title: "Error!",
-          text: err?.error?.message || "Failed to create batch",
-        });
-      },
-      complete: () => (this.loading = false),
-    });
+    if (this.isEditMode && this.currentBatchCode) {
+      // Update existing batch - fix the type issue
+      const updateData = {
+        batch_code: this.currentBatchCode,
+        batch_name: this.batchForm.value.batch_name,
+        standard_id: this.batchForm.value.standard_id,
+        is_active: "Y" as const, // 👈 Fix: Use 'as const' to assert literal type
+      };
+
+      this.apiService.updateBatch(updateData).subscribe({
+        next: (res: any) => {
+          Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: res.message || "Batch updated successfully",
+            timer: 2000,
+            showConfirmButton: false,
+          });
+          this.addBatchModal.close();
+          this.loadBatches(); // Refresh the list
+        },
+        error: (err) => {
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: err?.error?.message || "Failed to update batch",
+          });
+        },
+        complete: () => (this.loading = false),
+      });
+    } else {
+      // Create new batch
+      this.apiService.createBatch(this.batchForm.value).subscribe({
+        next: (res: any) => {
+          Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: res.message || "Batch created successfully",
+            timer: 2000,
+            showConfirmButton: false,
+          });
+          this.addBatchModal.close();
+          this.loadBatches(); // Refresh the list
+        },
+        error: (err) => {
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: err?.error?.message || "Failed to create batch",
+          });
+        },
+        complete: () => (this.loading = false),
+      });
+    }
   }
 
   confirmDelete(batch: any): void {
@@ -201,14 +240,38 @@ export class CreateBatchComponent implements OnInit {
     });
   }
 
+  // Updated editBatch method
   editBatch(batch: any): void {
-    // This is a placeholder for edit functionality
-    Swal.fire({
-      icon: "info",
-      title: "Coming Soon",
-      text: "Edit functionality will be implemented soon!",
-      timer: 2000,
-      showConfirmButton: false,
+    this.isEditMode = true;
+    this.currentBatchCode = batch.batch_code || batch.batch_id;
+
+    // Populate the form with existing batch data
+    this.batchForm.patchValue({
+      batch_name: batch.batch_name,
+      standard_id: batch.standard_id,
     });
+
+    // Open the modal with edit mode
+    this.addBatchModal.open();
+  }
+
+  // Helper method to get modal title
+  getModalTitle(): string {
+    return this.isEditMode ? "Edit Batch" : "Create New Batch";
+  }
+
+  // Helper method to get modal subtitle
+  getModalSubtitle(): string {
+    return this.isEditMode
+      ? "Update the batch information below"
+      : "Add a new batch to your training program";
+  }
+
+  // Helper method to get submit button text
+  getSubmitButtonText(): string {
+    if (this.loading) {
+      return this.isEditMode ? "Updating..." : "Creating...";
+    }
+    return this.isEditMode ? "Update Batch" : "Create Batch";
   }
 }

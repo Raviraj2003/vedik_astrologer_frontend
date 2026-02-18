@@ -279,14 +279,83 @@
   </div>
 
   <!-- ================= ADD BATCH MODAL ================= -->
-  <ngx-custom-modal #addBatchModal class="no-footer">
-    <ng-template #modalHeader>
-      <div class="flex items-center gap-3">
+<ngx-custom-modal #addBatchModal class="no-footer">
+  <ng-template #modalHeader>
+    <div class="flex items-center gap-3">
+      <div
+        class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center"
+      >
+        <svg
+          class="w-5 h-5 text-blue-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            *ngIf="!isEditMode"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4v16m8-8H4"
+          />
+          <path
+            *ngIf="isEditMode"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+          />
+        </svg>
+      </div>
+      <div>
+        <span class="text-xl font-bold text-gray-800">{{ getModalTitle() }}</span>
+        <p class="text-sm text-gray-600 mt-1">
+          {{ getModalSubtitle() }}
+        </p>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #modalBody>
+    <form
+      [formGroup]="batchForm"
+      (ngSubmit)="saveBatch()"
+      class="space-y-6 py-2"
+    >
+      <!-- ================= STANDARD DROPDOWN ================= -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Standard
+          <span class="text-red-500 ml-1">*</span>
+        </label>
+
+        <select
+          formControlName="standard_id"
+          class="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white
+               focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 shadow-sm"
+          [class.border-red-300]="
+            batchForm.get('standard_id')?.invalid &&
+            batchForm.get('standard_id')?.touched
+          "
+        >
+          <option value="" disabled hidden>
+            -- Select Standard --
+          </option>
+
+          <option *ngFor="let s of standardsList" [value]="s.standard_id">
+            {{ s.standard_name }}
+          </option>
+        </select>
+
         <div
-          class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center"
+          class="mt-2 flex items-center gap-2 text-red-500 text-sm"
+          *ngIf="
+            batchForm.get('standard_id')?.invalid &&
+            batchForm.get('standard_id')?.touched
+          "
         >
           <svg
-            class="w-5 h-5 text-blue-600"
+            class="w-4 h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -295,59 +364,76 @@
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M12 4v16m8-8H4"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-        </div>
-        <div>
-          <span class="text-xl font-bold text-gray-800">Create New Batch</span>
-          <p class="text-sm text-gray-600 mt-1">
-            Add a new batch to your training program
-          </p>
+          Standard is required
         </div>
       </div>
-    </ng-template>
 
-    <ng-template #modalBody>
-      <form
-        [formGroup]="batchForm"
-        (ngSubmit)="saveBatch()"
-        class="space-y-6 py-2"
-      >
-        <!-- ================= STANDARD DROPDOWN ================= -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            Standard
-            <span class="text-red-500 ml-1">*</span>
-          </label>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Batch Name
+          <span class="text-red-500 ml-1">*</span>
+        </label>
+        <input
+          class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 shadow-sm placeholder:text-gray-400"
+          placeholder="Enter batch name (e.g., 'Spring 2024')"
+          formControlName="batch_name"
+          [class.border-red-300]="
+            batchForm.get('batch_name')?.invalid &&
+            batchForm.get('batch_name')?.touched
+          "
+        />
 
-          <select
-            formControlName="standard_id"
-            class="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white
-                 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 shadow-sm"
-            [class.border-red-300]="
-              batchForm.get('standard_id')?.invalid &&
-              batchForm.get('standard_id')?.touched
-            "
+        <div
+          class="mt-2 flex items-center gap-2 text-red-500 text-sm"
+          *ngIf="
+            batchForm.get('batch_name')?.invalid &&
+            batchForm.get('batch_name')?.touched
+          "
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            <option value="" disabled hidden>
-              -- Select Standard --
-            </option>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          Batch name is required
+        </div>
 
-            <option *ngFor="let s of standardsList" [value]="s.standard_id">
-              {{ s.standard_name }}
-            </option>
-          </select>
+        <p class="mt-2 text-sm text-gray-500">
+          Use a descriptive name that identifies the batch period or cohort
+        </p>
+      </div>
 
-          <div
-            class="mt-2 flex items-center gap-2 text-red-500 text-sm"
-            *ngIf="
-              batchForm.get('standard_id')?.invalid &&
-              batchForm.get('standard_id')?.touched
-            "
-          >
+      
+
+      <div class="flex justify-end gap-3 pt-6 border-t border-gray-100">
+        <button
+          type="button"
+          class="px-6 py-3 border border-gray-300 rounded-xl text-gray-700 font-medium hover:bg-gray-50 transition-all duration-200 hover:border-gray-400"
+          (click)="addBatchModal.close()"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="px-6 py-3 rounded-xl font-medium transition-all duration-200 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-600 disabled:hover:to-indigo-600"
+          [disabled]="loading"
+        >
+          <span class="flex items-center gap-2">
             <svg
-              class="w-4 h-4"
+              *ngIf="loading"
+              class="w-5 h-5 animate-spin"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -356,90 +442,14 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
               />
             </svg>
-            Standard is required
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            Batch Name
-            <span class="text-red-500 ml-1">*</span>
-          </label>
-          <input
-            class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 shadow-sm placeholder:text-gray-400"
-            placeholder="Enter batch name (e.g., 'Spring 2024')"
-            formControlName="batch_name"
-            [class.border-red-300]="
-              batchForm.get('batch_name')?.invalid &&
-              batchForm.get('batch_name')?.touched
-            "
-          />
-
-          <div
-            class="mt-2 flex items-center gap-2 text-red-500 text-sm"
-            *ngIf="
-              batchForm.get('batch_name')?.invalid &&
-              batchForm.get('batch_name')?.touched
-            "
-          >
-            <svg
-              class="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            Batch name is required
-          </div>
-
-          <p class="mt-2 text-sm text-gray-500">
-            Use a descriptive name that identifies the batch period or cohort
-          </p>
-        </div>
-
-        <div class="flex justify-end gap-3 pt-6 border-t border-gray-100">
-          <button
-            type="button"
-            class="px-6 py-3 border border-gray-300 rounded-xl text-gray-700 font-medium hover:bg-gray-50 transition-all duration-200 hover:border-gray-400"
-            (click)="addBatchModal.close()"
-          >
-            Cancel
-          </button>
-
-          <button
-            type="submit"
-            class="px-6 py-3 rounded-xl font-medium transition-all duration-200 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-600 disabled:hover:to-indigo-600"
-            [disabled]="loading"
-          >
-            <span class="flex items-center gap-2">
-              <svg
-                *ngIf="loading"
-                class="w-5 h-5 animate-spin"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                />
-              </svg>
-              <span>{{ loading ? "Creating..." : "Create Batch" }}</span>
-            </span>
-          </button>
-        </div>
-      </form>
-    </ng-template>
-  </ngx-custom-modal>
+            <span>{{ getSubmitButtonText() }}</span>
+          </span>
+        </button>
+      </div>
+    </form>
+  </ng-template>
+</ngx-custom-modal>
 </div>

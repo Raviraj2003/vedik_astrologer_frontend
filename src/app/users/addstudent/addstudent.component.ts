@@ -166,12 +166,15 @@ export class AddStudentComponent implements OnInit {
 
   /* ================= MODALS ================= */
   openAddStudent(student: any = null): void {
-    this.initForm();
+    this.initForm(); // This resets the form
     if (student) {
       this.studentForm.patchValue({
         ...student,
         is_in_batch: student.is_in_batch === "Y",
       });
+    } else {
+      // Ensure loading is false when opening modal for new student
+      this.loading = false;
     }
     this.addStudentModal.open();
   }
@@ -208,9 +211,16 @@ export class AddStudentComponent implements OnInit {
         Swal.fire("Success", res.message || "Student saved", "success");
         this.addStudentModal.close();
         this.loadInitialData();
+        // Reset loading state after modal closes
+        setTimeout(() => {
+          this.loading = false;
+        }, 100);
       },
-      error: () => Swal.fire("Error", "Failed to save student", "error"),
-      complete: () => (this.loading = false),
+      error: (error) => {
+        Swal.fire("Error", "Failed to save student", "error");
+        this.loading = false; // Reset loading on error
+      },
+      // Remove the complete callback as we're handling it in next
     });
   }
 }

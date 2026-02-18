@@ -1,0 +1,806 @@
+<div
+  class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-100 p-4 sm:p-6 lg:p-8"
+>
+  <!-- Header Section -->
+  <div class="max-w-7xl mx-auto mb-8">
+    <div
+      class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8"
+    >
+      <div class="flex items-center gap-4">
+        <div class="relative">
+          <div
+            class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 p-0.5"
+          >
+            <div
+              class="w-full h-full rounded-2xl bg-white flex items-center justify-center"
+            >
+              <svg
+                class="w-7 h-7 text-purple-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
+              </svg>
+            </div>
+          </div>
+          <div
+            class="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center"
+          >
+            <svg
+              class="w-3 h-3 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="3"
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              />
+            </svg>
+          </div>
+        </div>
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">
+            Manage Class Slots
+          </h1>
+          <p class="text-gray-600 mt-1.5">
+            View and manage all class schedules and time slots
+          </p>
+        </div>
+      </div>
+
+      <!-- Reset Button -->
+      <button
+        *ngIf="selectedBatchCode || selectedStandardId"
+        (click)="resetSelection()"
+        class="px-4 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-200 flex items-center gap-2"
+      >
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+          />
+        </svg>
+        Reset Selection
+      </button>
+    </div>
+
+    <!-- Selection Cards -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <!-- Standard Selection Card -->
+      <div
+        class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden"
+      >
+        <div
+          class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-800">Select Standard</h3>
+              <p class="text-sm text-gray-600">
+                Choose a standard to view batches
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="p-6">
+          <select
+            [(ngModel)]="selectedStandardId"
+            (change)="onStandardChange()"
+            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+          >
+            <option value="" disabled>-- Select Standard --</option>
+            <option *ngFor="let std of standardsList" [value]="std.standard_id">
+              {{ std.standard_name }}
+            </option>
+          </select>
+          <p class="text-xs text-gray-500 mt-2">
+            {{ standardsList.length }} standards available
+          </p>
+        </div>
+      </div>
+
+      <!-- Batch Selection Card -->
+      <div
+        class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden"
+      >
+        <div
+          class="bg-gradient-to-r from-purple-50 to-pink-50 px-6 py-4 border-b border-gray-200"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5 text-purple-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-800">Select Batch</h3>
+              <p class="text-sm text-gray-600">
+                Choose a batch to view its slots
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="p-6">
+          <select
+            [(ngModel)]="selectedBatchCode"
+            (change)="onBatchChange()"
+            [disabled]="!selectedStandardId || loading"
+            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
+          >
+            <option value="" disabled>
+              {{
+                !selectedStandardId
+                  ? "Select standard first"
+                  : loading
+                    ? "Loading..."
+                    : "-- Select Batch --"
+              }}
+            </option>
+            <option *ngFor="let batch of batchList" [value]="batch.batch_code">
+              {{ batch.batch_name }}
+            </option>
+          </select>
+          <p
+            *ngIf="loading"
+            class="text-xs text-gray-500 mt-2 flex items-center gap-1"
+          >
+            <svg
+              class="w-3 h-3 animate-spin"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+            Loading batches...
+          </p>
+          <p
+            *ngIf="!loading && selectedStandardId && batchList.length === 0"
+            class="text-xs text-amber-600 mt-2"
+          >
+            No active batches found for this standard
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Class Slots Section -->
+    <div
+      *ngIf="selectedBatchCode"
+      class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden"
+    >
+      <!-- Section Header with Filters -->
+      <div
+        class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200"
+      >
+        <div
+          class="flex flex-col lg:flex-row lg:items-center justify-between gap-4"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 rounded-lg bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-800">Class Slots</h3>
+              <p class="text-sm text-gray-600">
+                {{ filteredSlots.length }} slot{{
+                  filteredSlots.length !== 1 ? "s" : ""
+                }}
+                found
+              </p>
+            </div>
+          </div>
+
+          <!-- Filters -->
+          <div class="flex flex-col sm:flex-row gap-3">
+            <!-- Date Filter -->
+            <select
+              [(ngModel)]="selectedDate"
+              (change)="applyFilters()"
+              class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm"
+            >
+              <option value="">All Dates</option>
+              <option *ngFor="let date of uniqueDates" [value]="date">
+                {{ formatDate(date) }}
+              </option>
+            </select>
+
+            <!-- Search -->
+            <div class="relative">
+              <input
+                type="text"
+                [(ngModel)]="searchText"
+                (input)="applyFilters()"
+                placeholder="Search slots..."
+                class="pl-9 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm w-full sm:w-64"
+              />
+              <svg
+                class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+
+            <!-- Clear Filters -->
+            <button
+              *ngIf="searchText || selectedDate"
+              (click)="clearFilters()"
+              class="px-3 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition-all duration-200"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
+            <!-- Refresh Button -->
+            <button
+              (click)="refreshSlots()"
+              [disabled]="slotsLoading"
+              class="px-3 py-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-all duration-200 disabled:opacity-50"
+            >
+              <svg
+                class="w-5 h-5"
+                [class.animate-spin]="slotsLoading"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="slotsLoading" class="p-12 text-center">
+        <svg
+          class="w-12 h-12 mx-auto text-blue-500 animate-spin mb-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+          />
+        </svg>
+        <p class="text-gray-600">Loading class slots...</p>
+      </div>
+
+      <!-- No Slots State -->
+      <div
+        *ngIf="!slotsLoading && filteredSlots.length === 0"
+        class="p-12 text-center"
+      >
+        <div
+          class="w-20 h-20 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4"
+        >
+          <svg
+            class="w-10 h-10 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        </div>
+        <h3 class="text-lg font-medium text-gray-700 mb-2">No slots found</h3>
+        <p class="text-gray-500">
+          {{
+            searchText || selectedDate
+              ? "Try clearing your filters"
+              : "No class slots available for this batch"
+          }}
+        </p>
+        <button
+          *ngIf="searchText || selectedDate"
+          (click)="clearFilters()"
+          class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200"
+        >
+          Clear Filters
+        </button>
+      </div>
+
+      <!-- Slots List -->
+      <div
+        *ngIf="!slotsLoading && filteredSlots.length > 0"
+        class="divide-y divide-gray-200"
+      >
+        <div
+          *ngFor="let slot of filteredSlots"
+          class="p-6 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-white transition-all duration-200"
+          [class.editing-mode]="editingSlot === slot"
+        >
+          <!-- Edit Mode -->
+          <!-- Edit Mode - Updated with all fields -->
+          <div *ngIf="editingSlot === slot" class="space-y-4">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="font-medium text-gray-700">
+                Editing Schedule #{{ slot.schedule_id || slot.id }}
+              </h4>
+              <span
+                class="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full"
+                >Edit Mode</span
+              >
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <!-- Day Name - Required -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                  Day <span class="text-red-500">*</span>
+                </label>
+                <select
+                  [(ngModel)]="editFormData.day_name"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  [class.border-red-500]="
+                    !editFormData.day_name && showValidationErrors
+                  "
+                >
+                  <option value="">Select Day</option>
+                  <option value="Monday">Monday</option>
+                  <option value="Tuesday">Tuesday</option>
+                  <option value="Wednesday">Wednesday</option>
+                  <option value="Thursday">Thursday</option>
+                  <option value="Friday">Friday</option>
+                  <option value="Saturday">Saturday</option>
+                  <option value="Sunday">Sunday</option>
+                </select>
+              </div>
+
+              <!-- Start Time - Required -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                  Start Time <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="time"
+                  [(ngModel)]="editFormData.start_time"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  [class.border-red-500]="
+                    !editFormData.start_time && showValidationErrors
+                  "
+                />
+              </div>
+
+              <!-- End Time - Required -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                  End Time <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="time"
+                  [(ngModel)]="editFormData.end_time"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  [class.border-red-500]="
+                    !editFormData.end_time && showValidationErrors
+                  "
+                />
+              </div>
+
+              <!-- Slot Interval -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                  Slot Interval (minutes)
+                </label>
+                <input
+                  type="number"
+                  min="5"
+                  max="120"
+                  step="5"
+                  [(ngModel)]="editFormData.slot_interval"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <!-- From Date -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                  From Date
+                </label>
+                <input
+                  type="date"
+                  [(ngModel)]="editFormData.from_date"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <!-- To Date -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                  To Date
+                </label>
+                <input
+                  type="date"
+                  [(ngModel)]="editFormData.to_date"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            <!-- Optional: Display current topic as read-only info if needed -->
+            <div
+              *ngIf="editingSlot?.topic_name"
+              class="bg-blue-50 p-3 rounded-lg mt-2"
+            >
+              <p class="text-sm text-blue-700">
+                <span class="font-medium">Current Topic:</span>
+                {{ editingSlot.topic_name }}
+                <span class="text-xs text-blue-500 ml-2">(read-only)</span>
+              </p>
+            </div>
+
+            <!-- Validation Error Summary (optional) -->
+            <div
+              *ngIf="showValidationErrors"
+              class="bg-red-50 p-3 rounded-lg mt-2"
+            >
+              <p class="text-sm text-red-600 flex items-center gap-1">
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                Please fill all required fields marked with
+                <span class="text-red-500 font-bold">*</span>
+              </p>
+            </div>
+
+            <div class="flex justify-end gap-2 mt-4">
+              <button
+                (click)="cancelEdit()"
+                class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200 flex items-center gap-2"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+                Cancel
+              </button>
+              <button
+                (click)="saveSlotChanges()"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center gap-2"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                Save Changes
+              </button>
+            </div>
+          </div>
+
+          <!-- View Mode -->
+          <div
+            *ngIf="editingSlot !== slot"
+            class="flex flex-col lg:flex-row lg:items-center justify-between gap-4"
+          >
+            <div class="flex items-start gap-4">
+              <!-- Time Icon -->
+              <div
+                class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center flex-shrink-0"
+              >
+                <svg
+                  class="w-6 h-6 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+
+              <!-- Slot Details -->
+              <!-- Slot Details - Updated with day_name display -->
+              <div class="flex-1">
+                <div class="flex items-center gap-3 flex-wrap">
+                  <h4 class="font-semibold text-gray-800">
+                    {{ slot.subject_name || "Class Slot" }}
+                  </h4>
+
+                  >
+                  <span
+                    class="px-2 py-1 rounded-full text-xs font-medium border"
+                    [class]="getStatusColor(slot.status)"
+                  >
+                    <span class="flex items-center gap-1">
+                      <span
+                        class="w-1.5 h-1.5 rounded-full"
+                        [class]="getStatusDotColor(slot.status)"
+                      ></span>
+                      {{ slot.status || "scheduled" | titlecase }}
+                    </span>
+                  </span>
+                </div>
+
+                <div
+                  class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-3"
+                >
+                  <!-- Day Name - NEW -->
+                  <div class="flex items-center gap-2 text-sm text-gray-600">
+                    <svg
+                      class="w-4 h-4 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <span class="font-medium">{{
+                      slot.day_name || "N/A"
+                    }}</span>
+                  </div>
+
+                  <!-- Date -->
+                  <div class="flex items-center gap-2 text-sm text-gray-600">
+                    <svg
+                      class="w-4 h-4 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <span>{{ formatDate(slot.class_date || slot.date) }}</span>
+                  </div>
+
+                  <!-- Time -->
+                  <div class="flex items-center gap-2 text-sm text-gray-600">
+                    <svg
+                      class="w-4 h-4 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>{{
+                      slot.slot_time || slot.start_time + " - " + slot.end_time
+                    }}</span>
+                  </div>
+
+                  <!-- Topic (if available) -->
+                  <div
+                    class="flex items-center gap-2 text-sm text-gray-600"
+                    *ngIf="slot.topic_name"
+                  >
+                    <svg
+                      class="w-4 h-4 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                      />
+                    </svg>
+                    <span
+                      class="truncate max-w-[150px]"
+                      title="{{ slot.topic_name }}"
+                      >{{ slot.topic_name }}</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <!-- Action Buttons - Updated (removed view icon) -->
+            <div class="flex items-center gap-2 lg:ml-4">
+              <button
+                (click)="editSlot(slot)"
+                class="p-2 rounded-lg text-amber-600 hover:bg-amber-50 transition-all duration-200"
+                title="Edit Slot"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+              </button>
+              <button
+                (click)="deleteSlot(slot)"
+                class="p-2 rounded-lg text-red-600 hover:bg-red-50 transition-all duration-200"
+                title="Delete Slot"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Batch Selected State -->
+    <div
+      *ngIf="!selectedBatchCode && selectedStandardId"
+      class="bg-white rounded-xl shadow-md border border-gray-200 p-12 text-center"
+    >
+      <div
+        class="w-20 h-20 mx-auto bg-purple-100 rounded-full flex items-center justify-center mb-4"
+      >
+        <svg
+          class="w-10 h-10 text-purple-500"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+          />
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-gray-700 mb-2">Select a Batch</h3>
+      <p class="text-gray-500 max-w-md mx-auto">
+        Please select a batch from the dropdown above to view its class slots
+      </p>
+    </div>
+  </div>
+</div>

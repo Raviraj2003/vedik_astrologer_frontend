@@ -28,6 +28,7 @@ import { StudentReceiptsComponent } from "./student-receipts/student-receipts.co
 import { AttendanceComponent } from "./pages/attendance/attendance.component";
 import { CustomerAppointmentComponent } from "./customer-appointment/customer-appointment.component";
 import { AllStudentsComponent } from "./admin/all-students/all-students.component";
+import { ManageClassSlotsComponent } from "./pages/manage-class-slots/manage-class-slots.component";
 
 // widgets
 import { WidgetsComponent } from "./widgets";
@@ -107,7 +108,7 @@ export const routes: Routes = [
         component: StudentDashboardComponent,
         data: { title: "Student Dashboard" },
       },
-     
+
       {
         path: "shedules",
         component: ShedulesComponent,
@@ -213,6 +214,11 @@ export const routes: Routes = [
         path: "attendance",
         component: AttendanceComponent,
         data: { title: "Attendance" },
+      },
+      {
+        path: "manage-class-slots",
+        component: ManageClassSlotsComponent,
+        data: { title: "Manage Class Slots" },
       },
 
       // widgets
