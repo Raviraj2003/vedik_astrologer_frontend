@@ -25,21 +25,38 @@
     </div>
   </div>
 
-  <!-- ========== MODAL OVERLAY - SCROLLABLE BODY ========== -->
+  <!-- Global Messages -->
+  <div *ngIf="successMessage && !isModalOpen" class="global-alert success">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
+    <span>{{ successMessage }}</span>
+  </div>
+  
+  <div *ngIf="errorMessage && !isModalOpen" class="global-alert error">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10" />
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01" />
+    </svg>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <!-- ========== MODAL OVERLAY ========== -->
   <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
     <div class="modal-container" (click)="$event.stopPropagation()">
       
-      <!-- Modal Header - Compact -->
+      <!-- Modal Header - Dynamic -->
       <div class="modal-header">
         <div class="modal-header-left">
           <div class="modal-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path *ngIf="!isEditMode" stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path *ngIf="isEditMode" stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
           </div>
           <div>
-            <h2 class="modal-title">Create topic</h2>
-            <p class="modal-subtitle">Add a new topic to your library</p>
+            <h2 class="modal-title">{{ isEditMode ? 'Edit topic' : 'Create topic' }}</h2>
+            <p class="modal-subtitle">{{ isEditMode ? 'Update topic information' : 'Add a new topic to your library' }}</p>
           </div>
         </div>
         <button class="modal-close-btn" (click)="closeModal()">
@@ -49,7 +66,7 @@
         </button>
       </div>
 
-      <!-- Alert Messages - Compact -->
+      <!-- Modal Alert Messages -->
       <div *ngIf="successMessage" class="alert success">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -65,7 +82,7 @@
         <span>{{ errorMessage }}</span>
       </div>
 
-      <!-- Form - Compact -->
+      <!-- Form -->
       <form (ngSubmit)="onSubmit()" #topicForm="ngForm" class="modal-form">
         <div class="form-group">
           <label for="topicName">
@@ -86,29 +103,14 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="topicDescription">
-            Description <span class="optional">(optional)</span>
-          </label>
-          <textarea
-            id="topicDescription"
-            [(ngModel)]="newTopic.topic_description"
-            name="topicDescription"
-            placeholder="Brief description of the topic..."
-            rows="2"
-            maxlength="500"
-          ></textarea>
-          <div class="char-hint">
-            <span>{{ newTopic.topic_description?.length || 0 }}/500</span>
-          </div>
-        </div>
+       
 
         <div class="modal-actions">
           <button type="button" class="btn-secondary" (click)="closeModal()" [disabled]="isSubmitting">
             Cancel
           </button>
           <button type="submit" class="btn-primary" [disabled]="isSubmitting || !topicForm.valid">
-            <span *ngIf="!isSubmitting">Add topic</span>
+            <span *ngIf="!isSubmitting">{{ isEditMode ? 'Update topic' : 'Add topic' }}</span>
             <span *ngIf="isSubmitting" class="spinner"></span>
           </button>
         </div>
@@ -116,10 +118,10 @@
     </div>
   </div>
 
-  <!-- MAIN CARD - Topics List - Compact -->
+  <!-- MAIN CARD - Topics List -->
   <div class="main-card">
     
-    <!-- List Header - Compact -->
+    <!-- List Header -->
     <div class="list-header">
       <div class="list-title">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -135,13 +137,13 @@
       </button>
     </div>
 
-    <!-- Loading State - Compact -->
+    <!-- Loading State -->
     <div *ngIf="isLoading" class="state-container loading">
-      <div class="spinner"></div>
+      <div class="spinner-large"></div>
       <p>Loading topics...</p>
     </div>
 
-    <!-- Empty State - Compact -->
+    <!-- Empty State -->
     <div *ngIf="!isLoading && topics.length === 0" class="state-container empty">
       <div class="empty-icon">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
@@ -158,7 +160,7 @@
       </button>
     </div>
 
-    <!-- Topics Grid - Compact Cards -->
+    <!-- Topics Grid -->
     <div *ngIf="!isLoading && topics.length > 0" class="topics-grid">
       <div *ngFor="let topic of topics" class="topic-card">
         <div class="card-header">
@@ -170,18 +172,39 @@
             {{ topic.category || 'Uncategorized' }}
           </span>
         </div>
+        
         <h3 class="topic-title">{{ topic.topic_name }}</h3>
-        <p *ngIf="topic.topic_description" class="topic-desc">
-          {{ topic.topic_description }}
-        </p>
-        <p *ngIf="!topic.topic_description" class="topic-desc empty">
-          No description
-        </p>
+        
+       
+        
         <div class="card-footer">
-          <span class="status">
-            <span class="dot"></span>
-            Active
-          </span>
+          <div class="footer-actions">
+            <span class="status">
+              <span class="dot"></span>
+              Active
+            </span>
+            <div class="card-actions">
+              <!-- Edit Button -->
+              <button class="btn-icon edit-btn" (click)="openEditModal(topic)" title="Edit topic">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </button>
+              
+              <!-- Delete Button with Loading State -->
+              <button 
+                class="btn-icon delete-btn" 
+                (click)="deleteTopic(topic.id)" 
+                [disabled]="deletingTopicId === topic.id"
+                title="Delete topic"
+              >
+                <svg *ngIf="deletingTopicId !== topic.id" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                <span *ngIf="deletingTopicId === topic.id" class="spinner-small"></span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -193,7 +216,7 @@
 
 <style>
 /* ---------------------------------------------------------
-   TOPICS MANAGEMENT - COMPACT MODAL, SCROLLABLE PAGE
+   TOPICS MANAGEMENT - COMPLETE STYLES
    --------------------------------------------------------- */
 
 * {
@@ -214,7 +237,7 @@
   background: #0f172a;
 }
 
-/* ========== HERO HEADER - COMPACT ========== */
+/* ========== HERO HEADER ========== */
 .hero-header {
   max-width: 1200px;
   margin: 0 auto 1.5rem;
@@ -316,7 +339,54 @@
   border-color: #334155;
 }
 
-/* ========== MODAL OVERLAY - SCROLLABLE PAGE ========== */
+/* ========== GLOBAL ALERTS ========== */
+.global-alert {
+  max-width: 1200px;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.global-alert.success {
+  background: #e6f7e6;
+  color: #0b5e42;
+  border: 1px solid #b3e0b3;
+}
+
+.dark .global-alert.success {
+  background: #1a2e1a;
+  color: #a7f0a7;
+}
+
+.global-alert.error {
+  background: #fee9e7;
+  color: #a12b2b;
+  border: 1px solid #fbc5c5;
+}
+
+.dark .global-alert.error {
+  background: #2a1c1c;
+  color: #fbb;
+}
+
+/* ========== MODAL OVERLAY ========== */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -365,7 +435,7 @@
   border: 1px solid #334155;
 }
 
-/* Modal Content - Compact */
+/* Modal Content */
 .modal-header {
   display: flex;
   align-items: flex-start;
@@ -437,7 +507,7 @@
   color: white;
 }
 
-/* Alert Messages - Compact */
+/* Alert Messages */
 .alert {
   display: flex;
   align-items: center;
@@ -471,7 +541,7 @@
   color: #fbb;
 }
 
-/* Form - Compact */
+/* Form */
 .modal-form {
   padding: 1.25rem 1.5rem 1.5rem;
 }
@@ -593,11 +663,32 @@
   animation: spin 0.6s linear infinite;
 }
 
+.spinner-large {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border: 3px solid #e2e8f0;
+  border-radius: 50%;
+  border-top-color: #2563eb;
+  animation: spin 0.6s linear infinite;
+  margin-bottom: 0.75rem;
+}
+
+.spinner-small {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(239, 68, 68, 0.2);
+  border-radius: 50%;
+  border-top-color: #ef4444;
+  animation: spin 0.6s linear infinite;
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-/* ========== MAIN CARD - COMPACT ========== */
+/* ========== MAIN CARD ========== */
 .main-card {
   max-width: 1200px;
   margin: 0 auto;
@@ -613,7 +704,7 @@
   border-color: #334155;
 }
 
-/* List Header - Compact */
+/* List Header */
 .list-header {
   display: flex;
   align-items: center;
@@ -674,7 +765,7 @@
   animation: spin 1s linear infinite;
 }
 
-/* State Containers - Compact */
+/* State Containers */
 .state-container {
   display: flex;
   flex-direction: column;
@@ -688,13 +779,6 @@
 
 .dark .state-container {
   background: #0f172a;
-}
-
-.state-container.loading .spinner {
-  width: 30px;
-  height: 30px;
-  border-width: 3px;
-  margin-bottom: 0.75rem;
 }
 
 .state-container p {
@@ -728,10 +812,10 @@
   font-size: 0.8rem;
 }
 
-/* Topics Grid - Compact Cards */
+/* Topics Grid */
 .topics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1rem;
 }
 
@@ -743,6 +827,8 @@
   transition: all 0.2s;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .dark .topic-card {
@@ -814,6 +900,7 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  flex: 1;
 }
 
 .dark .topic-desc {
@@ -835,6 +922,12 @@
   border-top-color: #334155;
 }
 
+.footer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .status {
   display: flex;
   align-items: center;
@@ -850,6 +943,49 @@
   background: #2563eb;
   border-radius: 50%;
   display: inline-block;
+}
+
+.card-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-icon {
+  background: transparent;
+  border: none;
+  padding: 0.4rem;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-icon:hover {
+  background: #f1f5f9;
+}
+
+.dark .btn-icon:hover {
+  background: #1e293b;
+}
+
+.btn-icon:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-icon:disabled:hover {
+  background: transparent;
+}
+
+.edit-btn:hover {
+  color: #2563eb;
+}
+
+.delete-btn:hover {
+  color: #ef4444;
 }
 
 /* Background Decoration */

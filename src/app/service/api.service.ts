@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: "root",
 })
 export class ApiService {
-  private baseUrl = "http://192.168.1.2:5000/api"; // ✅ BASE URL
+  private baseUrl = "https://vediknode.vedikastrologer.com"; // ✅ BASE URL
 
   constructor(private http: HttpClient) {}
 
@@ -353,6 +353,106 @@ export class ApiService {
   }
 
   // ======================================
+  // 📅 CLASS SCHEDULE → UPDATE
+  // ======================================
+
+  updateClassSchedule(data: {
+    schedule_id: number;
+    day_name: string;
+    start_time: string;
+    end_time: string;
+    slot_interval: number;
+    from_date: string;
+    to_date: string;
+    topic?: string;
+  }): Observable<{
+    success: boolean;
+    message: string;
+    total_slots_inserted?: number;
+  }> {
+    return this.http.post<{
+      success: boolean;
+      message: string;
+      total_slots_inserted?: number;
+    }>(`${this.baseUrl}/updateClassSchedule`, data, {
+      headers: this.getJsonHeaders(), // 🔐 Bearer token auto-added
+    });
+  }
+
+  // ======================================
+  // 📅 CLASS SLOT → DELETE
+  // ======================================
+
+  deleteClassSlot(slotId: number): Observable<{
+    success: boolean;
+    message: string;
+    deleted_slot_id?: number;
+  }> {
+    return this.http.post<{
+      success: boolean;
+      message: string;
+      deleted_slot_id?: number;
+    }>(
+      `${this.baseUrl}/deleteClassSlot`,
+      {
+        slot_id: slotId,
+      },
+      {
+        headers: this.getJsonHeaders(), // 🔐 Bearer token auto-added
+      },
+    );
+  }
+
+  // ======================================
+  // 📚 TOPIC → UPDATE
+  // ======================================
+
+  updateTopic(data: {
+    id: number;
+    topic_name: string;
+    topic_description?: string;
+    level?: string;
+    category?: string;
+    is_active?: boolean;
+  }): Observable<{
+    success: boolean;
+    message: string;
+    topic_id?: number;
+  }> {
+    return this.http.post<{
+      success: boolean;
+      message: string;
+      topic_id?: number;
+    }>(`${this.baseUrl}/updateTopic`, data, {
+      headers: this.getJsonHeaders(), // 🔐 Bearer token auto-added
+    });
+  }
+
+  // ======================================
+  // 📚 TOPIC → DELETE (Soft Delete)
+  // ======================================
+
+  deleteTopic(topicId: number): Observable<{
+    success: boolean;
+    message: string;
+    deleted_topic_id?: number;
+  }> {
+    return this.http.post<{
+      success: boolean;
+      message: string;
+      deleted_topic_id?: number;
+    }>(
+      `${this.baseUrl}/deleteTopic`,
+      {
+        id: topicId,
+      },
+      {
+        headers: this.getJsonHeaders(), // 🔐 Bearer token auto-added
+      },
+    );
+  }
+
+  // ======================================
   // 🧑‍💼 ADMIN → UPDATE CLASS TOPIC (DATE-WISE)
   // ======================================
 
@@ -680,6 +780,24 @@ export class ApiService {
         headers: this.getJsonHeaders(), // 🔐 Bearer token auto-added
       },
     );
+  }
+
+  // 🔹 Update Batch
+  updateBatch(data: {
+    batch_code: string;
+    batch_name: string;
+    standard_id: number;
+    is_active: "Y" | "N";
+  }): Observable<{
+    success: boolean;
+    message: string;
+  }> {
+    return this.http.post<{
+      success: boolean;
+      message: string;
+    }>(`${this.baseUrl}/batches/updateBatch`, data, {
+      headers: this.getJsonHeaders(), // 🔐 Bearer token auto-added
+    });
   }
 
   // ======================================

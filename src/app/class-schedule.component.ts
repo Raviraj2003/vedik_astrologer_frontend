@@ -43,12 +43,25 @@ export class ClassScheduleComponent implements OnInit {
     ],
   };
 
+  // Validation messages
+  dateError: string = "";
+  timeErrors: { [key: number]: string } = {};
+
   loading = false;
 
   constructor(private api: ApiService) {}
 
   ngOnInit(): void {
     this.loadStandards();
+  }
+
+  /* ================= TODAY'S DATE GETTER ================= */
+  get today(): string {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   }
 
   /* ================= LOAD STANDARDS ================= */
@@ -78,6 +91,68 @@ export class ClassScheduleComponent implements OnInit {
     });
   }
 
+  /* ================= DATE VALIDATION ================= */
+  validateDates(): boolean {
+    if (!this.form.from_date || !this.form.to_date) {
+      this.dateError = "";
+      return true; // Not invalid, just incomplete
+    }
+
+    const fromDate = new Date(this.form.from_date);
+    const toDate = new Date(this.form.to_date);
+
+    if (toDate <= fromDate) {
+      this.dateError = "End date must be greater than start date";
+      return false;
+    }
+
+    this.dateError = "";
+    return true;
+  }
+
+  /* ================= TIME VALIDATION FOR SCHEDULE ================= */
+  validateScheduleTimes(index: number): boolean {
+    const schedule = this.form.schedules[index];
+
+    if (!schedule.start_time || !schedule.end_time) {
+      this.timeErrors[index] = "";
+      return true;
+    }
+
+    // Convert time strings to comparable values
+    const startTime = schedule.start_time;
+    const endTime = schedule.end_time;
+
+    if (endTime <= startTime) {
+      this.timeErrors[index] = "End time must be greater than start time";
+      return false;
+    }
+
+    this.timeErrors[index] = "";
+    return true;
+  }
+
+  /* ================= VALIDATE ALL SCHEDULE TIMES ================= */
+  validateAllScheduleTimes(): boolean {
+    let isValid = true;
+    this.form.schedules.forEach((schedule: any, index: number) => {
+      if (!this.validateScheduleTimes(index)) {
+        isValid = false;
+      }
+    });
+    return isValid;
+  }
+
+  /* ================= ON DATE CHANGE ================= */
+  onDateChange(): void {
+    this.validateDates();
+  }
+
+  /* ================= ON TIME CHANGE ================= */
+  onTimeChange(index: number): void {
+    this.validateScheduleTimes(index);
+  }
+
   /* ================= ADD / REMOVE DAY ================= */
   addSchedule(): void {
     this.form.schedules.push({
@@ -91,11 +166,25 @@ export class ClassScheduleComponent implements OnInit {
   removeSchedule(index: number): void {
     if (this.form.schedules.length > 1) {
       this.form.schedules.splice(index, 1);
+      // Clear time error for removed schedule
+      delete this.timeErrors[index];
+      // Re-index remaining time errors
+      const newTimeErrors: { [key: number]: string } = {};
+      Object.keys(this.timeErrors).forEach((key) => {
+        const numKey = parseInt(key);
+        if (numKey < index) {
+          newTimeErrors[numKey] = this.timeErrors[numKey];
+        } else if (numKey > index) {
+          newTimeErrors[numKey - 1] = this.timeErrors[numKey];
+        }
+      });
+      this.timeErrors = newTimeErrors;
     }
   }
 
   /* ================= VALIDATION ================= */
   isFormValid(): boolean {
+    // Check basic fields
     if (
       !this.form.standard_id ||
       !this.form.batch_code ||
@@ -105,15 +194,35 @@ export class ClassScheduleComponent implements OnInit {
       return false;
     }
 
-    return this.form.schedules.every(
-      (s: any) => s.day_name && s.start_time && s.end_time && s.slot_interval,
-    );
+    // Check date validation
+    if (!this.validateDates()) {
+      return false;
+    }
+
+    // Check schedules
+    let schedulesValid = true;
+    this.form.schedules.forEach((s: any, index: number) => {
+      if (!s.day_name || !s.start_time || !s.end_time || !s.slot_interval) {
+        schedulesValid = false;
+      }
+      // Check time validation for each schedule
+      if (!this.validateScheduleTimes(index)) {
+        schedulesValid = false;
+      }
+    });
+
+    return schedulesValid;
   }
 
   /* ================= SUBMIT ================= */
   submit(): void {
+    // Run all validations before submit
+    if (!this.validateDates() || !this.validateAllScheduleTimes()) {
+      return;
+    }
+
     if (!this.isFormValid()) {
-      alert("Please fill all required fields");
+      alert("Please fill all required fields correctly");
       return;
     }
 
@@ -157,5 +266,7 @@ export class ClassScheduleComponent implements OnInit {
       ],
     };
     this.batchList = [];
+    this.dateError = "";
+    this.timeErrors = {};
   }
 }
