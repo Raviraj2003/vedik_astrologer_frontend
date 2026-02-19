@@ -1056,7 +1056,7 @@
               >First Time or Repeat check-up?</label
             >
             <span class="block text-xs text-gray-500 dark:text-gray-400 mb-3"
-              >पहिल्यांदा किंवा पुन्हा तपासणी आहे का?</span
+              >पहिल्यांदा आहे का पुन्हा विचारणा करत आहात?</span
             >
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               <label
@@ -1098,7 +1098,7 @@
                 </div>
                 <div>
                   <span class="block">Repeat</span>
-                  <span class="text-xs text-gray-500">पुन्हा तपासणी</span>
+                  <span class="text-xs text-gray-500">पुन्हा विचारणा</span>
                 </div>
               </label>
             </div>
@@ -1419,44 +1419,41 @@
           </div>
 
           <!-- Date of Birth -->
-         <div>
-  <label class="block text-sm font-medium mb-2">
-    Date of Birth <span class="text-red-500">*</span>
-  </label>
+          <div>
+            <label class="block text-sm font-medium mb-2">
+              Date of Birth <span class="text-red-500">*</span>
+            </label>
 
-  <input
-    type="date"
-    formControlName="date_of_birth"
-    [max]="maxDobDate"
-    onkeydown="return false"
-    class="w-full rounded-lg border p-3 
-           dark:bg-gray-700 dark:text-white 
-           focus:ring-2 focus:ring-blue-500"
-  />
+            <input
+              type="date"
+              formControlName="date_of_birth"
+              [max]="maxDobDate"
+              onkeydown="return false"
+              class="w-full rounded-lg border p-3 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500"
+            />
 
-  <!-- Required Error -->
-  <p
-    *ngIf="
-      partnerTempGroup.get('date_of_birth')?.errors?.['required'] &&
-      partnerTempGroup.get('date_of_birth')?.touched
-    "
-    class="text-red-500 text-xs mt-1"
-  >
-    Date of birth is required.
-  </p>
+            <!-- Required Error -->
+            <p
+              *ngIf="
+                partnerTempGroup.get('date_of_birth')?.errors?.['required'] &&
+                partnerTempGroup.get('date_of_birth')?.touched
+              "
+              class="text-red-500 text-xs mt-1"
+            >
+              Date of birth is required.
+            </p>
 
-  <!-- Future Date Error -->
-  <p
-    *ngIf="
-      partnerTempGroup.get('date_of_birth')?.errors?.['futureDate'] &&
-      partnerTempGroup.get('date_of_birth')?.touched
-    "
-    class="text-red-500 text-xs mt-1"
-  >
-    Future date is not allowed.
-  </p>
-</div>
-
+            <!-- Future Date Error -->
+            <p
+              *ngIf="
+                partnerTempGroup.get('date_of_birth')?.errors?.['futureDate'] &&
+                partnerTempGroup.get('date_of_birth')?.touched
+              "
+              class="text-red-500 text-xs mt-1"
+            >
+              Future date is not allowed.
+            </p>
+          </div>
         </div>
 
         <!-- Time + Place -->

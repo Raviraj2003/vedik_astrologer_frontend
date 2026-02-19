@@ -165,12 +165,7 @@
       <div *ngFor="let topic of topics" class="topic-card">
         <div class="card-header">
           <span class="topic-id">#{{ topic.id }}</span>
-          <span class="topic-category">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-            </svg>
-            {{ topic.category || 'Uncategorized' }}
-          </span>
+         
         </div>
         
         <h3 class="topic-title">{{ topic.topic_name }}</h3>
