@@ -25,12 +25,24 @@ export class DashboardComponent implements OnInit {
   activeTab: TabType = "today";
   tabs: TabType[] = ["today", "future", "empty", "conducted"];
 
-  // 🔹 Data
-  appointments: any[] = [];
-  filteredAppointments: any[] = [];
+  // 🔹 Data - Store all raw data separately
+  rawAppointments: {
+    today: any[];
+    future: any[];
+    empty: any[];
+    conducted: any[];
+  } = {
+    today: [],
+    future: [],
+    empty: [],
+    conducted: [],
+  };
+
+  // Display data for current tab
+  displayAppointments: any[] = [];
   totalEmptySlots: number = 0;
 
-  // Add this property for all-time collection data
+  // All-time collection data
   allConductedAppointments: any[] = [];
   totalCollectionAmount: number = 0;
   isTotalCollectionLoading: boolean = true;
@@ -45,7 +57,7 @@ export class DashboardComponent implements OnInit {
     price: 0,
   };
 
-  // Statistics with proper typing
+  // Statistics
   stats: DashboardStats = {
     today: 0,
     future: 0,
@@ -61,123 +73,95 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadAppointments();
-    this.calculateInitialStats();
-    // Load all-time collection on initialization
-    this.loadAllConductedAppointmentsForTotal();
+    this.loadAllData();
   }
 
   // ===============================
-  // 🔹 LOAD ALL CONDUCTED APPOINTMENTS FOR TOTAL COLLECTION
+  // 🔹 LOAD ALL DATA ON INITIALIZATION
   // ===============================
-  loadAllConductedAppointmentsForTotal() {
-    this.isTotalCollectionLoading = true;
-    this.api.getByConductStatus().subscribe({
-      next: (res: any) => {
-        console.log("All conducted appointments response:", res);
-        this.allConductedAppointments = res?.data || [];
+  loadAllData() {
+    this.isLoading = true;
+
+    // Use forkJoin to load all data in parallel
+    const todayCall = this.api.getTodayAppointments();
+    const futureCall = this.api.getFutureAppointments();
+    const emptyCall = this.api.getTodayEmptySlots();
+    const conductedCall = this.api.getByConductStatus();
+
+    Promise.all([
+      todayCall.toPromise(),
+      futureCall.toPromise(),
+      emptyCall.toPromise(),
+      conductedCall.toPromise(),
+    ])
+      .then(([todayRes, futureRes, emptyRes, conductedRes]) => {
+        // Store today's appointments
+        this.rawAppointments.today = todayRes?.data || [];
+        this.stats.today = this.rawAppointments.today.length;
+
+        // Store future appointments
+        this.rawAppointments.future = futureRes?.data || [];
+        this.stats.future = this.rawAppointments.future.length;
+
+        // Store empty slots
+        if (emptyRes) {
+          this.rawAppointments.empty = (emptyRes?.empty_slots || []).map(
+            (slot: any) => ({
+              ...slot,
+              slot_time: slot.slot_range,
+            }),
+          );
+          this.totalEmptySlots = emptyRes?.total_empty_slots || 0;
+          this.stats.empty = this.totalEmptySlots;
+        }
+
+        // Store conducted appointments
+        this.rawAppointments.conducted = conductedRes?.data || [];
+        this.stats.conducted = this.rawAppointments.conducted.length;
+
+        // Also store all conducted for collection calculation
+        this.allConductedAppointments = this.rawAppointments.conducted;
 
         // Calculate total collection from ALL conducted appointments
         const conductedWithPrice = this.allConductedAppointments.filter(
           (appt) => appt.is_appointment_conducted && appt.price,
         );
 
-        console.log("Conducted appointments with price:", conductedWithPrice);
-
         this.totalCollectionAmount = conductedWithPrice.reduce((sum, appt) => {
           const price = Number(appt.price) || 0;
           return sum + price;
         }, 0);
 
-        console.log("Total collection amount:", this.totalCollectionAmount);
+        // Set display data for active tab
+        this.updateDisplayForActiveTab();
+
+        this.isLoading = false;
         this.isTotalCollectionLoading = false;
-      },
-      error: (err) => {
-        console.error("❌ Failed to load all conducted appointments:", err);
-        this.totalCollectionAmount = 0;
+      })
+      .catch((error) => {
+        console.error("❌ Failed to load dashboard data:", error);
+        this.isLoading = false;
         this.isTotalCollectionLoading = false;
-      },
-    });
+      });
   }
 
   // ===============================
-  // 🔹 CALCULATE INITIAL STATS
+  // 🔹 UPDATE DISPLAY DATA BASED ON ACTIVE TAB
   // ===============================
-  calculateInitialStats() {
-    this.stats = {
-      today: 0,
-      future: 0,
-      empty: 0,
-      conducted: 0,
-    };
-  }
-
-  // ===============================
-  // 🔹 LOAD DATA BASED ON TAB
-  // ===============================
-  loadAppointments() {
-    this.isLoading = true;
-    this.appointments = [];
-    this.filteredAppointments = [];
-
-    let apiCall;
-
+  updateDisplayForActiveTab() {
     switch (this.activeTab) {
       case "today":
-        apiCall = this.api.getTodayAppointments();
+        this.displayAppointments = this.rawAppointments.today;
         break;
-
       case "future":
-        apiCall = this.api.getFutureAppointments();
+        this.displayAppointments = this.rawAppointments.future;
         break;
-
       case "empty":
-        apiCall = this.api.getTodayEmptySlots();
+        this.displayAppointments = this.rawAppointments.empty;
         break;
-
       case "conducted":
-        apiCall = this.api.getByConductStatus();
+        this.displayAppointments = this.rawAppointments.conducted;
         break;
-
-      default:
-        this.isLoading = false;
-        return;
-    }
-
-    apiCall.subscribe({
-      next: (res: any) => {
-        if (this.activeTab === "empty") {
-          this.appointments = (res?.empty_slots || []).map((slot: any) => ({
-            ...slot,
-            slot_time: slot.slot_range,
-          }));
-          this.totalEmptySlots = res?.total_empty_slots || 0;
-        } else {
-          this.appointments = res?.data || [];
-        }
-
-        this.filteredAppointments = this.appointments;
-        this.isLoading = false;
-
-        this.updateStatsFromResponse(res);
-      },
-      error: (err) => {
-        console.error("❌ API Error:", err);
-        this.appointments = [];
-        this.filteredAppointments = [];
-        this.isLoading = false;
-      },
-    });
-  }
-
-  // ===============================
-  // 🔹 UPDATE STATISTICS FROM RESPONSE
-  // ===============================
-  updateStatsFromResponse(res: any) {
-    if (this.activeTab === "empty") {
-      this.stats.empty = res?.total_empty_slots || this.appointments.length;
-    } else {
-      this.stats[this.activeTab] = this.appointments.length;
     }
   }
 
@@ -195,12 +179,12 @@ export class DashboardComponent implements OnInit {
   }
 
   // ===============================
-  // 🔹 TAB CHANGE
+  // 🔹 TAB CHANGE - Now just updates display without API calls
   // ===============================
   setActiveTab(tab: TabType) {
     if (this.isLoading) return;
     this.activeTab = tab;
-    this.loadAppointments();
+    this.updateDisplayForActiveTab();
   }
 
   // ===============================
@@ -259,33 +243,72 @@ export class DashboardComponent implements OnInit {
           appt.price = price;
           appt.appointment_status = newStatus ? "conducted" : "pending";
 
-          // Update the total collection if appointment is conducted
+          // Update raw data based on where this appointment belongs
+
+          // Update in today's appointments
+          const todayIndex = this.rawAppointments.today.findIndex(
+            (a) => a.appointment_code === appt.appointment_code,
+          );
+          if (todayIndex !== -1) {
+            this.rawAppointments.today[todayIndex] = appt;
+          }
+
+          // Update in future appointments
+          const futureIndex = this.rawAppointments.future.findIndex(
+            (a) => a.appointment_code === appt.appointment_code,
+          );
+          if (futureIndex !== -1) {
+            this.rawAppointments.future[futureIndex] = appt;
+          }
+
+          // Update in conducted appointments
+          const conductedIndex = this.rawAppointments.conducted.findIndex(
+            (a) => a.appointment_code === appt.appointment_code,
+          );
+
           if (newStatus) {
-            // Add to allConductedAppointments if not already there
-            const existingIndex = this.allConductedAppointments.findIndex(
-              (a) => a.appointment_code === appt.appointment_code,
-            );
-
-            if (existingIndex === -1) {
-              this.allConductedAppointments.push(appt);
+            // If marking as conducted, add to conducted list if not already there
+            if (conductedIndex === -1) {
+              this.rawAppointments.conducted.push(appt);
             } else {
-              this.allConductedAppointments[existingIndex] = appt;
+              this.rawAppointments.conducted[conductedIndex] = appt;
             }
-
-            // Update total collection amount
-            this.totalCollectionAmount += price;
           } else {
-            // Remove from collection if appointment is un-conducted
-            const index = this.allConductedAppointments.findIndex(
-              (a) => a.appointment_code === appt.appointment_code,
-            );
-
-            if (index !== -1) {
-              this.totalCollectionAmount -=
-                this.allConductedAppointments[index].price || 0;
-              this.allConductedAppointments.splice(index, 1);
+            // If un-conducting, remove from conducted list
+            if (conductedIndex !== -1) {
+              this.rawAppointments.conducted.splice(conductedIndex, 1);
             }
           }
+
+          // Update stats
+          this.stats.conducted = this.rawAppointments.conducted.length;
+
+          // Update allConductedAppointments and total collection
+          const allIndex = this.allConductedAppointments.findIndex(
+            (a) => a.appointment_code === appt.appointment_code,
+          );
+
+          if (newStatus) {
+            if (allIndex === -1) {
+              this.allConductedAppointments.push(appt);
+              this.totalCollectionAmount += price;
+            } else {
+              const oldPrice =
+                this.allConductedAppointments[allIndex].price || 0;
+              this.totalCollectionAmount =
+                this.totalCollectionAmount - oldPrice + price;
+              this.allConductedAppointments[allIndex] = appt;
+            }
+          } else {
+            if (allIndex !== -1) {
+              this.totalCollectionAmount -=
+                this.allConductedAppointments[allIndex].price || 0;
+              this.allConductedAppointments.splice(allIndex, 1);
+            }
+          }
+
+          // Update display for current tab
+          this.updateDisplayForActiveTab();
 
           this.isLoading = false;
           this.showToast(
@@ -342,18 +365,15 @@ export class DashboardComponent implements OnInit {
   // 🔹 FORMAT CURRENCY - FIXED VERSION
   // ===============================
   formatCurrency(amount: number | undefined | null): string {
-    // Check if amount is undefined, null, or NaN
     if (amount === undefined || amount === null) {
       return "₹0";
     }
 
-    // Check if amount is NaN
     if (isNaN(amount)) {
       console.warn("formatCurrency received NaN:", amount);
       return "₹0";
     }
 
-    // Ensure it's a number
     const numAmount = Number(amount);
 
     if (isNaN(numAmount) || numAmount === 0) {
@@ -391,7 +411,6 @@ export class DashboardComponent implements OnInit {
   // 🔹 PAYMENT CALCULATIONS - ALL TIME
   // ===============================
 
-  // Get ALL-TIME collection (from all conducted appointments ever)
   getTotalCollection(): string {
     if (this.isTotalCollectionLoading) {
       return "Loading...";
@@ -399,12 +418,10 @@ export class DashboardComponent implements OnInit {
     return this.formatCurrency(this.totalCollectionAmount);
   }
 
-  // Get count of ALL conducted appointments (all-time)
   getConductedCount(): number {
     return this.allConductedAppointments.length;
   }
 
-  // Get average fee from ALL conducted appointments (all-time)
   getAverageFee(): string {
     const conductedWithPrice = this.allConductedAppointments.filter(
       (appt) => appt.is_appointment_conducted && appt.price,
@@ -420,10 +437,9 @@ export class DashboardComponent implements OnInit {
     return this.formatCurrency(avg);
   }
 
-  // Today's collection (for reference - optional)
   getTodayCollection(): string {
     const today = new Date().toDateString();
-    const total = this.appointments
+    const total = this.rawAppointments.today
       .filter((appt) => {
         if (!appt.is_appointment_conducted || !appt.price) return false;
         const apptDate = new Date(
@@ -438,9 +454,8 @@ export class DashboardComponent implements OnInit {
     return this.formatCurrency(total);
   }
 
-  // Pending payments calculation (for reference - optional)
   getPendingCollection(): string {
-    const pendingCount = this.appointments.filter(
+    const pendingCount = this.rawAppointments.conducted.filter(
       (appt) => !appt.is_appointment_conducted,
     ).length;
     const avgFee = this.getAverageFeeNumber();
@@ -448,9 +463,8 @@ export class DashboardComponent implements OnInit {
     return this.formatCurrency(total);
   }
 
-  // Helper method to get average fee as number
   getAverageFeeNumber(): number {
-    const conductedWithPrice = this.appointments.filter(
+    const conductedWithPrice = this.allConductedAppointments.filter(
       (appt) => appt.is_appointment_conducted && appt.price,
     );
 
@@ -464,10 +478,16 @@ export class DashboardComponent implements OnInit {
   }
 
   // ===============================
+  // 🔹 REFRESH DATA (Manual refresh)
+  // ===============================
+  refreshData() {
+    this.loadAllData();
+  }
+
+  // ===============================
   // 🔹 STORE INIT
   // ===============================
   initStore() {
     this.storeData.select((d) => d.index).subscribe((d) => (this.store = d));
   }
 }
-  

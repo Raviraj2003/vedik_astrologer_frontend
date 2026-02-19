@@ -704,47 +704,7 @@
             </div>
           </div>
 
-          <!-- MEDIA MASTER -->
-          <div class="menu-item-wrapper">
-            <button
-              type="button"
-              class="nav-link accordion-button w-full flex items-center justify-between"
-              [ngClass]="{ active: activeDropdown.includes('media-master') }"
-              (click)="toggleAccordion('media-master')"
-            >
-              <div class="flex items-center gap-3">
-                <icon-menu-dashboard />
-                <span>Media Master</span>
-              </div>
-              <icon-caret-down />
-            </button>
-
-            <div
-              [@slideDownUp]="!activeDropdown.includes('media-master')"
-              class="accordion-content"
-            >
-              <ul class="sub-menu">
-               
-                <li>
-                  <a routerLink="/assign-media" routerLinkActive="active"
-                    >Assign Media</a
-                  >
-                </li>
-                <li>
-                  <a routerLink="/upload-certificate" routerLinkActive="active"
-                    >Upload Certificate</a
-                  >
-                </li>
-                <li>
-                  <a routerLink="/payment-receipt" routerLinkActive="active"
-                    >Payment Receipt</a
-                  >
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <!-- SCHEDULE MASTER -->
+           <!-- SCHEDULE MASTER -->
           <div class="menu-item-wrapper">
             <button
               type="button"
@@ -790,34 +750,55 @@
             </div>
           </div>
 
-          <!-- APPOINTMENT -->
+          <!-- MEDIA MASTER -->
           <div class="menu-item-wrapper">
             <button
               type="button"
               class="nav-link accordion-button w-full flex items-center justify-between"
-              [ngClass]="{ active: activeDropdown.includes('add-appointment') }"
-              (click)="toggleAccordion('add-appointment')"
+              [ngClass]="{ active: activeDropdown.includes('media-master') }"
+              (click)="toggleAccordion('media-master')"
             >
               <div class="flex items-center gap-3">
-                <icon-menu-notes />
-                <span>Appointment</span>
+                <icon-menu-dashboard />
+                <span>Media Master</span>
               </div>
               <icon-caret-down />
             </button>
 
             <div
-              [@slideDownUp]="!activeDropdown.includes('add-appointment')"
+              [@slideDownUp]="!activeDropdown.includes('media-master')"
               class="accordion-content"
             >
               <ul class="sub-menu">
+               
+              
                 <li>
-                  <a routerLink="/add-appointment" routerLinkActive="active"
-                    >Add Appointment</a
+                  <a routerLink="/upload-certificate" routerLinkActive="active"
+                    >Upload Certificate</a
+                  >
+                </li>
+                <li>
+                  <a routerLink="/payment-receipt" routerLinkActive="active"
+                    >Payment Receipt</a
                   >
                 </li>
               </ul>
             </div>
           </div>
+
+         
+
+         <!-- APPOINTMENT -->
+<div class="menu-item-wrapper">
+  <a
+    routerLink="/add-appointment"
+    routerLinkActive="active"
+    class="nav-link flex items-center gap-3 w-full"
+  >
+    <icon-menu-notes />
+    <span>Add Appointment</span>
+  </a>
+</div>
 
           <!-- OTHER SERVICES -->
           <div class="menu-item-wrapper">

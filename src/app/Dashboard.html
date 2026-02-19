@@ -11,7 +11,7 @@
           <h1
             class="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mb-2"
           >
-            🏥 Appointments Dashboard
+            ♈ Astrology Dashboard
           </h1>
           <p class="text-gray-600 dark:text-gray-400">
             Manage and monitor all appointments in one place
@@ -19,24 +19,32 @@
         </div>
 
         <!-- STATISTICS CARDS -->
-       <div class="float-right mb-3">
-  <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
-    <div class="flex items-center justify-between">
-      <div>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Total Collection</p>
-        <p class="text-2xl font-bold text-gray-800 dark:text-white">
-          {{ getTotalCollection() }}
-        </p>
-        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          From {{ getConductedCount() }} conducted appointments
-        </p>
-      </div>
-      <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
-        <span class="text-green-600 dark:text-green-300 text-lg">💰</span>
-      </div>
-    </div>
-  </div>
-</div>
+        <div class="float-right mb-3">
+          <div
+            class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700"
+          >
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  Total Collection
+                </p>
+                <p class="text-2xl font-bold text-gray-800 dark:text-white">
+                  {{ getTotalCollection() }}
+                </p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  From {{ getConductedCount() }} conducted appointments
+                </p>
+              </div>
+              <div
+                class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center"
+              >
+                <span class="text-green-600 dark:text-green-300 text-lg"
+                  >💰</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -112,11 +120,11 @@
           </div>
 
           <div
-            *ngIf="filteredAppointments.length"
+            *ngIf="displayAppointments.length"
             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
           >
             <div
-              *ngFor="let slot of filteredAppointments; let i = index"
+              *ngFor="let slot of displayAppointments; let i = index"
               class="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-5 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-300 group"
             >
               <div class="flex items-start justify-between mb-3">
@@ -148,16 +156,6 @@
                   >
                 </div>
               </div>
-
-              <div
-                class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700"
-              >
-                <button
-                  class="w-full py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg text-sm font-medium transition-all duration-300"
-                >
-                  Book Appointment
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -167,7 +165,7 @@
           *ngIf="!isLoading && activeTab !== 'empty'"
           class="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700"
         >
-          <div *ngIf="filteredAppointments.length; else noData">
+          <div *ngIf="displayAppointments.length; else noData">
             <div class="overflow-x-auto">
               <table
                 class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
@@ -218,7 +216,7 @@
                   class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
                 >
                   <tr
-                    *ngFor="let appt of filteredAppointments; let i = index"
+                    *ngFor="let appt of displayAppointments; let i = index"
                     class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200"
                   >
                     <td class="px-6 py-4 whitespace-nowrap">
@@ -362,9 +360,6 @@
             <h2 class="text-xl font-bold text-white flex items-center">
               <span class="mr-3">📋</span>
               Appointment Details
-              <span class="ml-3 px-3 py-1 bg-white/20 rounded-full text-sm">
-                {{ selectedAppointment.appointment_code }}
-              </span>
             </h2>
             <p class="text-white/90 text-sm mt-1">
               Created on {{ selectedAppointment.created_at | date:'dd MMM yyyy,
@@ -688,32 +683,31 @@
             </div>
           </div>
         </div>
-
-      
       </div>
 
       <!-- Modal Footer -->
-   <div class="sticky bottom-0 border-t border-gray-200 dark:border-gray-700 px-6 py-3 bg-gray-50 dark:bg-gray-800/50 mt-auto">
-  <div class="flex justify-between items-center">
-    <div class="text-sm text-gray-500 dark:text-gray-400">
-    </div>
-    <div class="flex space-x-2">
-      <button
-        (click)="closePopup()"
-        class="px-4 py-2 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 hover:from-gray-300 hover:to-gray-400 dark:hover:from-gray-600 dark:hover:to-gray-500 text-gray-800 dark:text-gray-200 font-medium rounded-lg transition-all duration-300 text-sm"
+      <div
+        class="sticky bottom-0 border-t border-gray-200 dark:border-gray-700 px-6 py-3 bg-gray-50 dark:bg-gray-800/50 mt-auto"
       >
-        Close
-      </button>
-      <button
-        *ngIf="!selectedAppointment.is_appointment_conducted"
-        (click)="openPriceModal(selectedAppointment)"
-        class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl text-sm"
-      >
-        Set Fee & Complete
-      </button>
-    </div>
-  </div>
-</div>
+        <div class="flex justify-between items-center">
+          <div class="text-sm text-gray-500 dark:text-gray-400"></div>
+          <div class="flex space-x-2">
+            <button
+              (click)="closePopup()"
+              class="px-4 py-2 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 hover:from-gray-300 hover:to-gray-400 dark:hover:from-gray-600 dark:hover:to-gray-500 text-gray-800 dark:text-gray-200 font-medium rounded-lg transition-all duration-300 text-sm"
+            >
+              Close
+            </button>
+            <button
+              *ngIf="!selectedAppointment.is_appointment_conducted"
+              (click)="openPriceModal(selectedAppointment)"
+              class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl text-sm"
+            >
+              Set Fee & Complete
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -732,9 +726,6 @@
         <div class="flex items-center justify-between">
           <div>
             <h2 class="text-xl font-bold text-white">Update Appointment</h2>
-            <p class="text-white/90 text-sm mt-1">
-              Code: {{ priceModal.appointment?.appointment_code }}
-            </p>
           </div>
           <button
             (click)="closePriceModal()"
