@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: "root",
 })
 export class ApiService {
-  private baseUrl = "https://vediksoft.vedikastrologer.com/api"; // ✅ BASE URL
+  private baseUrl = "https://vediknode.vedikastrologer.com/api"; // ✅ BASE URL
 
   constructor(private http: HttpClient) {}
 
