@@ -25,28 +25,20 @@ export class DashboardComponent implements OnInit {
   activeTab: TabType = "today";
   tabs: TabType[] = ["today", "future", "empty", "conducted"];
 
-  // 🔹 Data - Store all raw data separately
-  rawAppointments: {
-    today: any[];
-    future: any[];
-    empty: any[];
-    conducted: any[];
-  } = {
-    today: [],
-    future: [],
-    empty: [],
-    conducted: [],
-  };
-
-  // Display data for current tab
-  displayAppointments: any[] = [];
+  // 🔹 Data
+  appointments: any[] = [];
+  filteredAppointments: any[] = [];
   totalEmptySlots: number = 0;
 
-  // All-time collection data
+  // Add this property for all-time collection data
   allConductedAppointments: any[] = [];
   totalCollectionAmount: number = 0;
   isTotalCollectionLoading: boolean = true;
-
+  // 🔹 Store all data separately
+  todayAppointments: any[] = [];
+  futureAppointments: any[] = [];
+  emptySlots: any[] = [];
+  conductedAppointments: any[] = [];
   // 🔹 Modals
   selectedAppointment: any = null;
 
@@ -57,7 +49,7 @@ export class DashboardComponent implements OnInit {
     price: 0,
   };
 
-  // Statistics
+  // Statistics with proper typing
   stats: DashboardStats = {
     today: 0,
     future: 0,
@@ -73,95 +65,127 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadAllData();
+    this.loadAllDashboardData();
+    this.calculateInitialStats();
+    // Load all-time collection on initialization
+    this.loadAllConductedAppointmentsForTotal();
   }
 
   // ===============================
-  // 🔹 LOAD ALL DATA ON INITIALIZATION
+  // 🔹 LOAD ALL CONDUCTED APPOINTMENTS FOR TOTAL COLLECTION
   // ===============================
-  loadAllData() {
-    this.isLoading = true;
-
-    // Use forkJoin to load all data in parallel
-    const todayCall = this.api.getTodayAppointments();
-    const futureCall = this.api.getFutureAppointments();
-    const emptyCall = this.api.getTodayEmptySlots();
-    const conductedCall = this.api.getByConductStatus();
-
-    Promise.all([
-      todayCall.toPromise(),
-      futureCall.toPromise(),
-      emptyCall.toPromise(),
-      conductedCall.toPromise(),
-    ])
-      .then(([todayRes, futureRes, emptyRes, conductedRes]) => {
-        // Store today's appointments
-        this.rawAppointments.today = todayRes?.data || [];
-        this.stats.today = this.rawAppointments.today.length;
-
-        // Store future appointments
-        this.rawAppointments.future = futureRes?.data || [];
-        this.stats.future = this.rawAppointments.future.length;
-
-        // Store empty slots
-        if (emptyRes) {
-          this.rawAppointments.empty = (emptyRes?.empty_slots || []).map(
-            (slot: any) => ({
-              ...slot,
-              slot_time: slot.slot_range,
-            }),
-          );
-          this.totalEmptySlots = emptyRes?.total_empty_slots || 0;
-          this.stats.empty = this.totalEmptySlots;
-        }
-
-        // Store conducted appointments
-        this.rawAppointments.conducted = conductedRes?.data || [];
-        this.stats.conducted = this.rawAppointments.conducted.length;
-
-        // Also store all conducted for collection calculation
-        this.allConductedAppointments = this.rawAppointments.conducted;
+  loadAllConductedAppointmentsForTotal() {
+    this.isTotalCollectionLoading = true;
+    this.api.getByConductStatus().subscribe({
+      next: (res: any) => {
+        console.log("All conducted appointments response:", res);
+        this.allConductedAppointments = res?.data || [];
 
         // Calculate total collection from ALL conducted appointments
         const conductedWithPrice = this.allConductedAppointments.filter(
           (appt) => appt.is_appointment_conducted && appt.price,
         );
 
+        console.log("Conducted appointments with price:", conductedWithPrice);
+
         this.totalCollectionAmount = conductedWithPrice.reduce((sum, appt) => {
           const price = Number(appt.price) || 0;
           return sum + price;
         }, 0);
 
-        // Set display data for active tab
-        this.updateDisplayForActiveTab();
+        console.log("Total collection amount:", this.totalCollectionAmount);
+        this.isTotalCollectionLoading = false;
+      },
+      error: (err) => {
+        console.error("❌ Failed to load all conducted appointments:", err);
+        this.totalCollectionAmount = 0;
+        this.isTotalCollectionLoading = false;
+      },
+    });
+  }
+
+  loadAllDashboardData() {
+    this.isLoading = true;
+
+    Promise.all([
+      this.api.getTodayAppointments().toPromise(),
+      this.api.getFutureAppointments().toPromise(),
+      this.api.getTodayEmptySlots().toPromise(),
+      this.api.getByConductStatus().toPromise(),
+    ])
+      .then(([todayRes, futureRes, emptyRes, conductedRes]) => {
+        // Store data
+        this.todayAppointments = todayRes?.data || [];
+        this.futureAppointments = futureRes?.data || [];
+        this.emptySlots = (emptyRes?.empty_slots || []).map((slot: any) => ({
+          ...slot,
+          slot_time: slot.slot_range,
+        }));
+        this.conductedAppointments = conductedRes?.data || [];
+
+        // Update stats
+        this.stats.today = this.todayAppointments.length;
+        this.stats.future = this.futureAppointments.length;
+        this.stats.empty =
+          emptyRes?.total_empty_slots || this.emptySlots.length;
+        this.stats.conducted = this.conductedAppointments.length;
+
+        // Default tab data
+        this.setAppointmentsByTab(this.activeTab);
 
         this.isLoading = false;
-        this.isTotalCollectionLoading = false;
       })
-      .catch((error) => {
-        console.error("❌ Failed to load dashboard data:", error);
+      .catch((err) => {
+        console.error("❌ Dashboard load error:", err);
         this.isLoading = false;
-        this.isTotalCollectionLoading = false;
       });
+  }
+  // ===============================
+  // 🔹 CALCULATE INITIAL STATS
+  // ===============================
+  calculateInitialStats() {
+    this.stats = {
+      today: 0,
+      future: 0,
+      empty: 0,
+      conducted: 0,
+    };
   }
 
   // ===============================
-  // 🔹 UPDATE DISPLAY DATA BASED ON ACTIVE TAB
+  // 🔹 LOAD DATA BASED ON TAB
   // ===============================
-  updateDisplayForActiveTab() {
-    switch (this.activeTab) {
+  setAppointmentsByTab(tab: TabType) {
+    switch (tab) {
       case "today":
-        this.displayAppointments = this.rawAppointments.today;
+        this.appointments = this.todayAppointments;
         break;
+
       case "future":
-        this.displayAppointments = this.rawAppointments.future;
+        this.appointments = this.futureAppointments;
         break;
+
       case "empty":
-        this.displayAppointments = this.rawAppointments.empty;
+        this.appointments = this.emptySlots;
+        this.totalEmptySlots = this.emptySlots.length;
         break;
+
       case "conducted":
-        this.displayAppointments = this.rawAppointments.conducted;
+        this.appointments = this.conductedAppointments;
         break;
+    }
+
+    this.filteredAppointments = this.appointments;
+  }
+
+  // ===============================
+  // 🔹 UPDATE STATISTICS FROM RESPONSE
+  // ===============================
+  updateStatsFromResponse(res: any) {
+    if (this.activeTab === "empty") {
+      this.stats.empty = res?.total_empty_slots || this.appointments.length;
+    } else {
+      this.stats[this.activeTab] = this.appointments.length;
     }
   }
 
@@ -179,12 +203,11 @@ export class DashboardComponent implements OnInit {
   }
 
   // ===============================
-  // 🔹 TAB CHANGE - Now just updates display without API calls
+  // 🔹 TAB CHANGE
   // ===============================
   setActiveTab(tab: TabType) {
-    if (this.isLoading) return;
     this.activeTab = tab;
-    this.updateDisplayForActiveTab();
+    this.setAppointmentsByTab(tab);
   }
 
   // ===============================
@@ -243,72 +266,33 @@ export class DashboardComponent implements OnInit {
           appt.price = price;
           appt.appointment_status = newStatus ? "conducted" : "pending";
 
-          // Update raw data based on where this appointment belongs
-
-          // Update in today's appointments
-          const todayIndex = this.rawAppointments.today.findIndex(
-            (a) => a.appointment_code === appt.appointment_code,
-          );
-          if (todayIndex !== -1) {
-            this.rawAppointments.today[todayIndex] = appt;
-          }
-
-          // Update in future appointments
-          const futureIndex = this.rawAppointments.future.findIndex(
-            (a) => a.appointment_code === appt.appointment_code,
-          );
-          if (futureIndex !== -1) {
-            this.rawAppointments.future[futureIndex] = appt;
-          }
-
-          // Update in conducted appointments
-          const conductedIndex = this.rawAppointments.conducted.findIndex(
-            (a) => a.appointment_code === appt.appointment_code,
-          );
-
+          // Update the total collection if appointment is conducted
           if (newStatus) {
-            // If marking as conducted, add to conducted list if not already there
-            if (conductedIndex === -1) {
-              this.rawAppointments.conducted.push(appt);
-            } else {
-              this.rawAppointments.conducted[conductedIndex] = appt;
-            }
-          } else {
-            // If un-conducting, remove from conducted list
-            if (conductedIndex !== -1) {
-              this.rawAppointments.conducted.splice(conductedIndex, 1);
-            }
-          }
+            // Add to allConductedAppointments if not already there
+            const existingIndex = this.allConductedAppointments.findIndex(
+              (a) => a.appointment_code === appt.appointment_code,
+            );
 
-          // Update stats
-          this.stats.conducted = this.rawAppointments.conducted.length;
-
-          // Update allConductedAppointments and total collection
-          const allIndex = this.allConductedAppointments.findIndex(
-            (a) => a.appointment_code === appt.appointment_code,
-          );
-
-          if (newStatus) {
-            if (allIndex === -1) {
+            if (existingIndex === -1) {
               this.allConductedAppointments.push(appt);
-              this.totalCollectionAmount += price;
             } else {
-              const oldPrice =
-                this.allConductedAppointments[allIndex].price || 0;
-              this.totalCollectionAmount =
-                this.totalCollectionAmount - oldPrice + price;
-              this.allConductedAppointments[allIndex] = appt;
+              this.allConductedAppointments[existingIndex] = appt;
             }
+
+            // Update total collection amount
+            this.totalCollectionAmount += price;
           } else {
-            if (allIndex !== -1) {
+            // Remove from collection if appointment is un-conducted
+            const index = this.allConductedAppointments.findIndex(
+              (a) => a.appointment_code === appt.appointment_code,
+            );
+
+            if (index !== -1) {
               this.totalCollectionAmount -=
-                this.allConductedAppointments[allIndex].price || 0;
-              this.allConductedAppointments.splice(allIndex, 1);
+                this.allConductedAppointments[index].price || 0;
+              this.allConductedAppointments.splice(index, 1);
             }
           }
-
-          // Update display for current tab
-          this.updateDisplayForActiveTab();
 
           this.isLoading = false;
           this.showToast(
@@ -365,15 +349,18 @@ export class DashboardComponent implements OnInit {
   // 🔹 FORMAT CURRENCY - FIXED VERSION
   // ===============================
   formatCurrency(amount: number | undefined | null): string {
+    // Check if amount is undefined, null, or NaN
     if (amount === undefined || amount === null) {
       return "₹0";
     }
 
+    // Check if amount is NaN
     if (isNaN(amount)) {
       console.warn("formatCurrency received NaN:", amount);
       return "₹0";
     }
 
+    // Ensure it's a number
     const numAmount = Number(amount);
 
     if (isNaN(numAmount) || numAmount === 0) {
@@ -411,6 +398,7 @@ export class DashboardComponent implements OnInit {
   // 🔹 PAYMENT CALCULATIONS - ALL TIME
   // ===============================
 
+  // Get ALL-TIME collection (from all conducted appointments ever)
   getTotalCollection(): string {
     if (this.isTotalCollectionLoading) {
       return "Loading...";
@@ -418,10 +406,12 @@ export class DashboardComponent implements OnInit {
     return this.formatCurrency(this.totalCollectionAmount);
   }
 
+  // Get count of ALL conducted appointments (all-time)
   getConductedCount(): number {
     return this.allConductedAppointments.length;
   }
 
+  // Get average fee from ALL conducted appointments (all-time)
   getAverageFee(): string {
     const conductedWithPrice = this.allConductedAppointments.filter(
       (appt) => appt.is_appointment_conducted && appt.price,
@@ -437,9 +427,10 @@ export class DashboardComponent implements OnInit {
     return this.formatCurrency(avg);
   }
 
+  // Today's collection (for reference - optional)
   getTodayCollection(): string {
     const today = new Date().toDateString();
-    const total = this.rawAppointments.today
+    const total = this.appointments
       .filter((appt) => {
         if (!appt.is_appointment_conducted || !appt.price) return false;
         const apptDate = new Date(
@@ -454,8 +445,9 @@ export class DashboardComponent implements OnInit {
     return this.formatCurrency(total);
   }
 
+  // Pending payments calculation (for reference - optional)
   getPendingCollection(): string {
-    const pendingCount = this.rawAppointments.conducted.filter(
+    const pendingCount = this.appointments.filter(
       (appt) => !appt.is_appointment_conducted,
     ).length;
     const avgFee = this.getAverageFeeNumber();
@@ -463,8 +455,9 @@ export class DashboardComponent implements OnInit {
     return this.formatCurrency(total);
   }
 
+  // Helper method to get average fee as number
   getAverageFeeNumber(): number {
-    const conductedWithPrice = this.allConductedAppointments.filter(
+    const conductedWithPrice = this.appointments.filter(
       (appt) => appt.is_appointment_conducted && appt.price,
     );
 
@@ -475,13 +468,6 @@ export class DashboardComponent implements OnInit {
       return sum + price;
     }, 0);
     return Math.round(total / conductedWithPrice.length);
-  }
-
-  // ===============================
-  // 🔹 REFRESH DATA (Manual refresh)
-  // ===============================
-  refreshData() {
-    this.loadAllData();
   }
 
   // ===============================
