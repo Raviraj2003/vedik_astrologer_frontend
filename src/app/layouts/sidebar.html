@@ -653,12 +653,12 @@
                     >Create Batch</a
                   >
                 </li>
-                 <li>
+                <li>
                   <a routerLink="/class-schedule" routerLinkActive="active"
                     >Class Schedule</a
                   >
                 </li>
-                 <li>
+                <li>
                   <a routerLink="/assign-batch" routerLinkActive="active"
                     >Assign Students</a
                   >
@@ -669,20 +669,18 @@
                   >
                 </li>
 
-                 <li>
+                <li>
                   <a routerLink="/add-media" routerLinkActive="active"
                     >Add Topic Media</a
                   >
                 </li>
-               
-               
-                
+
                 <li>
                   <a routerLink="/assign-topic" routerLinkActive="active"
                     >Assign Topic & Media</a
                   >
                 </li>
-               
+
                 <li>
                   <a routerLink="/attendance" routerLinkActive="active"
                     >Student Attendance</a
@@ -693,7 +691,12 @@
                     >Registered Students</a
                   >
                 </li>
-                 <li>
+                <li>
+                  <a routerLink="/batch-student-list" routerLinkActive="active"
+                    >Batch Student List</a
+                  >
+                </li>
+                <li>
                   <a
                     routerLink="/upgrade-student-batch"
                     routerLinkActive="active"
@@ -704,7 +707,7 @@
             </div>
           </div>
 
-           <!-- SCHEDULE MASTER -->
+          <!-- SCHEDULE MASTER -->
           <div class="menu-item-wrapper">
             <button
               type="button"
@@ -770,8 +773,6 @@
               class="accordion-content"
             >
               <ul class="sub-menu">
-               
-              
                 <li>
                   <a routerLink="/upload-certificate" routerLinkActive="active"
                     >Upload Certificate</a
@@ -786,19 +787,17 @@
             </div>
           </div>
 
-         
-
-         <!-- APPOINTMENT -->
-<div class="menu-item-wrapper">
-  <a
-    routerLink="/add-appointment"
-    routerLinkActive="active"
-    class="nav-link flex items-center gap-3 w-full"
-  >
-    <icon-menu-notes />
-    <span>Add Appointment</span>
-  </a>
-</div>
+          <!-- APPOINTMENT -->
+          <div class="menu-item-wrapper">
+            <a
+              routerLink="/add-appointment"
+              routerLinkActive="active"
+              class="nav-link flex items-center gap-3 w-full"
+            >
+              <icon-menu-notes />
+              <span>Add Appointment</span>
+            </a>
+          </div>
 
           <!-- OTHER SERVICES -->
           <div class="menu-item-wrapper">
@@ -889,13 +888,12 @@
               </a>
             </div> -->
 
-            
             <div>
               <a
-              routerLink="/student-certificates"
-              routerLinkActive="active"
-              (click)="toggleMobileMenu()"
-              class="nav-link"
+                routerLink="/student-certificates"
+                routerLinkActive="active"
+                (click)="toggleMobileMenu()"
+                class="nav-link"
               >
                 <icon-menu-notes />
                 <span>My Certificates</span>
