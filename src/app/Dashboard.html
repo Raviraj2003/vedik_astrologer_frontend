@@ -8,7 +8,7 @@
         class="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
-             <h1
+          <h1
             class="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mb-2"
           >
             ♈ Astrology Dashboard
@@ -19,24 +19,30 @@
         </div>
 
         <!-- STATISTICS CARDS -->
-       <div class="float-right mb-3">
-  <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
-    <div class="flex items-center justify-between">
-      <div>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Total Collection</p>
-        <p class="text-2xl font-bold text-gray-800 dark:text-white">
-          {{ getTotalCollection() }}
-        </p>
-        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          From {{ getConductedCount() }} conducted appointments
-        </p>
-      </div>
-      <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
-        <span class="text-green-600 dark:text-green-300 text-lg">💰</span>
-      </div>
-    </div>
-  </div>
-</div>
+        <div class="float-right mb-3">
+          <div
+            class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700"
+          >
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  Total Collection
+                </p>
+                <p class="text-2xl font-bold text-gray-800 dark:text-white">
+                  {{ getTotalCollection() }}
+                </p>
+                
+              </div>
+              <div
+                class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center"
+              >
+                <span class="text-green-600 dark:text-green-300 text-lg"
+                  >💰</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -148,8 +154,6 @@
                   >
                 </div>
               </div>
-
-          
             </div>
           </div>
         </div>
@@ -354,9 +358,7 @@
             <h2 class="text-xl font-bold text-white flex items-center">
               <span class="mr-3">📋</span>
               Appointment Details
-             
             </h2>
-          
           </div>
           <button
             (click)="closePopup()"
@@ -675,32 +677,31 @@
             </div>
           </div>
         </div>
-
-      
       </div>
 
       <!-- Modal Footer -->
-   <div class="sticky bottom-0 border-t border-gray-200 dark:border-gray-700 px-6 py-3 bg-gray-50 dark:bg-gray-800/50 mt-auto">
-  <div class="flex justify-between items-center">
-    <div class="text-sm text-gray-500 dark:text-gray-400">
-    </div>
-    <div class="flex space-x-2">
-      <button
-        (click)="closePopup()"
-        class="px-4 py-2 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 hover:from-gray-300 hover:to-gray-400 dark:hover:from-gray-600 dark:hover:to-gray-500 text-gray-800 dark:text-gray-200 font-medium rounded-lg transition-all duration-300 text-sm"
+      <div
+        class="sticky bottom-0 border-t border-gray-200 dark:border-gray-700 px-6 py-3 bg-gray-50 dark:bg-gray-800/50 mt-auto"
       >
-        Close
-      </button>
-      <button
-        *ngIf="!selectedAppointment.is_appointment_conducted"
-        (click)="openPriceModal(selectedAppointment)"
-        class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl text-sm"
-      >
-        Set Fee & Complete
-      </button>
-    </div>
-  </div>
-</div>
+        <div class="flex justify-between items-center">
+          <div class="text-sm text-gray-500 dark:text-gray-400"></div>
+          <div class="flex space-x-2">
+            <button
+              (click)="closePopup()"
+              class="px-4 py-2 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 hover:from-gray-300 hover:to-gray-400 dark:hover:from-gray-600 dark:hover:to-gray-500 text-gray-800 dark:text-gray-200 font-medium rounded-lg transition-all duration-300 text-sm"
+            >
+              Close
+            </button>
+            <button
+              *ngIf="!selectedAppointment.is_appointment_conducted"
+              (click)="openPriceModal(selectedAppointment)"
+              class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl text-sm"
+            >
+              Set Fee & Complete
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: "root",
 })
 export class ApiService {
-  private baseUrl = "https://vediknode.vedikastrologer.com/api"; // ✅ BASE URL
+  private baseUrl = "http://192.168.1.13:5000/api"; // ✅ BASE URL
 
   constructor(private http: HttpClient) {}
 
@@ -738,6 +738,36 @@ export class ApiService {
     }>(
       `${this.baseUrl}/getStandards`,
       {}, // ✅ POST body is EMPTY as per Postman
+      {
+        headers: this.getJsonHeaders(), // 🔐 Bearer token auto-added
+      },
+    );
+  }
+
+  // ======================================
+  // 🎓 STUDENT → GET STUDENTS BY BATCH
+  // ======================================
+
+  getStudentsByBatch(batchCode: string): Observable<{
+    success: boolean;
+    count: number;
+    data: {
+      stu_ref_code: string;
+      student_name: string;
+      email: string;
+      phone_no: string;
+      joined_at: string;
+    }[];
+  }> {
+    return this.http.post<{
+      success: boolean;
+      count: number;
+      data: any[];
+    }>(
+      `${this.baseUrl}/student/getStudentsByBatch`,
+      {
+        batch_code: batchCode, // ✅ matches your Postman body
+      },
       {
         headers: this.getJsonHeaders(), // 🔐 Bearer token auto-added
       },

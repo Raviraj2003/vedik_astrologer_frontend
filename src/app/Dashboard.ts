@@ -41,6 +41,7 @@ export class DashboardComponent implements OnInit {
   conductedAppointments: any[] = [];
   // 🔹 Modals
   selectedAppointment: any = null;
+  
 
   priceModal = {
     show: false,
@@ -266,35 +267,46 @@ export class DashboardComponent implements OnInit {
           appt.price = price;
           appt.appointment_status = newStatus ? "conducted" : "pending";
 
-          // Update the total collection if appointment is conducted
+          // ===============================
+          // 🔹 REMOVE FROM OTHER ARRAYS
+          // ===============================
+
+          const removeFromArray = (arr: any[]) => {
+            const index = arr.findIndex(
+              (a) => a.appointment_code === appt.appointment_code,
+            );
+            if (index !== -1) arr.splice(index, 1);
+          };
+
+          removeFromArray(this.todayAppointments);
+          removeFromArray(this.futureAppointments);
+
+          // ===============================
+          // 🔹 ADD TO CORRECT ARRAY
+          // ===============================
+
           if (newStatus) {
-            // Add to allConductedAppointments if not already there
-            const existingIndex = this.allConductedAppointments.findIndex(
-              (a) => a.appointment_code === appt.appointment_code,
-            );
-
-            if (existingIndex === -1) {
-              this.allConductedAppointments.push(appt);
-            } else {
-              this.allConductedAppointments[existingIndex] = appt;
-            }
-
-            // Update total collection amount
-            this.totalCollectionAmount += price;
+            this.conductedAppointments.push(appt);
           } else {
-            // Remove from collection if appointment is un-conducted
-            const index = this.allConductedAppointments.findIndex(
-              (a) => a.appointment_code === appt.appointment_code,
-            );
-
-            if (index !== -1) {
-              this.totalCollectionAmount -=
-                this.allConductedAppointments[index].price || 0;
-              this.allConductedAppointments.splice(index, 1);
-            }
+            this.todayAppointments.push(appt); // or future logic if needed
           }
 
+          // ===============================
+          // 🔹 UPDATE STATS
+          // ===============================
+
+          this.stats.today = this.todayAppointments.length;
+          this.stats.future = this.futureAppointments.length;
+          this.stats.conducted = this.conductedAppointments.length;
+
+          // ===============================
+          // 🔹 UPDATE CURRENT VIEW
+          // ===============================
+
+          this.setAppointmentsByTab(this.activeTab);
+
           this.isLoading = false;
+
           this.showToast(
             `Appointment ${appt.appointment_code} updated successfully`,
             "success",

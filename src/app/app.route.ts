@@ -29,6 +29,7 @@ import { AttendanceComponent } from "./pages/attendance/attendance.component";
 import { CustomerAppointmentComponent } from "./customer-appointment/customer-appointment.component";
 import { AllStudentsComponent } from "./admin/all-students/all-students.component";
 import { ManageClassSlotsComponent } from "./pages/manage-class-slots/manage-class-slots.component";
+import { BatchStudentListComponent } from "./pages/batch-student-list/batch-student-list.component";
 
 // widgets
 import { WidgetsComponent } from "./widgets";
@@ -215,6 +216,12 @@ export const routes: Routes = [
         component: AttendanceComponent,
         data: { title: "Attendance" },
       },
+      {
+        path: "batch-student-list",
+        component: BatchStudentListComponent,
+        data: { title: "Batch Student List" },
+      },
+
       {
         path: "manage-class-slots",
         component: ManageClassSlotsComponent,
