@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { ActivatedRoute } from "@angular/router";
 import {
   FormBuilder,
   FormGroup,
@@ -35,16 +36,28 @@ export class CustomerAppointmentComponent implements OnInit {
 
   maxDobDate: string = this.formatDate(new Date()); // today
   minAppointmentDate: string = this.formatDate(new Date()); // today only or future
+  isRescheduleMode: boolean = false;
+  paymentAmount: number = 700; // Set your consultation fee
+  upiId: string = "mrunalk007@okhdfcbank"; // Set your UPI ID
 
   constructor(
     private api: ApiService,
     private fb: FormBuilder,
+    private route: ActivatedRoute, // ✅ ADD THIS
   ) {}
 
   ngOnInit() {
     this.createForm();
     this.watchAppointmentType();
     this.watchSource();
+
+    const code = this.route.snapshot.queryParams["code"];
+    console.log("Reschedule Code:", code); // 👈 ADD THIS
+
+    if (code) {
+      this.isRescheduleMode = true;
+      this.loadAppointmentData(code); // 👈 correct method name
+    }
   }
 
   /* ================= FORM ================= */
@@ -70,7 +83,8 @@ export class CustomerAppointmentComponent implements OnInit {
       city: [""],
       subjects: [[]],
       source: [""],
-      appointment_status: [""],
+      appointment_status: ["First Time"],
+
       transaction_id: [""],
       appointment_date: ["", Validators.required],
       slot_range: ["", Validators.required],
@@ -80,10 +94,7 @@ export class CustomerAppointmentComponent implements OnInit {
 
       partner_details_temp: this.fb.group({
         name: [""],
-        date_of_birth: [
-          "",
-          [ this.noFutureDateValidator()],
-        ],
+        date_of_birth: ["", [this.noFutureDateValidator()]],
         time_of_birth: [""],
         place_of_birth: [""],
       }),
@@ -106,11 +117,17 @@ export class CustomerAppointmentComponent implements OnInit {
     this.appointmentForm
       .get("appointment_type")
       ?.valueChanges.subscribe((value) => {
+        // 🚫 Do not auto-open modal in reschedule mode
+        if (this.isRescheduleMode) return;
+
         if (value === "Online") {
           this.showOnlineModeModal = true;
         } else {
           this.showOnlineModeModal = false;
-          this.appointmentForm.patchValue({ consultation_mode: "" });
+          this.appointmentForm.patchValue(
+            { consultation_mode: "" },
+            { emitEvent: false },
+          );
         }
       });
   }
@@ -123,6 +140,82 @@ export class CustomerAppointmentComponent implements OnInit {
         this.showFriendModal = false;
         this.appointmentForm.patchValue({ friend_name: "" });
       }
+    });
+  }
+
+  loadAppointmentData(code: string) {
+    this.isLoading = true;
+
+    this.api.getAppointmentByCode(code).subscribe({
+      next: (res: any) => {
+        this.isLoading = false;
+
+        if (!res?.success) {
+          alert("Appointment not found");
+          return;
+        }
+
+        const data = res.data;
+
+        // 🔹 Helper function to format ISO → YYYY-MM-DD
+        const formatDate = (dateStr: string) => {
+          if (!dateStr) return "";
+          return dateStr.split("T")[0];
+        };
+
+        // 🔹 Patch normal fields
+        this.appointmentForm.patchValue(
+          {
+            name: data.name || "",
+            email: data.email || "",
+            mobile_number: data.mobile_number || "",
+            gender: data.gender || "",
+            marital_status: data.marital_status || "",
+            is_twins: !!data.is_twins,
+            appointment_type: data.appointment_type || "",
+            consultation_mode: data.consultation_mode || "",
+
+            date_of_birth: formatDate(data.date_of_birth),
+            time_of_birth: data.time_of_birth || "",
+
+            country: data.country || "India",
+            state: data.state || "Maharashtra",
+            city: data.city || "",
+
+            subjects: data.subjects || [],
+            source: data.source || "",
+            friend_name: data.friend_name || "",
+            transaction_id: data.transaction_id || "",
+
+            appointment_status: ["First Time"],
+            appointment_date: formatDate(data.appointment_date),
+            slot_range: data.slot_range || "",
+          },
+          { emitEvent: false },
+        );
+
+        // 🔹 Load partner details
+        if (data.partner_details && data.partner_details.length > 0) {
+          this.partnerDetailsArray.clear();
+
+          data.partner_details.forEach((partner: any) => {
+            this.partnerDetailsArray.push(
+              this.fb.group({
+                name: partner.name || "",
+                date_of_birth: formatDate(partner.date_of_birth),
+                time_of_birth: partner.time_of_birth || "",
+                place_of_birth: partner.place_of_birth || "",
+                relation_type: partner.relation_type || "",
+              }),
+            );
+          });
+        }
+      },
+
+      error: () => {
+        this.isLoading = false;
+        alert("Failed to fetch appointment data");
+      },
     });
   }
 
@@ -216,6 +309,18 @@ export class CustomerAppointmentComponent implements OnInit {
     this.showPartnerModal = false;
   }
 
+  copyUpiId() {
+    navigator.clipboard
+      .writeText(this.upiId)
+      .then(() => {
+        // You can add a toast notification here
+        alert("UPI ID copied to clipboard! / UPI ID कॉपी झाली!");
+      })
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
+      });
+  }
+
   /* ================= ONLINE MODAL ================= */
 
   confirmConsultationMode() {
@@ -268,23 +373,53 @@ export class CustomerAppointmentComponent implements OnInit {
     }
 
     if (
-      this.appointmentForm.value.appointment_type === "Online" &&
-      !this.appointmentForm.value.consultation_mode
+      this.appointmentForm.get("appointment_type")?.value === "Online" &&
+      !this.appointmentForm.get("consultation_mode")?.value
     ) {
       alert("Please select consultation mode");
       return;
     }
 
-    if (!this.appointmentForm.value.slot_range) {
+    if (!this.appointmentForm.get("slot_range")?.value) {
       alert("Please select a time slot");
       return;
     }
 
     this.isSubmitting = true;
 
+    const appointmentCode = this.route.snapshot.queryParams["code"];
+
+    // ==========================================
+    // 🔥 RESCHEDULE MODE
+    // ==========================================
+    if (appointmentCode) {
+      this.api
+        .rescheduleAppointment({
+          appointment_code: appointmentCode,
+          new_date: this.appointmentForm.get("appointment_date")?.value,
+          new_slot_range: this.appointmentForm.get("slot_range")?.value,
+        })
+        .subscribe({
+          next: () => {
+            this.isSubmitting = false;
+            alert("Appointment rescheduled successfully");
+          },
+          error: (err) => {
+            this.isSubmitting = false;
+            alert(err?.error?.message || "Failed to reschedule appointment");
+          },
+        });
+
+      return;
+    }
+
+    // ==========================================
+    // 🟢 NORMAL BOOKING MODE
+    // ==========================================
+
     const payload = {
-      ...this.appointmentForm.value,
-      is_twins: this.appointmentForm.value.is_twins === true,
+      ...this.appointmentForm.getRawValue(), // 🔥 important (includes disabled fields)
+      is_twins: !!this.appointmentForm.getRawValue().is_twins,
       is_appointment_conducted: false,
       booked_by: "customer",
     };
@@ -292,10 +427,13 @@ export class CustomerAppointmentComponent implements OnInit {
     this.api.addAppointment(payload).subscribe({
       next: (response: any) => {
         this.isSubmitting = false;
-        this.showSuccessMessage = true;
-        this.bookingReference =
-          response.appointment_code || `APP-${Date.now()}`;
 
+        this.bookingReference =
+          response?.appointment_code || `APP-${Date.now()}`;
+
+        this.showSuccessMessage = true;
+
+        // Reset form
         this.appointmentForm.reset({
           country: "India",
           state: "Maharashtra",
@@ -303,15 +441,15 @@ export class CustomerAppointmentComponent implements OnInit {
           is_appointment_conducted: false,
         });
 
+        this.partnerDetailsArray.clear();
         this.slots = [];
       },
       error: (err) => {
         this.isSubmitting = false;
-        alert(err.error?.message || "Failed to book appointment");
+        alert(err?.error?.message || "Failed to book appointment");
       },
     });
   }
-
   markFormGroupTouched(formGroup: FormGroup) {
     Object.values(formGroup.controls).forEach((control: any) => {
       control.markAsTouched();

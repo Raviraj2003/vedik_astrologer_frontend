@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: "root",
 })
 export class ApiService {
-  private baseUrl = "https://vediknode.vedikastrologer.com/api"; // ✅ BASE URL
+  private baseUrl = "http://192.168.1.9:5000/api"; // ✅ BASE URL
 
   constructor(private http: HttpClient) {}
 
@@ -95,6 +95,31 @@ export class ApiService {
   }
 
   // ======================================
+  // 📩 CUSTOMER FORM (SEND MAIL)
+  // ======================================
+
+  submitCustomerForm(data: {
+    name: string;
+    email: string;
+    phone?: string;
+    message: string;
+  }): Observable<{
+    success: boolean;
+    message: string;
+  }> {
+    return this.http.post<{
+      success: boolean;
+      message: string;
+    }>(
+      `${this.baseUrl}/customer`, // ✅ Uses your baseUrl
+      data,
+      {
+        headers: this.getJsonHeaders(), // 🔐 If token required
+      },
+    );
+  }
+
+  // ======================================
   // 🧑‍⚕️ APPOINTMENTS
   // ======================================
 
@@ -148,6 +173,28 @@ export class ApiService {
       `${this.baseUrl}/appointments/updateConductStatus`,
       payload,
       { headers: this.getJsonHeaders() },
+    );
+  }
+
+  // ======================================
+  // 🧑‍⚕️ GET APPOINTMENT BY CODE (RESCHEDULE)
+  // ======================================
+
+  getAppointmentByCode(appointmentCode: string): Observable<{
+    success: boolean;
+    data: any;
+  }> {
+    return this.http.post<{
+      success: boolean;
+      data: any;
+    }>(
+      `${this.baseUrl}/appointments/getByCode`,
+      {
+        appointment_code: appointmentCode, // matches backend
+      },
+      {
+        headers: this.getJsonHeaders(), // 🔐 include token if needed
+      },
     );
   }
 
