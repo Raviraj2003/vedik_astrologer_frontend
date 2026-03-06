@@ -1,8 +1,4 @@
 import {
-  DomSanitizer
-} from "./chunk-7AFCKYR5.js";
-import "./chunk-GUXEIMF7.js";
-import {
   CheckboxControlValueAccessor,
   DefaultValueAccessor,
   FormsModule,
@@ -13,6 +9,10 @@ import {
   SelectControlValueAccessor,
   ɵNgSelectMultipleOption
 } from "./chunk-3VF27ZPB.js";
+import {
+  DomSanitizer
+} from "./chunk-7AFCKYR5.js";
+import "./chunk-GUXEIMF7.js";
 import {
   CommonModule,
   NgClass,
