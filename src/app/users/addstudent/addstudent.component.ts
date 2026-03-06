@@ -165,19 +165,25 @@ export class AddStudentComponent implements OnInit {
   }
 
   /* ================= MODALS ================= */
-  openAddStudent(student: any = null): void {
-    this.initForm(); // This resets the form
-    if (student) {
-      this.studentForm.patchValue({
-        ...student,
-        is_in_batch: student.is_in_batch === "Y",
-      });
-    } else {
-      // Ensure loading is false when opening modal for new student
-      this.loading = false;
-    }
-    this.addStudentModal.open();
+openAddStudent(student: any = null): void {
+  this.initForm();
+
+  if (student) {
+    this.studentForm.patchValue({
+      stu_ref_code: student.stu_ref_code,   // ✅ important
+      student_code: student.stu_ref_code,   // used for UI detection
+      first_name: student.first_name,
+      last_name: student.last_name,
+      email: student.email,
+      phone_no: student.phone_no,
+      is_in_batch: student.is_in_batch === "Y",
+    });
+  } else {
+    this.loading = false;
   }
+
+  this.addStudentModal.open();
+}
 
   viewStudent(student: any): void {
     this.selectedStudent = student;
@@ -185,42 +191,46 @@ export class AddStudentComponent implements OnInit {
   }
 
   /* ================= SAVE ================= */
-  saveStudent(): void {
-    if (this.studentForm.invalid) {
-      this.studentForm.markAllAsTouched();
-      return;
-    }
-
-    this.loading = true;
-    const v = this.studentForm.value;
-
-    const payload: any = {
-      ...v,
-      is_in_batch: v.is_in_batch ? "Y" : "N",
-      batch_code: v.is_in_batch ? v.batch_code : null,
-    };
-
-    delete payload.confirm_password;
-
-    const apiCall = v.student_code
-      ? this.apiService.adminUpdateStudentDetails(payload)
-      : this.apiService.addstudent(payload);
-
-    apiCall.subscribe({
-      next: (res: any) => {
-        Swal.fire("Success", res.message || "Student saved", "success");
-        this.addStudentModal.close();
-        this.loadInitialData();
-        // Reset loading state after modal closes
-        setTimeout(() => {
-          this.loading = false;
-        }, 100);
-      },
-      error: (error) => {
-        Swal.fire("Error", "Failed to save student", "error");
-        this.loading = false; // Reset loading on error
-      },
-      // Remove the complete callback as we're handling it in next
-    });
+saveStudent(): void {
+  if (this.studentForm.invalid) {
+    this.studentForm.markAllAsTouched();
+    return;
   }
+
+  this.loading = true;
+  const v = this.studentForm.value;
+
+  const payload: any = {
+    stu_ref_code: v.student_code,
+    first_name: v.first_name,
+    last_name: v.last_name,
+    email: v.email,
+    phone_no: v.phone_no,
+    password: v.password,
+    is_in_batch: v.is_in_batch ? "Y" : "N",
+  };
+
+  delete payload.confirm_password;
+
+  if (!payload.password) {
+    delete payload.password;
+  }
+
+  const apiCall = v.student_code
+    ? this.apiService.editStudent(payload)
+    : this.apiService.addstudent(payload);
+
+  apiCall.subscribe({
+    next: (res: any) => {
+      Swal.fire("Success", res.message || "Student saved", "success");
+      this.addStudentModal.close();
+      this.loadInitialData();
+      this.loading = false;
+    },
+    error: () => {
+      Swal.fire("Error", "Failed to save student", "error");
+      this.loading = false;
+    },
+  });
+}
 }
