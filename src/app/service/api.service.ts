@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: "root",
 })
 export class ApiService {
-  private baseUrl = "http://192.168.1.9:5000/api"; // ✅ BASE URL
+  private baseUrl = "http://172.20.10.2:5000/api"; // ✅ BASE URL
 
   constructor(private http: HttpClient) {}
 
@@ -118,6 +118,29 @@ export class ApiService {
       },
     );
   }
+
+
+
+
+  // ======================================
+// 🎓 STUDENT → EDIT STUDENT
+// ======================================
+
+editStudent(data: {
+  stu_ref_code: string;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  phone_no?: string;
+  password?: string;
+  is_in_batch?: "Y" | "N";
+}): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/student/editStudent`,
+    data,
+    { headers: this.getJsonHeaders() }
+  );
+}
 
   // ======================================
   // 🧑‍⚕️ APPOINTMENTS
@@ -795,32 +818,13 @@ export class ApiService {
   // 🎓 STUDENT → GET STUDENTS BY BATCH
   // ======================================
 
-  getStudentsByBatch(batchCode: string): Observable<{
-    success: boolean;
-    count: number;
-    data: {
-      stu_ref_code: string;
-      student_name: string;
-      email: string;
-      phone_no: string;
-      joined_at: string;
-    }[];
-  }> {
-    return this.http.post<{
-      success: boolean;
-      count: number;
-      data: any[];
-    }>(
-      `${this.baseUrl}/student/getStudentsByBatch`,
-      {
-        batch_code: batchCode, // ✅ matches your Postman body
-      },
-      {
-        headers: this.getJsonHeaders(), // 🔐 Bearer token auto-added
-      },
-    );
-  }
-
+getStudentsByBatch(batchCode: string): Observable<any> {
+  return this.http.post<any>(
+    `${this.baseUrl}/batches/students`,
+    { batch_code: batchCode },
+    { headers: this.getJsonHeaders() }
+  );
+}
   // ======================================
   // 📦 BATCH → FILTER BY STANDARD
   // ======================================

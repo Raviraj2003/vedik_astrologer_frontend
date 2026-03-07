@@ -1,4 +1,8 @@
 import {
+  Calendar,
+  CustomRenderingStore
+} from "./chunk-4DF5HWSC.js";
+import {
   CommonModule,
   NgClass,
   NgForOf,
@@ -38,10 +42,6 @@ import {
   ɵɵviewQuery
 } from "./chunk-SS62QQNN.js";
 import "./chunk-MJFKGM26.js";
-import {
-  Calendar,
-  CustomRenderingStore
-} from "./chunk-4DF5HWSC.js";
 import {
   __spreadValues
 } from "./chunk-4MWRP73S.js";

@@ -343,7 +343,7 @@ export class StudentDashboardComponent implements OnInit {
       return;
     }
 
-    const baseUrl = "https://vediknode.vedikastrologer.com";
+    const baseUrl = "http://172.20.10.2:5000";
     const fullUrl = path.startsWith("http") ? path : baseUrl + path;
 
     window.open(fullUrl, "_blank");
