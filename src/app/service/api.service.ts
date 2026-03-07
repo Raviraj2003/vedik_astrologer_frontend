@@ -818,32 +818,13 @@ editStudent(data: {
   // 🎓 STUDENT → GET STUDENTS BY BATCH
   // ======================================
 
-getStudentsByBatch(batchCode: string): Observable<{
-  success: boolean;
-  count: number;
-  data: {
-    stu_ref_code: string;
-    student_name: string;
-    email: string;
-    phone_no: string;
-    joined_at: string;
-  }[];
-}> {
-  return this.http.post<{
-    success: boolean;
-    count: number;
-    data: any[];
-  }>(
-    `${this.baseUrl}/batches/students`,   // ✅ updated endpoint
-    {
-      batch_code: batchCode,              // same as curl body
-    },
-    {
-      headers: this.getJsonHeaders(),     // Bearer token + JSON
-    }
+getStudentsByBatch(batchCode: string): Observable<any> {
+  return this.http.post<any>(
+    `${this.baseUrl}/batches/students`,
+    { batch_code: batchCode },
+    { headers: this.getJsonHeaders() }
   );
 }
-
   // ======================================
   // 📦 BATCH → FILTER BY STANDARD
   // ======================================

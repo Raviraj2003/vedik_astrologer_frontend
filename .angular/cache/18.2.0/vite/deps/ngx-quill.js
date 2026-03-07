@@ -2,13 +2,13 @@ import {
   takeUntilDestroyed
 } from "./chunk-DIYTBBRQ.js";
 import {
-  NG_VALIDATORS,
-  NG_VALUE_ACCESSOR
-} from "./chunk-3VF27ZPB.js";
-import {
   DomSanitizer
 } from "./chunk-7AFCKYR5.js";
 import "./chunk-GUXEIMF7.js";
+import {
+  NG_VALIDATORS,
+  NG_VALUE_ACCESSOR
+} from "./chunk-3VF27ZPB.js";
 import {
   DOCUMENT,
   NgClass,

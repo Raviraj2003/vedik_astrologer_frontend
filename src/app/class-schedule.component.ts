@@ -149,10 +149,31 @@ export class ClassScheduleComponent implements OnInit {
   }
 
   /* ================= ON TIME CHANGE ================= */
-  onTimeChange(index: number): void {
-    this.validateScheduleTimes(index);
+onTimeChange(index: number): void {
+  const schedule = this.form.schedules[index];
+
+  if (!schedule.start_time || !schedule.end_time) {
+    schedule.slot_interval = 0;
+    return;
   }
 
+  const start = schedule.start_time.split(":");
+  const end = schedule.end_time.split(":");
+
+  const startMinutes = parseInt(start[0]) * 60 + parseInt(start[1]);
+  const endMinutes = parseInt(end[0]) * 60 + parseInt(end[1]);
+
+  if (endMinutes <= startMinutes) {
+    this.timeErrors[index] = "End time must be greater than start time";
+    schedule.slot_interval = 0;
+    return;
+  }
+
+  this.timeErrors[index] = "";
+
+  // Calculate interval
+  schedule.slot_interval = endMinutes - startMinutes;
+}
   /* ================= ADD / REMOVE DAY ================= */
   addSchedule(): void {
     this.form.schedules.push({
