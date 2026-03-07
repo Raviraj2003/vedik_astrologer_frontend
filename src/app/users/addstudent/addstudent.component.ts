@@ -80,7 +80,13 @@ export class AddStudentComponent implements OnInit {
         email: ["", [Validators.required, Validators.email]],
         password: [""],
         confirm_password: [""],
-        phone_no: ["", Validators.required],
+        phone_no: [
+          "",
+          [
+            Validators.required,
+            Validators.pattern("^[0-9]{10}$"), // only 10 digits
+          ],
+        ],
         is_in_batch: [false],
       },
       { validators: this.passwordMatchValidator },
@@ -165,25 +171,25 @@ export class AddStudentComponent implements OnInit {
   }
 
   /* ================= MODALS ================= */
-openAddStudent(student: any = null): void {
-  this.initForm();
+  openAddStudent(student: any = null): void {
+    this.initForm();
 
-  if (student) {
-    this.studentForm.patchValue({
-      stu_ref_code: student.stu_ref_code,   // ✅ important
-      student_code: student.stu_ref_code,   // used for UI detection
-      first_name: student.first_name,
-      last_name: student.last_name,
-      email: student.email,
-      phone_no: student.phone_no,
-      is_in_batch: student.is_in_batch === "Y",
-    });
-  } else {
-    this.loading = false;
+    if (student) {
+      this.studentForm.patchValue({
+        stu_ref_code: student.stu_ref_code, // ✅ important
+        student_code: student.stu_ref_code, // used for UI detection
+        first_name: student.first_name,
+        last_name: student.last_name,
+        email: student.email,
+        phone_no: student.phone_no,
+        is_in_batch: student.is_in_batch === "Y",
+      });
+    } else {
+      this.loading = false;
+    }
+
+    this.addStudentModal.open();
   }
-
-  this.addStudentModal.open();
-}
 
   viewStudent(student: any): void {
     this.selectedStudent = student;
@@ -191,46 +197,46 @@ openAddStudent(student: any = null): void {
   }
 
   /* ================= SAVE ================= */
-saveStudent(): void {
-  if (this.studentForm.invalid) {
-    this.studentForm.markAllAsTouched();
-    return;
+  saveStudent(): void {
+    if (this.studentForm.invalid) {
+      this.studentForm.markAllAsTouched();
+      return;
+    }
+
+    this.loading = true;
+    const v = this.studentForm.value;
+
+    const payload: any = {
+      stu_ref_code: v.student_code,
+      first_name: v.first_name,
+      last_name: v.last_name,
+      email: v.email,
+      phone_no: v.phone_no,
+      password: v.password,
+      is_in_batch: v.is_in_batch ? "Y" : "N",
+    };
+
+    delete payload.confirm_password;
+
+    if (!payload.password) {
+      delete payload.password;
+    }
+
+    const apiCall = v.student_code
+      ? this.apiService.editStudent(payload)
+      : this.apiService.addstudent(payload);
+
+    apiCall.subscribe({
+      next: (res: any) => {
+        Swal.fire("Success", res.message || "Student saved", "success");
+        this.addStudentModal.close();
+        this.loadInitialData();
+        this.loading = false;
+      },
+      error: () => {
+        Swal.fire("Error", "Failed to save student", "error");
+        this.loading = false;
+      },
+    });
   }
-
-  this.loading = true;
-  const v = this.studentForm.value;
-
-  const payload: any = {
-    stu_ref_code: v.student_code,
-    first_name: v.first_name,
-    last_name: v.last_name,
-    email: v.email,
-    phone_no: v.phone_no,
-    password: v.password,
-    is_in_batch: v.is_in_batch ? "Y" : "N",
-  };
-
-  delete payload.confirm_password;
-
-  if (!payload.password) {
-    delete payload.password;
-  }
-
-  const apiCall = v.student_code
-    ? this.apiService.editStudent(payload)
-    : this.apiService.addstudent(payload);
-
-  apiCall.subscribe({
-    next: (res: any) => {
-      Swal.fire("Success", res.message || "Student saved", "success");
-      this.addStudentModal.close();
-      this.loadInitialData();
-      this.loading = false;
-    },
-    error: () => {
-      Swal.fire("Error", "Failed to save student", "error");
-      this.loading = false;
-    },
-  });
-}
 }

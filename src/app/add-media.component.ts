@@ -86,19 +86,24 @@ export class AddMediaComponent implements OnInit {
   }
 
   // ================= TOPIC FILE =================
-  onTopicFileChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (!input.files || !input.files.length) return;
+onTopicFileChange(event: Event): void {
+  const input = event.target as HTMLInputElement;
 
-    const file = input.files[0];
-    this.topicMediaData.file = file;
-    this.topicFileName = file.name;
+  if (!input.files || !input.files.length) return;
 
-    if (file.type.includes("pdf")) this.topicFileType = "PDF";
-    else if (file.type.includes("image")) this.topicFileType = "IMAGE";
-    else if (file.type.includes("video")) this.topicFileType = "VIDEO";
-    else this.topicFileType = "FILE";
-  }
+  const file = input.files[0];
+
+  this.topicMediaData.file = file;
+  this.topicFileName = file.name;
+
+  if (file.type.includes("pdf")) this.topicFileType = "PDF";
+  else if (file.type.includes("image")) this.topicFileType = "IMAGE";
+  else if (file.type.includes("video")) this.topicFileType = "VIDEO";
+  else this.topicFileType = "FILE";
+
+  // ✅ IMPORTANT: reset input so same file type can be selected again
+  input.value = "";
+}
 
   // ================= UPLOAD IMAGE =================
   uploadImage(): void {
@@ -169,28 +174,35 @@ export class AddMediaComponent implements OnInit {
   }
 
   // ================= RESET =================
-  private resetForm(type: string): void {
-    if (type === "image") {
-      this.imageData = { title: "", description: "", file: null };
-      this.imagePreview = null;
-    }
+private resetForm(type: string): void {
 
-    if (type === "pdf") {
-      this.pdfData = { title: "", description: "", file: null };
-      this.pdfFileName = "";
-    }
-
-    if (type === "video") {
-      this.videoData = { title: "", description: "", file: null };
-      this.videoFileName = "";
-    }
-
-    if (type === "topic media") {
-      this.topicMediaData = { title: "", description: "", file: null };
-      this.selectedTopicId = null;
-      this.selectedTopicName = "";
-      this.topicFileName = "";
-      this.topicFileType = "";
-    }
+  if (type === "image") {
+    this.imageData = { title: "", description: "", file: null };
+    this.imagePreview = null;
   }
+
+  if (type === "pdf") {
+    this.pdfData = { title: "", description: "", file: null };
+    this.pdfFileName = "";
+  }
+
+  if (type === "video") {
+    this.videoData = { title: "", description: "", file: null };
+    this.videoFileName = "";
+  }
+
+  if (type === "topic media") {
+    this.topicMediaData = { title: "", description: "", file: null };
+    this.selectedTopicId = null;
+    this.selectedTopicName = "";
+    this.topicFileName = "";
+    this.topicFileType = "";
+  }
+
+  // ✅ Clear file inputs so same file type can be uploaded again
+  const fileInputs = document.querySelectorAll('input[type="file"]');
+  fileInputs.forEach((input: any) => {
+    input.value = '';
+  });
+}
 }
