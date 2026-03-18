@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { ApiService } from "../service/api.service";
@@ -8,8 +8,9 @@ import { ApiService } from "../service/api.service";
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: "./assign-topic.component.html",
+  styleUrls: ["./assign-topic.component.css"]
 })
-export class AssignTopicComponent implements OnInit {
+export class AssignTopicComponent implements OnInit, OnDestroy {
   /* ================= MASTER ================= */
   standards: any[] = [];
   batches: any[] = [];
@@ -25,14 +26,26 @@ export class AssignTopicComponent implements OnInit {
   isAssigning = false;
   assigningSlotId: string | null = null;
 
-  successMsg = "";
   errorMsg = "";
+
+  /* ================= SUCCESS MODAL ================= */
+  showSuccessModal = false;
+  private modalTimeout: any;
+
+  /* ================= STORAGE KEYS ================= */
+  private readonly STORAGE_KEY = 'assigned_topics';
 
   constructor(private api: ApiService) {}
 
   ngOnInit(): void {
     this.loadStandards();
     this.loadTopics();
+  }
+
+  ngOnDestroy(): void {
+    if (this.modalTimeout) {
+      clearTimeout(this.modalTimeout);
+    }
   }
 
   /* ================= LOAD STANDARDS ================= */
@@ -80,7 +93,6 @@ export class AssignTopicComponent implements OnInit {
   /* ================= LOAD CLASSES ================= */
   onBatchChange(): void {
     this.classes = [];
-    this.successMsg = "";
     this.errorMsg = "";
 
     if (!this.selectedBatchCode) return;
@@ -118,6 +130,7 @@ export class AssignTopicComponent implements OnInit {
               loadingMedia: false,
               isUpdatingLink: false,
               editingLinkSlotId: null,
+              assignmentStatus: null, // Track when assignment was made
             };
           }
 
@@ -127,11 +140,91 @@ export class AssignTopicComponent implements OnInit {
         }
 
         this.classes = Object.values(grouped);
+        
+        // Restore any previously assigned topics for this batch
+        this.restoreAssignedTopics();
+        
         this.isLoading = false;
       },
       error: () => {
         this.showError("❌ Failed to load class slots");
         this.isLoading = false;
+      },
+    });
+  }
+
+  /* ================= RESTORE ASSIGNED TOPICS ================= */
+  private restoreAssignedTopics(): void {
+    try {
+      const stored = localStorage.getItem(this.STORAGE_KEY);
+      if (stored) {
+        const assignments = JSON.parse(stored);
+        const batchKey = this.selectedBatchCode;
+        
+        if (assignments[batchKey]) {
+          const batchAssignments = assignments[batchKey];
+          
+          this.classes.forEach((slot: any) => {
+            const slotKey = `${slot.class_date}_${slot.schedule_id}`;
+            if (batchAssignments[slotKey]) {
+              const assignment = batchAssignments[slotKey];
+              slot.selectedTopicId = assignment.topicId;
+              slot.assignmentStatus = assignment.timestamp;
+              
+              // If topic is selected, load its media
+              if (slot.selectedTopicId) {
+                this.loadTopicMediaForSlot(slot, assignment.selectedMediaIds);
+              }
+            }
+          });
+        }
+      }
+    } catch (e) {
+      console.error('Error restoring assignments:', e);
+    }
+  }
+
+  /* ================= SAVE ASSIGNED TOPICS ================= */
+  private saveAssignedTopics(slot: any, topicId: number, mediaIds: number[]): void {
+    try {
+      const stored = localStorage.getItem(this.STORAGE_KEY);
+      const assignments = stored ? JSON.parse(stored) : {};
+      
+      const batchKey = this.selectedBatchCode;
+      if (!assignments[batchKey]) {
+        assignments[batchKey] = {};
+      }
+      
+      const slotKey = `${slot.class_date}_${slot.schedule_id}`;
+      assignments[batchKey][slotKey] = {
+        topicId: topicId,
+        selectedMediaIds: mediaIds,
+        timestamp: new Date().toLocaleString()
+      };
+      
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(assignments));
+    } catch (e) {
+      console.error('Error saving assignments:', e);
+    }
+  }
+
+  /* ================= LOAD TOPIC MEDIA FOR SLOT ================= */
+  private loadTopicMediaForSlot(slot: any, preselectedMediaIds: number[] = []): void {
+    if (!slot.selectedTopicId) return;
+    
+    slot.loadingMedia = true;
+    
+    this.api.getTopicMedia(slot.selectedTopicId).subscribe({
+      next: (res: any) => {
+        slot.topicMedia = (res?.data || []).map((m: any) => ({
+          ...m,
+          selected: preselectedMediaIds.includes(Number(m.id))
+        }));
+        slot.loadingMedia = false;
+      },
+      error: () => {
+        this.showError("❌ Failed to load topic media");
+        slot.loadingMedia = false;
       },
     });
   }
@@ -187,12 +280,12 @@ export class AssignTopicComponent implements OnInit {
     const payload = {
       slot_id: slotId,
       class_link: classLink,
-      updated_by: "instructor", // You can update this with actual user ID/name
+      updated_by: "instructor",
     };
 
     this.api.updateClassLinkBySlotId(payload).subscribe({
       next: (res: any) => {
-        this.showSuccess(`✅ Class link updated successfully for time slot`);
+        this.showModernSuccessModal();
         slot.editingLinkSlotId = null;
       },
       error: (err: any) => {
@@ -211,7 +304,6 @@ export class AssignTopicComponent implements OnInit {
   getClassLinkDisplayText(link: string): string {
     if (!link) return "No link added";
 
-    // Extract domain from URL for display
     try {
       const url = new URL(link);
       return `${url.hostname}${url.pathname.substring(0, 30)}${url.pathname.length > 30 ? "..." : ""}`;
@@ -230,7 +322,7 @@ export class AssignTopicComponent implements OnInit {
   }
 
   toggleMediaSelection(media: any): void {
-    if (this.isAssigning || media.disabled) return; // Prevent toggling during assignment
+    if (this.isAssigning || media.disabled) return;
     media.selected = !media.selected;
   }
 
@@ -242,23 +334,9 @@ export class AssignTopicComponent implements OnInit {
 
   /* ================= SHOW MESSAGES ================= */
 
-  showSuccess(message: string): void {
-    this.successMsg = message;
-    this.errorMsg = "";
-
-    // Auto-hide success message after 5 seconds
-    setTimeout(() => {
-      if (this.successMsg === message) {
-        this.successMsg = "";
-      }
-    }, 5000);
-  }
-
   showError(message: string): void {
     this.errorMsg = message;
-    this.successMsg = "";
 
-    // Auto-hide error message after 5 seconds
     setTimeout(() => {
       if (this.errorMsg === message) {
         this.errorMsg = "";
@@ -267,8 +345,24 @@ export class AssignTopicComponent implements OnInit {
   }
 
   clearMessages(): void {
-    this.successMsg = "";
     this.errorMsg = "";
+  }
+
+  /* ================= MODERN SUCCESS MODAL ================= */
+  
+  showModernSuccessModal(): void {
+    // Clear any existing timeout
+    if (this.modalTimeout) {
+      clearTimeout(this.modalTimeout);
+    }
+
+    // Show modal
+    this.showSuccessModal = true;
+
+    // Auto close after 1.5 seconds
+    this.modalTimeout = setTimeout(() => {
+      this.showSuccessModal = false;
+    }, 1500);
   }
 
   /* ================= ASSIGN TOPIC + MEDIA ================= */
@@ -285,7 +379,7 @@ export class AssignTopicComponent implements OnInit {
 
     const payload = {
       batch_code: this.selectedBatchCode,
-      slot_ids: slot.slot_ids, // ✅ MULTIPLE SLOT IDS
+      slot_ids: slot.slot_ids,
       topic_id: Number(slot.selectedTopicId),
       media_ids: mediaIds,
     };
@@ -297,27 +391,16 @@ export class AssignTopicComponent implements OnInit {
 
     this.api.assignTopicAndMediaToSlot(payload).subscribe({
       next: (res: any) => {
-        const topicName = this.getTopicName(slot.selectedTopicId);
-        const mediaCount = mediaIds.length;
-        const slotCount = slot.slot_ids.length;
-
-        let successMessage = `✅ Successfully assigned!\n`;
-        successMessage += `📅 Date: ${slot.display_date}\n`;
-        successMessage += `📚 Topic: ${topicName}\n`;
-
-        if (mediaCount > 0) {
-          successMessage += `📁 Media Files: ${mediaCount}\n`;
-        }
-
-        if (slotCount > 1) {
-          successMessage += `⏰ Time Slots: ${slotCount}`;
-        }
-
-        this.showSuccess(successMessage);
-
-        // Optional: Reset the slot selections
-        // slot.selectedTopicId = null;
-        // slot.topicMedia.forEach((m: any) => m.selected = false);
+        // Set assignment status
+        slot.assignmentStatus = new Date().toLocaleString();
+        
+        // Save to localStorage to persist after refresh
+        this.saveAssignedTopics(slot, Number(slot.selectedTopicId), mediaIds);
+        
+        // Show modern success modal with just the tick
+        this.showModernSuccessModal();
+        
+        // Keep all selections - NO RESET, NO REFRESH
       },
       error: (err: any) => {
         console.error("Assignment error:", err);
@@ -326,7 +409,7 @@ export class AssignTopicComponent implements OnInit {
         this.showError(errorMessage);
       },
       complete: () => {
-        // Reset loading states
+        // Reset loading states but KEEP ALL SELECTIONS
         slot.isAssigning = false;
         this.isAssigning = false;
         this.assigningSlotId = null;

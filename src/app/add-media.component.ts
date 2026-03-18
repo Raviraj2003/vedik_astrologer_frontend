@@ -12,20 +12,29 @@ import { ApiService } from "src/app/service/api.service";
 export class AddMediaComponent implements OnInit {
   loading = false;
 
+  // ================= STANDARDS =================
+  standards: any[] = [];
+  selectedStandardId: number | null = null;
+  isLoadingStandards = false;
+
+  // ================= TOPICS =================
+  allTopics: any[] = [];
+  filteredTopics: any[] = [];
+  selectedTopicId: number | null = null;
+  selectedTopicName = "";
+  isLoadingTopics = false;
+
   // ================= IMAGE / PDF / VIDEO =================
   imageData = { title: "", description: "", file: null as File | null };
   pdfData = { title: "", description: "", file: null as File | null };
   videoData = { title: "", description: "", file: null as File | null };
+  // Removed audioData since we're using topicMedia for audio
 
   imagePreview: string | ArrayBuffer | null = null;
   pdfFileName = "";
   videoFileName = "";
 
   // ================= TOPIC MEDIA =================
-  topics: any[] = [];
-  selectedTopicId: number | null = null;
-  selectedTopicName = ""; // ✅ UI ONLY
-
   topicMediaData = {
     title: "",
     description: "",
@@ -39,24 +48,70 @@ export class AddMediaComponent implements OnInit {
 
   // ================= INIT =================
   ngOnInit(): void {
-    this.loadTopics();
+    this.loadStandards();
   }
 
-  // ================= LOAD TOPICS =================
-  loadTopics(): void {
-    this.api.getTopicList().subscribe({
+  // ================= LOAD STANDARDS =================
+  loadStandards(): void {
+    this.isLoadingStandards = true;
+    
+    this.api.getStandards().subscribe({
       next: (res: any) => {
-        this.topics = res?.data || [];
+        this.standards = res?.data || [];
+        this.isLoadingStandards = false;
+        console.log('✅ Standards loaded:', this.standards);
       },
-      error: () => {
-        alert("❌ Failed to load topics");
+      error: (err) => {
+        console.error("❌ Failed to load standards", err);
+        alert("Failed to load standards");
+        this.isLoadingStandards = false;
       },
     });
   }
 
-  // ================= TOPIC CHANGE =================
+  // ================= LOAD TOPICS BY STANDARD =================
+  loadTopicsByStandard(): void {
+    if (!this.selectedStandardId) {
+      this.filteredTopics = [];
+      this.selectedTopicId = null;
+      this.selectedTopicName = "";
+      return;
+    }
+
+    this.isLoadingTopics = true;
+    
+    this.api.getTopicList().subscribe({
+      next: (res: any) => {
+        this.allTopics = res?.data || [];
+        
+        // Filter topics by selected standard
+        this.filteredTopics = this.allTopics.filter(
+          topic => topic.standard_id === this.selectedStandardId
+        );
+        
+        console.log(`✅ Topics for standard ${this.selectedStandardId}:`, this.filteredTopics);
+        
+        // Reset selected topic
+        this.selectedTopicId = null;
+        this.selectedTopicName = "";
+        this.isLoadingTopics = false;
+      },
+      error: (err) => {
+        console.error("❌ Failed to load topics", err);
+        alert("Failed to load topics");
+        this.isLoadingTopics = false;
+      },
+    });
+  }
+
+  // ================= ON STANDARD CHANGE =================
+  onStandardChange(): void {
+    this.loadTopicsByStandard();
+  }
+
+  // ================= ON TOPIC CHANGE =================
   onTopicChange(): void {
-    const topic = this.topics.find((t) => t.id === this.selectedTopicId);
+    const topic = this.filteredTopics.find((t) => t.id === this.selectedTopicId);
     this.selectedTopicName = topic ? topic.topic_name : "";
   }
 
@@ -86,24 +141,35 @@ export class AddMediaComponent implements OnInit {
   }
 
   // ================= TOPIC FILE =================
-onTopicFileChange(event: Event): void {
-  const input = event.target as HTMLInputElement;
+  onTopicFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
 
-  if (!input.files || !input.files.length) return;
+    if (!input.files || !input.files.length) return;
 
-  const file = input.files[0];
+    const file = input.files[0];
 
-  this.topicMediaData.file = file;
-  this.topicFileName = file.name;
+    this.topicMediaData.file = file;
+    this.topicFileName = file.name;
 
-  if (file.type.includes("pdf")) this.topicFileType = "PDF";
-  else if (file.type.includes("image")) this.topicFileType = "IMAGE";
-  else if (file.type.includes("video")) this.topicFileType = "VIDEO";
-  else this.topicFileType = "FILE";
+    // Check for audio files
+    if (file.type.includes("pdf")) {
+      this.topicFileType = "PDF";
+    } else if (file.type.includes("image")) {
+      this.topicFileType = "IMAGE";
+    } else if (file.type.includes("video")) {
+      this.topicFileType = "VIDEO";
+    } else if (file.type.includes("audio") || 
+               file.name.toLowerCase().endsWith('.mp3') || 
+               file.name.toLowerCase().endsWith('.wav') ||
+               file.name.toLowerCase().endsWith('.ogg') ||
+               file.name.toLowerCase().endsWith('.m4a')) {
+      this.topicFileType = "AUDIO";
+    } else {
+      this.topicFileType = "FILE";
+    }
 
-  // ✅ IMPORTANT: reset input so same file type can be selected again
-  input.value = "";
-}
+    input.value = "";
+  }
 
   // ================= UPLOAD IMAGE =================
   uploadImage(): void {
@@ -148,7 +214,7 @@ onTopicFileChange(event: Event): void {
     }
 
     const fd = new FormData();
-    fd.append("topic_id", String(this.selectedTopicId)); // ✅ ID ONLY
+    fd.append("topic_id", String(this.selectedTopicId));
     fd.append("title", this.topicMediaData.title || "");
     fd.append("description", this.topicMediaData.description || "");
     fd.append("file", this.topicMediaData.file);
@@ -161,12 +227,14 @@ onTopicFileChange(event: Event): void {
     this.loading = true;
 
     obs.subscribe({
-      next: () => {
+      next: (response: any) => {
+        console.log(`✅ ${type} upload response:`, response);
         alert(`✅ ${type.toUpperCase()} uploaded successfully`);
         this.resetForm(type);
         this.loading = false;
       },
-      error: () => {
+      error: (error: any) => {
+        console.error(`❌ ${type} upload failed:`, error);
         alert("❌ Upload failed");
         this.loading = false;
       },
@@ -174,35 +242,38 @@ onTopicFileChange(event: Event): void {
   }
 
   // ================= RESET =================
-private resetForm(type: string): void {
+  private resetForm(type: string): void {
+    if (type === "image") {
+      this.imageData = { title: "", description: "", file: null };
+      this.imagePreview = null;
+    }
 
-  if (type === "image") {
-    this.imageData = { title: "", description: "", file: null };
-    this.imagePreview = null;
+    if (type === "pdf") {
+      this.pdfData = { title: "", description: "", file: null };
+      this.pdfFileName = "";
+    }
+
+    if (type === "video") {
+      this.videoData = { title: "", description: "", file: null };
+      this.videoFileName = "";
+    }
+
+    if (type === "topic media") {
+      this.topicMediaData = { title: "", description: "", file: null };
+      this.topicFileName = "";
+      this.topicFileType = "";
+    }
+
+    // Clear file inputs
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    fileInputs.forEach((input: any) => {
+      input.value = '';
+    });
   }
 
-  if (type === "pdf") {
-    this.pdfData = { title: "", description: "", file: null };
-    this.pdfFileName = "";
+  // ================= GET STANDARD NAME =================
+  getStandardName(standardId: number): string {
+    const standard = this.standards.find(s => s.standard_id === standardId);
+    return standard ? standard.standard_name : 'Unknown';
   }
-
-  if (type === "video") {
-    this.videoData = { title: "", description: "", file: null };
-    this.videoFileName = "";
-  }
-
-  if (type === "topic media") {
-    this.topicMediaData = { title: "", description: "", file: null };
-    this.selectedTopicId = null;
-    this.selectedTopicName = "";
-    this.topicFileName = "";
-    this.topicFileType = "";
-  }
-
-  // ✅ Clear file inputs so same file type can be uploaded again
-  const fileInputs = document.querySelectorAll('input[type="file"]');
-  fileInputs.forEach((input: any) => {
-    input.value = '';
-  });
-}
 }
