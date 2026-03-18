@@ -66,16 +66,16 @@
 
         <div class="w-full max-w-[400px] lg:mt-10 relative z-10">
           <!-- Heading -->
-        <div class="mb-8 text-center">
-  <h1
-    class="text-3xl font-extrabold uppercase text-white md:text-4xl"
-  >
-    Login
-  </h1>
-  <p class="text-base font-bold text-white mt-2">
-    Enter your email and password to login
-  </p>
-</div>
+          <div class="mb-8 text-center">
+            <h1
+              class="text-3xl font-extrabold uppercase text-white md:text-4xl"
+            >
+              Login
+            </h1>
+            <p class="text-base font-bold text-white mt-2">
+              Enter your email and password to login
+            </p>
+          </div>
 
           <!-- Login Form -->
           <form
@@ -126,6 +126,42 @@
                   <icon-lock-dots [fill]="true" class="w-5 h-5"></icon-lock-dots>
                 </span>
               </div>
+            </div>
+
+            <!-- Remember Me Checkbox -->
+            <div class="flex items-center justify-between">
+              <label class="flex items-center cursor-pointer group">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="rememberMe"
+                  name="rememberMe"
+                  class="hidden"
+                />
+                <span
+                  class="w-5 h-5 border-2 border-white/70 rounded flex items-center justify-center 
+                         transition-all duration-200 group-hover:border-white"
+                  [class.bg-gradient-to-r]="rememberMe"
+                  [class.from-primary]="rememberMe"
+                  [class.to-secondary]="rememberMe"
+                  [class.border-0]="rememberMe"
+                >
+                  <svg 
+                    *ngIf="rememberMe" 
+                    class="w-3 h-3 text-white" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                </span>
+                <span class="ml-2 text-white text-sm font-medium">Remember me</span>
+              </label>
+              
+              <!-- Forgot Password Link (Optional) -->
+              <a href="#" class="text-sm text-white/80 hover:text-white transition-colors font-medium">
+                Forgot Password?
+              </a>
             </div>
 
             <!-- Sign-in Button -->

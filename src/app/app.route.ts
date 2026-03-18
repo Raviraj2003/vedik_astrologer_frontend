@@ -30,6 +30,7 @@ import { CustomerAppointmentComponent } from "./customer-appointment/customer-ap
 import { AllStudentsComponent } from "./admin/all-students/all-students.component";
 import { ManageClassSlotsComponent } from "./pages/manage-class-slots/manage-class-slots.component";
 import { BatchStudentListComponent } from "./pages/batch-student-list/batch-student-list.component";
+import { ClassScheduleListComponent } from "./admin/class-schedule-list/class-schedule-list.component";
 
 // widgets
 import { WidgetsComponent } from "./widgets";
@@ -144,6 +145,11 @@ export const routes: Routes = [
         path: "reshedul-appointment",
         component: ReshedulAppointmentComponent,
         data: { title: "Reschedule Appointment" },
+      },
+      {
+        path: "class-schedule-list",
+        component: ClassScheduleListComponent,
+        data: { title: "Class Schedule List" },
       },
       {
         path: "class-schedule",

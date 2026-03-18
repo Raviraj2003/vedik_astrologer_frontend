@@ -1,15 +1,15 @@
 <div class="bg-gradient-to-br from-blue-50 via-sky-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen">
-  <!-- Floating Background Elements - Blue Theme -->
+  <!-- Floating Background Elements -->
   <div class="fixed inset-0 overflow-hidden pointer-events-none" style="z-index: 0;">
     <div class="absolute -top-40 -right-40 w-96 h-96 bg-blue-200 dark:bg-blue-900/20 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
     <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-sky-200 dark:bg-sky-900/20 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse delay-1000"></div>
   </div>
 
-  <!-- Main Content Container - NO top padding -->
+  <!-- Main Content Container -->
   <div class="relative w-full" style="z-index: 10;">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
       
-      <!-- HEADER - Shifted to left side at top (NO top margin) -->
+      <!-- HEADER -->
       <div class="mb-6 pt-4">
         <div class="flex items-center gap-2">
           <div
@@ -56,38 +56,94 @@
               </div>
             </div>
             <span class="text-xs bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full font-medium">
-              {{ topics.length }} topics
+              {{ standards.length }} standards
             </span>
           </div>
         </div>
 
         <!-- Card Body - Compact -->
         <div class="p-5 space-y-4">
-          <!-- Topic Dropdown -->
+          <!-- Standard Dropdown -->
+          <div class="space-y-2">
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+              </svg>
+              <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400">Select Standard</h3>
+            </div>
+
+            <select
+              [(ngModel)]="selectedStandardId"
+              (change)="onStandardChange()"
+              class="w-full px-3 py-2.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-150 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+              [disabled]="isLoadingStandards"
+            >
+              <option [ngValue]="null" disabled>-- Choose a standard --</option>
+              <option *ngFor="let s of standards" [ngValue]="s.standard_id">
+                {{ s.standard_name }}
+              </option>
+            </select>
+
+            <!-- Loading indicator for standards -->
+            <div *ngIf="isLoadingStandards" class="text-xs text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
+              <svg class="w-3.5 h-3.5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Loading standards...
+            </div>
+          </div>
+
+          <!-- Topic Dropdown - Filtered by Standard -->
           <div class="space-y-2">
             <div class="flex items-center gap-1.5">
               <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
               </svg>
               <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400">Select Topic</h3>
+              <span *ngIf="selectedStandardId" class="text-[10px] bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 px-1.5 py-0.5 rounded-full">
+                {{ filteredTopics.length }} available
+              </span>
             </div>
 
+            <!-- Show message if no standard selected -->
+            <div *ngIf="!selectedStandardId" class="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 p-2 rounded-lg">
+              Please select a standard first
+            </div>
+
+            <!-- Topic dropdown when standard is selected -->
             <select
+              *ngIf="selectedStandardId"
               [(ngModel)]="selectedTopicId"
               (change)="onTopicChange()"
-              class="w-full px-3 py-2.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-150 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+              class="w-full px-3 py-2.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-150 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+              [disabled]="isLoadingTopics || filteredTopics.length === 0"
             >
-              <option value="" disabled>Select topic...</option>
-              <option *ngFor="let t of topics" [value]="t.id">
+              <option [ngValue]="null" disabled>-- Choose a topic --</option>
+              <option *ngFor="let t of filteredTopics" [value]="t.id">
                 {{ t.topic_name }}
               </option>
             </select>
+
+            <!-- Loading indicator for topics -->
+            <div *ngIf="isLoadingTopics" class="text-xs text-purple-600 dark:text-purple-400 flex items-center gap-1">
+              <svg class="w-3.5 h-3.5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Loading topics...
+            </div>
+
+            <!-- No topics message -->
+            <div *ngIf="selectedStandardId && !isLoadingTopics && filteredTopics.length === 0" class="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 p-2 rounded-lg">
+              No topics found for this standard
+            </div>
 
             <div *ngIf="selectedTopicName" class="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
               </svg>
-              {{ selectedTopicName }}
+              Selected: {{ selectedTopicName }}
             </div>
           </div>
 
@@ -113,7 +169,7 @@
                 type="file"
                 hidden
                 (change)="onTopicFileChange($event)"
-                accept=".pdf,.jpg,.jpeg,.png,.gif,.mp4,.mov,.avi"
+                accept=".pdf,.jpg,.jpeg,.png,.gif,.mp4,.mov,.avi,.mp3,.wav,.ogg,.m4a,.aac,.flac"
               />
 
               <!-- Empty State -->
@@ -127,7 +183,7 @@
                   Click to upload or drag & drop
                 </p>
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                  PDF, Images, Video (Max 100MB)
+                  PDF, Images, Video, Audio (Max 100MB)
                 </p>
               </div>
 
@@ -151,6 +207,7 @@
                         'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400': topicFileType === 'PDF',
                         'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400': topicFileType === 'IMAGE',
                         'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-400': topicFileType === 'VIDEO',
+                        'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400': topicFileType === 'AUDIO',
                         'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300': topicFileType === 'FILE'
                       }"
                     >
@@ -248,13 +305,11 @@
     animation-delay: 1s;
   }
   
-  /* Fix for navbar - no extra padding needed */
   body {
     margin: 0;
     padding: 0;
   }
   
-  /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 5px;
     height: 5px;

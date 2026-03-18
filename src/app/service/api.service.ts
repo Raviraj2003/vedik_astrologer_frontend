@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: "root",
 })
 export class ApiService {
-  private baseUrl = "https://vediknode.vedikastrologer.com/api"; // ✅ BASE URL
+  private baseUrl = "http://192.168.1.43:5000/api"; // ✅ BASE URL
 
   constructor(private http: HttpClient) {}
 
@@ -422,6 +422,30 @@ editStudent(data: {
     );
   }
 
+
+
+  // ======================================
+// 📅 ADMIN → CLASS SCHEDULE LIST
+// ======================================
+
+getAdminClassSchedule(): Observable<{
+  success: boolean;
+  count: number;
+  data: any[];
+}> {
+  return this.http.post<{
+    success: boolean;
+    count: number;
+    data: any[];
+  }>(
+    `${this.baseUrl}/getScheduleForAdmin`,
+    {}, // ✅ empty body as per Postman
+    {
+      headers: this.getJsonHeaders(), // 🔐 Bearer token auto-added
+    }
+  );
+}
+
   // ======================================
   // 📅 CLASS SCHEDULE → UPDATE
   // ======================================
@@ -788,16 +812,7 @@ editStudent(data: {
   // 📘 STANDARD MASTER
   // ======================================
 
-  getStandards(): Observable<{
-    success: boolean;
-    message: string;
-    data: {
-      standard_id: number;
-      standard_name: string;
-      standard_description: string;
-    }[];
-  }> {
-    return this.http.post<{
+    getStandards(): Observable<{
       success: boolean;
       message: string;
       data: {
@@ -805,14 +820,23 @@ editStudent(data: {
         standard_name: string;
         standard_description: string;
       }[];
-    }>(
-      `${this.baseUrl}/getStandards`,
-      {}, // ✅ POST body is EMPTY as per Postman
-      {
-        headers: this.getJsonHeaders(), // 🔐 Bearer token auto-added
-      },
-    );
-  }
+    }> {
+      return this.http.post<{
+        success: boolean;
+        message: string;
+        data: {
+          standard_id: number;
+          standard_name: string;
+          standard_description: string;
+        }[];
+      }>(
+        `${this.baseUrl}/getStandards`,
+        {}, // ✅ POST body is EMPTY as per Postman
+        {
+          headers: this.getJsonHeaders(), // 🔐 Bearer token auto-added
+        },
+      );
+    }
 
   // ======================================
   // 🎓 STUDENT → GET STUDENTS BY BATCH
