@@ -49,7 +49,7 @@ export class AddStudentComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.initForm();
@@ -71,39 +71,39 @@ export class AddStudentComponent implements OnInit {
   }
 
   /* ================= FORM ================= */
-initForm(): void {
-  this.studentForm = this.fb.group(
-    {
-      student_code: [""],
-      first_name: ["", Validators.required],
-      last_name: ["", Validators.required],
-      email: ["", [Validators.required, Validators.email]],
-      password: [""],
-      confirm_password: [""],
-      phone_no: [
-        "",
-        [
-          Validators.required,
-          Validators.pattern("^[0-9]{10}$"), // only 10 digits
+  initForm(): void {
+    this.studentForm = this.fb.group(
+      {
+        student_code: [""],
+        first_name: ["", Validators.required],
+        last_name: ["", Validators.required],
+        email: ["", [Validators.required, Validators.email]],
+        password: [""],
+        confirm_password: [""],
+        phone_no: [
+          "",
+          [
+            Validators.required,
+            Validators.pattern("^[0-9]{10}$"), // only 10 digits
+          ],
         ],
-      ],
-      is_in_batch: [true], // Changed from false to true for batch selected by default
-      batch_code: [""], // You need to add this field if it's not already in your form
-    },
-    { validators: this.passwordMatchValidator },
-  );
+        is_in_batch: [true], // Changed from false to true for batch selected by default
+        batch_code: [""], // You need to add this field if it's not already in your form
+      },
+      { validators: this.passwordMatchValidator },
+    );
 
-  this.studentForm.get("is_in_batch")?.valueChanges.subscribe((checked) => {
-    const ctrl = this.studentForm.get("batch_code");
-    if (checked) {
-      ctrl?.setValidators([Validators.required]);
-    } else {
-      ctrl?.clearValidators();
-      ctrl?.setValue("");
-    }
-    ctrl?.updateValueAndValidity();
-  });
-}
+    this.studentForm.get("is_in_batch")?.valueChanges.subscribe((checked) => {
+      const ctrl = this.studentForm.get("batch_code");
+
+      if (!checked) {
+        ctrl?.clearValidators();
+        ctrl?.setValue("");
+      }
+
+      ctrl?.updateValueAndValidity();
+    });
+  }
 
   passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
     const p = control.get("password")?.value;
@@ -177,13 +177,14 @@ initForm(): void {
 
     if (student) {
       this.studentForm.patchValue({
-        stu_ref_code: student.stu_ref_code, // ✅ important
-        student_code: student.stu_ref_code, // used for UI detection
+        stu_ref_code: student.stu_ref_code,
+        student_code: student.stu_ref_code,
         first_name: student.first_name,
         last_name: student.last_name,
         email: student.email,
         phone_no: student.phone_no,
         is_in_batch: student.is_in_batch === "Y",
+        batch_code: student.batch_code || ""   // ✅ FIX
       });
     } else {
       this.loading = false;
