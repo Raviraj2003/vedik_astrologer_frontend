@@ -31,6 +31,7 @@ import { AllStudentsComponent } from "./admin/all-students/all-students.componen
 import { ManageClassSlotsComponent } from "./pages/manage-class-slots/manage-class-slots.component";
 import { BatchStudentListComponent } from "./pages/batch-student-list/batch-student-list.component";
 import { ClassScheduleListComponent } from "./admin/class-schedule-list/class-schedule-list.component";
+import {TopicMediaListComponent} from "./apps/topic-media-list.component";
 
 // widgets
 import { WidgetsComponent } from "./widgets";
@@ -155,6 +156,12 @@ export const routes: Routes = [
         path: "class-schedule",
         component: ClassScheduleComponent,
         data: { title: "class-schedule" },
+      },
+
+      {
+        path: "topic-media-list",
+        component: TopicMediaListComponent,
+        data: { title: "Topic Media List" },
       },
       {
         path: "create-batch",

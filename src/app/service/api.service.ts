@@ -991,6 +991,42 @@ getStudentsByBatch(batchCode: string): Observable<any> {
     );
   }
 
+  getTopicMediaByTopic(topicId: number): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/media/getTopicMediaByTopic`,
+    { topic_id: topicId },
+    { headers: this.getJsonHeaders() }
+  );
+}
+
+updateTopicMedia(data: {
+  id: number;
+  title?: string;
+  description?: string;
+}): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/media/updateTopicMedia`,
+    data,
+    { headers: this.getJsonHeaders() }
+  );
+}
+
+deleteTopicMedia(id: number): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/media/deleteTopicMedia`,
+    { id },
+    { headers: this.getJsonHeaders() }
+  );
+}
+
+getTopicsByStandard(standardId: number): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/media/getTopicsByStandard`,
+    { standard_id: standardId },
+    { headers: this.getJsonHeaders() }
+  );
+}
+
   // ======================================
   // 🧰 HELPERS
   // ======================================
