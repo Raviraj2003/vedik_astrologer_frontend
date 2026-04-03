@@ -27,7 +27,7 @@
   }
 
   /* Make the inner div transparent */
-  .sidebar > div {
+  .sidebar>div {
     background: transparent !important;
     backdrop-filter: none !important;
   }
@@ -51,14 +51,12 @@
     left: 25% !important;
     width: 50% !important;
     height: 2px !important;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(59, 130, 246, 0.8) 20%,
-      rgba(139, 92, 246, 0.8) 50%,
-      rgba(59, 130, 246, 0.8) 80%,
-      transparent 100%
-    ) !important;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(59, 130, 246, 0.8) 20%,
+        rgba(139, 92, 246, 0.8) 50%,
+        rgba(59, 130, 246, 0.8) 80%,
+        transparent 100%) !important;
     border-radius: 2px !important;
   }
 
@@ -86,14 +84,12 @@
     left: 25% !important;
     width: 50% !important;
     height: 2px !important;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(59, 130, 246, 0.8) 20%,
-      rgba(139, 92, 246, 0.8) 50%,
-      rgba(59, 130, 246, 0.8) 80%,
-      transparent 100%
-    ) !important;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(59, 130, 246, 0.8) 20%,
+        rgba(139, 92, 246, 0.8) 50%,
+        rgba(59, 130, 246, 0.8) 80%,
+        transparent 100%) !important;
     border-radius: 2px !important;
   }
 
@@ -103,30 +99,28 @@
   }
 
   .sidebar-logo {
-    height: 60px !important; /* Increased size */
+    height: 60px !important;
+    /* Increased size */
     width: auto !important;
-    max-width: 200px !important; /* Increased size */
+    max-width: 200px !important;
+    /* Increased size */
     display: block !important;
     margin: 0 auto !important;
     transition: all 0.3s ease !important;
-    filter: drop-shadow(0 3px 8px rgba(59, 130, 246, 0.25))
-      drop-shadow(0 1px 3px rgba(99, 102, 241, 0.15)) brightness(1.05) !important;
+    filter: drop-shadow(0 3px 8px rgba(59, 130, 246, 0.25)) drop-shadow(0 1px 3px rgba(99, 102, 241, 0.15)) brightness(1.05) !important;
   }
 
   .sidebar-logo:hover {
     transform: scale(1.04) !important;
-    filter: drop-shadow(0 5px 15px rgba(99, 102, 241, 0.35))
-      drop-shadow(0 2px 6px rgba(139, 92, 246, 0.25)) brightness(1.1) !important;
+    filter: drop-shadow(0 5px 15px rgba(99, 102, 241, 0.35)) drop-shadow(0 2px 6px rgba(139, 92, 246, 0.25)) brightness(1.1) !important;
   }
 
   .dark .sidebar-logo {
-    filter: drop-shadow(0 3px 10px rgba(99, 102, 241, 0.3))
-      drop-shadow(0 1px 4px rgba(139, 92, 246, 0.2)) brightness(1.05) !important;
+    filter: drop-shadow(0 3px 10px rgba(99, 102, 241, 0.3)) drop-shadow(0 1px 4px rgba(139, 92, 246, 0.2)) brightness(1.05) !important;
   }
 
   .dark .sidebar-logo:hover {
-    filter: drop-shadow(0 6px 20px rgba(139, 92, 246, 0.4))
-      drop-shadow(0 3px 10px rgba(99, 102, 241, 0.3)) brightness(1.12) !important;
+    filter: drop-shadow(0 6px 20px rgba(139, 92, 246, 0.4)) drop-shadow(0 3px 10px rgba(99, 102, 241, 0.3)) brightness(1.12) !important;
   }
 
   /* Update mobile responsive size */
@@ -139,16 +133,14 @@
 
   /* Dark mode specific shadow */
   .dark .sidebar-logo {
-    filter: drop-shadow(0 4px 15px rgba(99, 102, 241, 0.4))
-      drop-shadow(0 1px 4px rgba(139, 92, 246, 0.3)) brightness(1.05) !important;
+    filter: drop-shadow(0 4px 15px rgba(99, 102, 241, 0.4)) drop-shadow(0 1px 4px rgba(139, 92, 246, 0.3)) brightness(1.05) !important;
     box-shadow:
       0 10px 30px rgba(0, 0, 0, 0.4),
       0 5px 12px rgba(99, 102, 241, 0.25) !important;
   }
 
   .dark .sidebar-logo:hover {
-    filter: drop-shadow(0 10px 30px rgba(139, 92, 246, 0.6))
-      drop-shadow(0 4px 10px rgba(99, 102, 241, 0.4)) brightness(1.2) !important;
+    filter: drop-shadow(0 10px 30px rgba(139, 92, 246, 0.6)) drop-shadow(0 4px 10px rgba(99, 102, 241, 0.4)) brightness(1.2) !important;
     box-shadow:
       0 20px 45px rgba(0, 0, 0, 0.6),
       0 10px 20px rgba(139, 92, 246, 0.3),
@@ -158,10 +150,10 @@
   /* Update mobile responsive size as well */
   @media (max-width: 768px) {
     .sidebar-logo {
-      height: 52px !important; /* Increased from 42px */
+      height: 52px !important;
+      /* Increased from 42px */
       max-width: 180px !important;
-      filter: drop-shadow(0 3px 10px rgba(59, 130, 246, 0.3))
-        drop-shadow(0 1px 3px rgba(99, 102, 241, 0.2)) brightness(1.1) !important;
+      filter: drop-shadow(0 3px 10px rgba(59, 130, 246, 0.3)) drop-shadow(0 1px 3px rgba(99, 102, 241, 0.2)) brightness(1.1) !important;
       box-shadow:
         0 8px 20px rgba(59, 130, 246, 0.15),
         0 3px 8px rgba(99, 102, 241, 0.1) !important;
@@ -188,32 +180,36 @@
     margin: 0.125rem 0 !important;
     border-radius: 10px !important;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    color: #1f2937 !important; /* Darker text for better visibility */
-    font-weight: 600 !important; /* Bolder font weight */
+    color: #1f2937 !important;
+    /* Darker text for better visibility */
+    font-weight: 600 !important;
+    /* Bolder font weight */
     font-size: 0.875rem !important;
     width: 100% !important;
-    background: rgba(
-      255,
-      255,
-      255,
-      0.7
-    ) !important; /* Less transparent for better visibility */
-    border: 1.5px solid rgba(59, 130, 246, 0.25) !important; /* Thicker border */
+    background: rgba(255,
+        255,
+        255,
+        0.7) !important;
+    /* Less transparent for better visibility */
+    border: 1.5px solid rgba(59, 130, 246, 0.25) !important;
+    /* Thicker border */
     position: relative !important;
     overflow: hidden !important;
     backdrop-filter: blur(8px) !important;
-    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5) !important; /* Text shadow for readability */
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5) !important;
+    /* Text shadow for readability */
   }
 
   .dark .nav-link {
-    background: rgba(
-      255,
-      255,
-      255,
-      0.15
-    ) !important; /* More visible in dark mode */
-    border: 1.5px solid rgba(99, 102, 241, 0.3) !important; /* Thicker border */
-    color: #f1f5f9 !important; /* Lighter text for dark mode */
+    background: rgba(255,
+        255,
+        255,
+        0.15) !important;
+    /* More visible in dark mode */
+    border: 1.5px solid rgba(99, 102, 241, 0.3) !important;
+    /* Thicker border */
+    color: #f1f5f9 !important;
+    /* Lighter text for dark mode */
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3) !important;
   }
 
@@ -224,14 +220,14 @@
   .nav-link icon-menu-elements,
   .nav-link icon-menu-charts,
   .nav-link icon-clipboard-text {
-    width: 18px !important; /* Slightly larger */
+    width: 18px !important;
+    /* Slightly larger */
     height: 18px !important;
     color: #4f46e5 !important;
     transition: all 0.25s ease !important;
     flex-shrink: 0 !important;
-    filter: drop-shadow(
-      0 1px 1px rgba(0, 0, 0, 0.1)
-    ) !important; /* Icon shadow */
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1)) !important;
+    /* Icon shadow */
   }
 
   .dark .nav-link icon-menu-dashboard,
@@ -246,27 +242,27 @@
 
   /* Compact Hover Effects for main menu - Enhanced visibility */
   .nav-link:hover {
-    background: linear-gradient(
-      135deg,
-      rgba(59, 130, 246, 0.3) 0%,
-      /* More opaque */ rgba(99, 102, 241, 0.25) 100%
-    ) !important;
+    background: linear-gradient(135deg,
+        rgba(59, 130, 246, 0.3) 0%,
+        /* More opaque */
+        rgba(99, 102, 241, 0.25) 100%) !important;
     transform: translateX(3px) !important;
-    color: #1e40af !important; /* Darker blue for better contrast */
+    color: #1e40af !important;
+    /* Darker blue for better contrast */
     border-color: rgba(59, 130, 246, 0.4) !important;
     box-shadow:
       0 4px 18px rgba(59, 130, 246, 0.25),
-      /* Stronger shadow */ 0 2px 5px rgba(99, 102, 241, 0.2),
+      /* Stronger shadow */
+      0 2px 5px rgba(99, 102, 241, 0.2),
       inset 0 0 20px rgba(255, 255, 255, 0.15) !important;
-    font-weight: 700 !important; /* Even bolder on hover */
+    font-weight: 700 !important;
+    /* Even bolder on hover */
   }
 
   .dark .nav-link:hover {
-    background: linear-gradient(
-      135deg,
-      rgba(59, 130, 246, 0.35) 0%,
-      rgba(99, 102, 241, 0.3) 100%
-    ) !important;
+    background: linear-gradient(135deg,
+        rgba(59, 130, 246, 0.35) 0%,
+        rgba(99, 102, 241, 0.3) 100%) !important;
     color: #60a5fa !important;
     border-color: rgba(99, 102, 241, 0.4) !important;
   }
@@ -278,23 +274,27 @@
   .nav-link:hover icon-menu-charts,
   .nav-link:hover icon-clipboard-text {
     color: #3b82f6 !important;
-    transform: scale(1.15) !important; /* More noticeable scale */
+    transform: scale(1.15) !important;
+    /* More noticeable scale */
   }
 
   /* Compact Active State for main menu - Enhanced visibility */
   .nav-link.active {
-    background: linear-gradient(
-      135deg,
-      rgba(59, 130, 246, 0.35) 0%,
-      /* More opaque */ rgba(99, 102, 241, 0.3) 100%
-    ) !important;
-    color: #1e3a8a !important; /* Much darker blue for maximum contrast */
-    font-weight: 700 !important; /* Bolder active state */
+    background: linear-gradient(135deg,
+        rgba(59, 130, 246, 0.35) 0%,
+        /* More opaque */
+        rgba(99, 102, 241, 0.3) 100%) !important;
+    color: #1e3a8a !important;
+    /* Much darker blue for maximum contrast */
+    font-weight: 700 !important;
+    /* Bolder active state */
     font-size: 0.875rem !important;
-    border: 2px solid rgba(59, 130, 246, 0.5) !important; /* Thicker border */
+    border: 2px solid rgba(59, 130, 246, 0.5) !important;
+    /* Thicker border */
     box-shadow:
       0 5px 25px rgba(59, 130, 246, 0.3),
-      /* Stronger shadow */ 0 3px 8px rgba(99, 102, 241, 0.25),
+      /* Stronger shadow */
+      0 3px 8px rgba(99, 102, 241, 0.25),
       inset 0 1px 0 rgba(255, 255, 255, 0.5),
       inset 0 0 25px rgba(255, 255, 255, 0.15) !important;
     transform: translateX(3px) !important;
@@ -302,12 +302,12 @@
   }
 
   .dark .nav-link.active {
-    background: linear-gradient(
-      135deg,
-      rgba(59, 130, 246, 0.45) 0%,
-      /* More opaque in dark mode */ rgba(99, 102, 241, 0.4) 100%
-    ) !important;
-    color: #dbeafe !important; /* Very light blue for maximum contrast */
+    background: linear-gradient(135deg,
+        rgba(59, 130, 246, 0.45) 0%,
+        /* More opaque in dark mode */
+        rgba(99, 102, 241, 0.4) 100%) !important;
+    color: #dbeafe !important;
+    /* Very light blue for maximum contrast */
     border: 2px solid rgba(99, 102, 241, 0.5) !important;
     box-shadow:
       0 5px 30px rgba(0, 0, 0, 0.6),
@@ -337,14 +337,16 @@
   /* Compact Accordion Button - Enhanced visibility */
   .accordion-button {
     padding-right: 2rem !important;
-    font-weight: 600 !important; /* Bolder text */
+    font-weight: 600 !important;
+    /* Bolder text */
   }
 
   .accordion-button icon-caret-down {
     position: absolute !important;
     right: 0.75rem !important;
     transition: all 0.3s ease !important;
-    width: 14px !important; /* Larger icon */
+    width: 14px !important;
+    /* Larger icon */
     height: 14px !important;
     color: #4b5563 !important;
     filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1)) !important;
@@ -370,7 +372,8 @@
   .sub-menu {
     margin: 0.375rem 0 0.375rem 0.875rem !important;
     padding-left: 0.75rem !important;
-    border-left: 3px solid rgba(99, 102, 241, 0.4) !important; /* Thicker border */
+    border-left: 3px solid rgba(99, 102, 241, 0.4) !important;
+    /* Thicker border */
     position: relative !important;
   }
 
@@ -381,14 +384,13 @@
     top: 0 !important;
     height: 100% !important;
     width: 3px !important;
-    background: linear-gradient(
-      to bottom,
-      transparent 0%,
-      rgba(139, 92, 246, 0.7) 20%,
-      /* More opaque */ rgba(59, 130, 246, 0.7) 50%,
-      rgba(139, 92, 246, 0.7) 80%,
-      transparent 100%
-    ) !important;
+    background: linear-gradient(to bottom,
+        transparent 0%,
+        rgba(139, 92, 246, 0.7) 20%,
+        /* More opaque */
+        rgba(59, 130, 246, 0.7) 50%,
+        rgba(139, 92, 246, 0.7) 80%,
+        transparent 100%) !important;
     opacity: 0.9 !important;
   }
 
@@ -404,15 +406,19 @@
     padding: 0.625rem 0.875rem !important;
     font-size: 0.875rem !important;
     border-radius: 8px !important;
-    color: #374151 !important; /* Darker text for better visibility */
+    color: #374151 !important;
+    /* Darker text for better visibility */
     transition: all 0.2s ease !important;
     display: flex !important;
     align-items: center !important;
     gap: 0.75rem !important;
-    background: rgba(255, 255, 255, 0.65) !important; /* Less transparent */
-    border: 1.5px solid rgba(59, 130, 246, 0.2) !important; /* Thicker border */
+    background: rgba(255, 255, 255, 0.65) !important;
+    /* Less transparent */
+    border: 1.5px solid rgba(59, 130, 246, 0.2) !important;
+    /* Thicker border */
     backdrop-filter: blur(8px) !important;
-    font-weight: 500 !important; /* Medium weight for submenus */
+    font-weight: 500 !important;
+    /* Medium weight for submenus */
     text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5) !important;
   }
 
@@ -426,11 +432,13 @@
   /* Larger Dot Indicator for sub-menu - Enhanced */
   .sub-menu a::before {
     content: "" !important;
-    width: 7px !important; /* Slightly larger */
+    width: 7px !important;
+    /* Slightly larger */
     height: 7px !important;
     background: #8b5cf6 !important;
     border-radius: 50% !important;
-    opacity: 0.8 !important; /* More visible */
+    opacity: 0.8 !important;
+    /* More visible */
     transition: all 0.2s ease !important;
     flex-shrink: 0 !important;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
@@ -438,15 +446,18 @@
 
   /* Hover for sub-menu - Enhanced */
   .sub-menu a:hover {
-    background: rgba(99, 102, 241, 0.25) !important; /* More opaque */
-    color: #4338ca !important; /* Darker purple for contrast */
+    background: rgba(99, 102, 241, 0.25) !important;
+    /* More opaque */
+    color: #4338ca !important;
+    /* Darker purple for contrast */
     padding-left: 1rem !important;
     transform: translateX(2px) !important;
     border-color: rgba(99, 102, 241, 0.35) !important;
     box-shadow:
       0 3px 12px rgba(99, 102, 241, 0.2),
       inset 0 0 15px rgba(255, 255, 255, 0.15) !important;
-    font-weight: 600 !important; /* Bolder on hover */
+    font-weight: 600 !important;
+    /* Bolder on hover */
   }
 
   .dark .sub-menu a:hover {
@@ -457,20 +468,23 @@
   .sub-menu a:hover::before {
     opacity: 1 !important;
     background: #3b82f6 !important;
-    transform: scale(1.4) !important; /* More noticeable scale */
+    transform: scale(1.4) !important;
+    /* More noticeable scale */
   }
 
   /* Active Sub-menu - Enhanced visibility */
   .sub-menu a.active {
-    background: linear-gradient(
-      90deg,
-      rgba(59, 130, 246, 0.35) 0%,
-      /* More opaque */ rgba(99, 102, 241, 0.3) 100%
-    ) !important;
-    color: #312e81 !important; /* Very dark purple for maximum contrast */
-    font-weight: 700 !important; /* Bold active state */
+    background: linear-gradient(90deg,
+        rgba(59, 130, 246, 0.35) 0%,
+        /* More opaque */
+        rgba(99, 102, 241, 0.3) 100%) !important;
+    color: #312e81 !important;
+    /* Very dark purple for maximum contrast */
+    font-weight: 700 !important;
+    /* Bold active state */
     font-size: 0.875rem !important;
-    border: 2px solid rgba(99, 102, 241, 0.45) !important; /* Thicker border */
+    border: 2px solid rgba(99, 102, 241, 0.45) !important;
+    /* Thicker border */
     padding-left: 1rem !important;
     box-shadow:
       0 3px 15px rgba(99, 102, 241, 0.25),
@@ -479,20 +493,21 @@
   }
 
   .dark .sub-menu a.active {
-    background: linear-gradient(
-      90deg,
-      rgba(59, 130, 246, 0.45) 0%,
-      rgba(139, 92, 246, 0.4) 100%
-    ) !important;
-    color: #c7d2fe !important; /* Very light purple for contrast */
+    background: linear-gradient(90deg,
+        rgba(59, 130, 246, 0.45) 0%,
+        rgba(139, 92, 246, 0.4) 100%) !important;
+    color: #c7d2fe !important;
+    /* Very light purple for contrast */
     border: 2px solid rgba(139, 92, 246, 0.5) !important;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
   }
 
   /* Blue-Purple Scrollbar */
   .ng-scrollbar .ng-scrollbar-track {
-    background: rgba(59, 130, 246, 0.15) !important; /* More visible */
-    width: 5px !important; /* Slightly wider */
+    background: rgba(59, 130, 246, 0.15) !important;
+    /* More visible */
+    width: 5px !important;
+    /* Slightly wider */
     border-radius: 8px !important;
   }
 
@@ -501,32 +516,29 @@
   }
 
   .ng-scrollbar .ng-scrollbar-thumb {
-    background: linear-gradient(
-      180deg,
-      rgba(59, 130, 246, 0.7) 0%,
-      /* More opaque */ rgba(139, 92, 246, 0.7) 100%
-    ) !important;
+    background: linear-gradient(180deg,
+        rgba(59, 130, 246, 0.7) 0%,
+        /* More opaque */
+        rgba(139, 92, 246, 0.7) 100%) !important;
     border-radius: 8px !important;
     transition: all 0.3s ease !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
   }
 
   .ng-scrollbar .ng-scrollbar-thumb:hover {
-    background: linear-gradient(
-      180deg,
-      rgba(37, 99, 235, 0.9) 0%,
-      rgba(124, 58, 237, 0.9) 100%
-    ) !important;
+    background: linear-gradient(180deg,
+        rgba(37, 99, 235, 0.9) 0%,
+        rgba(124, 58, 237, 0.9) 100%) !important;
   }
 
   /* Student Sidebar - Blue Theme */
   .student-sidebar .nav-link.active {
-    background: linear-gradient(
-      135deg,
-      rgba(37, 99, 235, 0.35) 0%,
-      /* More opaque */ rgba(59, 130, 246, 0.3) 100%
-    ) !important;
-    border: 2px solid rgba(37, 99, 235, 0.45) !important; /* Thicker border */
+    background: linear-gradient(135deg,
+        rgba(37, 99, 235, 0.35) 0%,
+        /* More opaque */
+        rgba(59, 130, 246, 0.3) 100%) !important;
+    border: 2px solid rgba(37, 99, 235, 0.45) !important;
+    /* Thicker border */
   }
 
   /* Animation */
@@ -535,6 +547,7 @@
       opacity: 0;
       transform: translateX(-5px);
     }
+
     to {
       opacity: 1;
       transform: translateX(0);
@@ -549,18 +562,23 @@
   .menu-item-wrapper:nth-child(1) {
     animation-delay: 0.05s;
   }
+
   .menu-item-wrapper:nth-child(2) {
     animation-delay: 0.1s;
   }
+
   .menu-item-wrapper:nth-child(3) {
     animation-delay: 0.15s;
   }
+
   .menu-item-wrapper:nth-child(4) {
     animation-delay: 0.2s;
   }
+
   .menu-item-wrapper:nth-child(5) {
     animation-delay: 0.25s;
   }
+
   .menu-item-wrapper:nth-child(6) {
     animation-delay: 0.3s;
   }
@@ -579,31 +597,27 @@
       padding: 0.5rem 0.625rem !important;
       font-size: 0.8125rem !important;
       gap: 0.5rem !important;
-      font-weight: 700 !important; /* Even bolder on mobile */
+      font-weight: 700 !important;
+      /* Even bolder on mobile */
     }
 
     .sub-menu a {
       padding: 0.5rem 0.75rem !important;
       font-size: 0.8125rem !important;
-      font-weight: 600 !important; /* Bolder on mobile */
+      font-weight: 600 !important;
+      /* Bolder on mobile */
     }
   }
 </style>
 
 <div [ngClass]="{ 'dark text-white-dark': store.semidark }">
-  <nav
-    class="sidebar fixed bottom-0 top-0 z-50 h-full min-h-screen w-[260px] transition-all duration-300"
-  >
+  <nav class="sidebar fixed bottom-0 top-0 z-50 h-full min-h-screen w-[260px] transition-all duration-300">
     <div class="h-full">
       <!-- LOGO -->
       <div class="logo-wrapper">
         <a routerLink="/dashboard" class="main-logo inline-block">
-          <img
-            src="/assets/images/auth/vedik logo.png"
-            alt="Vedik Astrologer"
-            class="sidebar-logo"
-            style="height: 80px !important; max-width: 280px !important"
-          />
+          <img src="/assets/images/auth/vedik logo.png" alt="Vedik Astrologer" class="sidebar-logo"
+            style="height: 80px !important; max-width: 280px !important" />
         </a>
       </div>
 
@@ -612,12 +626,7 @@
         <div class="px-2 py-2">
           <!-- DASHBOARD -->
           <div class="menu-item-wrapper">
-            <a
-              routerLink="/dashboard"
-              routerLinkActive="active"
-              (click)="toggleMobileMenu()"
-              class="nav-link"
-            >
+            <a routerLink="/dashboard" routerLinkActive="active" (click)="toggleMobileMenu()" class="nav-link">
               <icon-menu-dashboard />
               <span>{{ 'dashboard' | translate }}</span>
             </a>
@@ -625,12 +634,8 @@
 
           <!-- BATCH MASTER -->
           <div class="menu-item-wrapper">
-            <button
-              type="button"
-              class="nav-link accordion-button w-full flex items-center justify-between"
-              [ngClass]="{ active: activeDropdown.includes('batch') }"
-              (click)="toggleAccordion('batch')"
-            >
+            <button type="button" class="nav-link accordion-button w-full flex items-center justify-between"
+              [ngClass]="{ active: activeDropdown.includes('batch') }" (click)="toggleAccordion('batch')">
               <div class="flex items-center gap-3">
                 <icon-menu-users />
                 <span>Batch Master</span>
@@ -638,88 +643,70 @@
               <icon-caret-down />
             </button>
 
-            <div
-              [@slideDownUp]="!activeDropdown.includes('batch')"
-              class="accordion-content"
-            >
+            <div [@slideDownUp]="!activeDropdown.includes('batch')" class="accordion-content">
+              <ul class="sub-menu">
+                <li><a routerLink="/create-batch" routerLinkActive="active">Create Batch</a></li>
+                <li><a routerLink="/class-schedule" routerLinkActive="active">Class Schedule</a></li>
+                <li><a routerLink="/class-schedule-list" routerLinkActive="active">Class Schedule List</a></li>
+                <li><a routerLink="/add-topic" routerLinkActive="active">Add Topic</a></li>
+                <li><a routerLink="/add-media" routerLinkActive="active">Add Topic Media</a></li>
+                <li><a routerLink="/topic-media-list" routerLinkActive="active">Topic Media List</a></li>
+                <li><a routerLink="/assign-topic" routerLinkActive="active">Assign Topic & Media</a></li>
+              </ul>
+            </div>
+          </div>
+
+
+          <div class="menu-item-wrapper">
+            <button type="button" class="nav-link accordion-button w-full flex items-center justify-between"
+              [ngClass]="{ active: activeDropdown.includes('student') }" (click)="toggleAccordion('student')">
+              <div class="flex items-center gap-3">
+                <icon-menu-users />
+                <span>Student</span>
+              </div>
+              <icon-caret-down />
+            </button>
+
+            <div [@slideDownUp]="!activeDropdown.includes('student')" class="accordion-content">
+              <ul class="sub-menu">
+                <li><a routerLink="/add-student" routerLinkActive="active">Add Student</a></li>
+                <li><a routerLink="/assign-batch" routerLinkActive="active">Assign Students</a></li>
+                <li><a routerLink="/attendance" routerLinkActive="active">Student Attendance</a></li>
+                <li><a routerLink="/all-students" routerLinkActive="active">Registered Students</a></li>
+                <li><a routerLink="/batch-student-list" routerLinkActive="active">Batch Student List</a></li>
+                <li><a routerLink="/upgrade-student-batch" routerLinkActive="active">Upgrade Student</a></li>
+              </ul>
+            </div>
+          </div>
+
+             <!-- MEDIA MASTER -->
+          <div class="menu-item-wrapper">
+            <button type="button" class="nav-link accordion-button w-full flex items-center justify-between"
+              [ngClass]="{ active: activeDropdown.includes('media-master') }" (click)="toggleAccordion('media-master')">
+              <div class="flex items-center gap-3">
+                <icon-menu-dashboard />
+                <span>Records</span>
+              </div>
+              <icon-caret-down />
+            </button>
+
+            <div [@slideDownUp]="!activeDropdown.includes('media-master')" class="accordion-content">
               <ul class="sub-menu">
                 <li>
-                  <a routerLink="/add-student" routerLinkActive="active"
-                    >Add Student</a
-                  >
+                  <a routerLink="/upload-certificate" routerLinkActive="active">Upload Certificate</a>
                 </li>
                 <li>
-                  <a routerLink="/create-batch" routerLinkActive="active"
-                    >Create Batch</a
-                  >
-                </li>
-                <li>
-                  <a routerLink="/class-schedule" routerLinkActive="active"
-                    >Class Schedule</a
-                  >
-                </li>
-                <li>
-                  <a routerLink="/class-schedule-list" routerLinkActive="active"
-                    >Class Schedule List</a
-                  >
-                </li>
-                <li>
-                  <a routerLink="/assign-batch" routerLinkActive="active"
-                    >Assign Students</a
-                  >
-                </li>
-                <li>
-                  <a routerLink="/add-topic" routerLinkActive="active"
-                    >Add Topic</a
-                  >
-                </li>
-
-                <li>
-                  <a routerLink="/add-media" routerLinkActive="active"
-                    >Add Topic Media</a
-                  >
-                </li>
-
-                <li>
-                  <a routerLink="/assign-topic" routerLinkActive="active"
-                    >Assign Topic & Media</a
-                  >
-                </li>
-
-                <li>
-                  <a routerLink="/attendance" routerLinkActive="active"
-                    >Student Attendance</a
-                  >
-                </li>
-                <li>
-                  <a routerLink="/all-students" routerLinkActive="active"
-                    >Registered Students</a
-                  >
-                </li>
-                <li>
-                  <a routerLink="/batch-student-list" routerLinkActive="active"
-                    >Batch Student List</a
-                  >
-                </li>
-                <li>
-                  <a
-                    routerLink="/upgrade-student-batch"
-                    routerLinkActive="active"
-                    >Upgrade Student</a
-                  >
+                  <a routerLink="/payment-receipt" routerLinkActive="active">Payment Receipt</a>
                 </li>
               </ul>
             </div>
           </div>
 
+          
           <!-- SCHEDULE MASTER -->
           <div class="menu-item-wrapper">
-            <button
-              type="button"
-              class="nav-link accordion-button w-full flex items-center justify-between"
-              [ngClass]="{ active: activeDropdown.includes('shedules') }"
-              (click)="toggleAccordion('shedules')"
-            >
+            <button type="button" class="nav-link accordion-button w-full flex items-center justify-between"
+              [ngClass]="{ active: activeDropdown.includes('shedules') }" (click)="toggleAccordion('shedules')">
               <div class="flex items-center gap-3">
                 <icon-menu-notes />
                 <span>Schedules Master</span>
@@ -727,78 +714,29 @@
               <icon-caret-down />
             </button>
 
-            <div
-              [@slideDownUp]="!activeDropdown.includes('shedules')"
-              class="accordion-content"
-            >
+            <div [@slideDownUp]="!activeDropdown.includes('shedules')" class="accordion-content">
               <ul class="sub-menu">
                 <li>
-                  <a routerLink="/shedules" routerLinkActive="active"
-                    >Add Slots</a
-                  >
+                  <a routerLink="/shedules" routerLinkActive="active">Add Slots</a>
                 </li>
                 <li>
-                  <a routerLink="/close-slots" routerLinkActive="active"
-                    >Close Slots</a
-                  >
+                  <a routerLink="/close-slots" routerLinkActive="active">Close Slots</a>
                 </li>
                 <li>
-                  <a routerLink="/manage-class-slots" routerLinkActive="active"
-                    >Manage Class Slots</a
-                  >
+                  <a routerLink="/manage-class-slots" routerLinkActive="active">Manage Class Slots</a>
                 </li>
                 <li>
-                  <a
-                    routerLink="/reshedul-appointment"
-                    routerLinkActive="active"
-                    >Reschedule Appointment</a
-                  >
+                  <a routerLink="/reshedul-appointment" routerLinkActive="active">Reschedule Appointment</a>
                 </li>
               </ul>
             </div>
           </div>
 
-          <!-- MEDIA MASTER -->
-          <div class="menu-item-wrapper">
-            <button
-              type="button"
-              class="nav-link accordion-button w-full flex items-center justify-between"
-              [ngClass]="{ active: activeDropdown.includes('media-master') }"
-              (click)="toggleAccordion('media-master')"
-            >
-              <div class="flex items-center gap-3">
-                <icon-menu-dashboard />
-                <span>Media Master</span>
-              </div>
-              <icon-caret-down />
-            </button>
-
-            <div
-              [@slideDownUp]="!activeDropdown.includes('media-master')"
-              class="accordion-content"
-            >
-              <ul class="sub-menu">
-                <li>
-                  <a routerLink="/upload-certificate" routerLinkActive="active"
-                    >Upload Certificate</a
-                  >
-                </li>
-                <li>
-                  <a routerLink="/payment-receipt" routerLinkActive="active"
-                    >Payment Receipt</a
-                  >
-                </li>
-              </ul>
-            </div>
-          </div>
+       
 
           <!-- APPOINTMENT -->
           <div class="menu-item-wrapper">
-            <a
-              routerLink="/add-appointment"
-              routerLinkActive="active"
-              class="nav-link flex items-center gap-3 w-full"
-            >
+            <a routerLink="/add-appointment" routerLinkActive="active" class="nav-link flex items-center gap-3 w-full">
               <icon-menu-notes />
               <span>Add Appointment</span>
             </a>
@@ -806,12 +744,9 @@
 
           <!-- OTHER SERVICES -->
           <div class="menu-item-wrapper">
-            <button
-              type="button"
-              class="nav-link accordion-button w-full flex items-center justify-between"
+            <button type="button" class="nav-link accordion-button w-full flex items-center justify-between"
               [ngClass]="{ active: activeDropdown.includes('other services') }"
-              (click)="toggleAccordion('other services')"
-            >
+              (click)="toggleAccordion('other services')">
               <div class="flex items-center gap-3">
                 <icon-menu-notes />
                 <span>Other Services</span>
@@ -819,20 +754,13 @@
               <icon-caret-down />
             </button>
 
-            <div
-              [@slideDownUp]="!activeDropdown.includes('other services')"
-              class="accordion-content"
-            >
+            <div [@slideDownUp]="!activeDropdown.includes('other services')" class="accordion-content">
               <ul class="sub-menu">
                 <li>
-                  <a routerLink="/add-services" routerLinkActive="active"
-                    >Add Services</a
-                  >
+                  <a routerLink="/add-services" routerLinkActive="active">Add Services</a>
                 </li>
                 <li>
-                  <a routerLink="/services-dashboard" routerLinkActive="active"
-                    >Services Dashboard</a
-                  >
+                  <a routerLink="/services-dashboard" routerLinkActive="active">Services Dashboard</a>
                 </li>
               </ul>
             </div>
@@ -847,35 +775,23 @@
 <div *ngIf="role === 'STD'">
   <div [ngClass]="{ 'dark text-white-dark': store.semidark }">
     <nav
-      class="sidebar student-sidebar fixed bottom-0 top-0 z-50 h-full min-h-screen w-[260px] transition-all duration-300"
-    >
+      class="sidebar student-sidebar fixed bottom-0 top-0 z-50 h-full min-h-screen w-[260px] transition-all duration-300">
       <div class="h-full">
         <!-- LOGO -->
         <div class="logo-wrapper">
           <a routerLink="/dashboard" class="main-logo inline-block">
-            <img
-              src="/assets/images/auth/vedik logo.png"
-              alt="Vedik Astrologer"
-              class="sidebar-logo"
-              style="height: 80px !important; max-width: 280px !important"
-            />
+            <img src="/assets/images/auth/vedik logo.png" alt="Vedik Astrologer" class="sidebar-logo"
+              style="height: 80px !important; max-width: 280px !important" />
           </a>
         </div>
 
         <!-- MENU -->
-        <ng-scrollbar
-          class="relative !h-[calc(100vh-90px)]"
-          appearance="compact"
-        >
+        <ng-scrollbar class="relative !h-[calc(100vh-90px)]" appearance="compact">
           <div class="px-2 py-2">
             <!-- My Dashboard -->
             <div class="menu-item-wrapper">
-              <a
-                routerLink="/student-dashboard"
-                routerLinkActive="active"
-                (click)="toggleMobileMenu()"
-                class="nav-link"
-              >
+              <a routerLink="/student-dashboard" routerLinkActive="active" (click)="toggleMobileMenu()"
+                class="nav-link">
                 <icon-menu-dashboard />
                 <span>My Dashboard</span>
               </a>
@@ -894,23 +810,14 @@
             </div> -->
 
             <div>
-              <a
-                routerLink="/student-certificates"
-                routerLinkActive="active"
-                (click)="toggleMobileMenu()"
-                class="nav-link"
-              >
+              <a routerLink="/student-certificates" routerLinkActive="active" (click)="toggleMobileMenu()"
+                class="nav-link">
                 <icon-menu-notes />
                 <span>My Certificates</span>
               </a>
             </div>
             <div>
-              <a
-                routerLink="/student-receipts"
-                routerLinkActive="active"
-                (click)="toggleMobileMenu()"
-                class="nav-link"
-              >
+              <a routerLink="/student-receipts" routerLinkActive="active" (click)="toggleMobileMenu()" class="nav-link">
                 <icon-menu-notes />
                 <span>My Receipts</span>
               </a>

@@ -1,0 +1,419 @@
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar - Topic Selection -->
+    <div class="w-80 bg-white border-r border-gray-200 flex flex-col shadow-lg">
+      <!-- Sidebar Header -->
+      <div class="bg-gradient-to-r from-purple-600 to-pink-600 p-6">
+        <h2 class="text-xl font-bold text-white mb-2">Media Library</h2>
+        <p class="text-purple-100 text-sm">Browse and manage media files</p>
+      </div>
+
+      <!-- Standard Selection -->
+      <div class="p-4 border-b border-gray-200">
+        <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+          Select Standard
+        </label>
+        <div class="relative">
+          <select [(ngModel)]="selectedStandardId" (ngModelChange)="onStandardChange()" [disabled]="standardsLoading"
+            class="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100">
+            <option [ngValue]="null" disabled>
+              {{ standardsLoading ? 'Loading...' : '-- Choose Standard --' }}
+            </option>
+            <option *ngFor="let s of standards" [ngValue]="s.standard_id">
+              {{ s.standard_name }}
+            </option>
+          </select>
+          <div *ngIf="standardsLoading" class="absolute right-3 top-1/2 -translate-y-1/2">
+            <div class="w-4 h-4 border-2 border-gray-300 border-t-purple-600 rounded-full animate-spin"></div>
+          </div>
+        </div>
+        <div *ngIf="standardsError" class="mt-2 text-xs text-red-600">
+          {{ standardsError }}
+        </div>
+      </div>
+
+      <!-- Topics List -->
+      <div class="flex-1 overflow-y-auto">
+        <div class="p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">
+              Topics
+              <span *ngIf="topics.length > 0" class="ml-1 text-gray-500">({{ topics.length }})</span>
+            </h3>
+            <div *ngIf="topicsLoading"
+              class="w-4 h-4 border-2 border-gray-300 border-t-purple-600 rounded-full animate-spin"></div>
+          </div>
+
+          <!-- Loading State -->
+          <div *ngIf="topicsLoading" class="text-center py-8">
+            <div class="text-gray-500 text-sm">Loading topics...</div>
+          </div>
+
+          <!-- No Topics Message -->
+          <div *ngIf="!topicsLoading && selectedStandardId && topics.length === 0" class="text-center py-8">
+            <div class="text-gray-400 text-sm">No topics available for this standard</div>
+          </div>
+
+          <!-- Topics List -->
+          <div *ngIf="!topicsLoading && topics.length > 0" class="space-y-2">
+            <div *ngFor="let topic of topics" (click)="onTopicSelect(topic.id)"
+              class="p-3 rounded-lg cursor-pointer transition-all duration-200"
+              [class.bg-purple-50]="selectedTopicId === topic.id" [class.border-l-4]="selectedTopicId === topic.id"
+              [class.border-purple-600]="selectedTopicId === topic.id"
+              [class.hover:bg-gray-50]="selectedTopicId !== topic.id">
+              <div class="flex items-center justify-between">
+                <div class="flex-1">
+                  <h4 class="text-sm font-medium text-gray-900">{{ topic.topic_name }}</h4>
+                  <p class="text-xs text-gray-500 mt-1">
+                    {{ topic.topic_description || 'No description' }}
+                  </p>
+                </div>
+                <div class="ml-2">
+                  <div class="w-2 h-2 rounded-full" [class.bg-purple-600]="selectedTopicId === topic.id"
+                    [class.bg-gray-300]="selectedTopicId !== topic.id">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Prompt to Select Standard -->
+          <div *ngIf="!selectedStandardId && !standardsLoading" class="text-center py-8">
+            <div class="text-gray-400 text-sm">Select a standard to view topics</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Footer -->
+      <div class="p-4 border-t border-gray-200 bg-gray-50">
+        <div class="text-xs text-gray-500 text-center">
+          Total Media: {{ mediaItems.length }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 overflow-y-auto">
+      <div class="p-6 md:p-8">
+        <!-- Header -->
+        <div class="mb-6">
+          <h1 class="text-2xl font-bold text-gray-900 mb-2">
+            {{ getTopicName() }}
+          </h1>
+          <p class="text-gray-600">
+            {{ mediaItems.length }} media item{{ mediaItems.length !== 1 ? 's' : '' }} available
+          </p>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="mediaLoading" class="text-center py-12">
+          <div class="inline-flex flex-col items-center">
+            <div class="relative">
+              <div class="w-12 h-12 border-4 border-purple-100 rounded-full"></div>
+              <div
+                class="w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full absolute top-0 left-0 animate-spin">
+              </div>
+            </div>
+            <p class="mt-4 text-gray-600">Loading media files...</p>
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="mediaError" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+          <p class="text-red-600 text-sm">{{ mediaError }}</p>
+        </div>
+
+        <!-- No Media Selected -->
+        <div *ngIf="!mediaLoading && !selectedTopicId && topics.length > 0" class="text-center py-12">
+          <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 mb-4">
+            <span class="text-3xl">📁</span>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Select a Topic</h3>
+          <p class="text-gray-500">Choose a topic from the sidebar to view its media files</p>
+        </div>
+
+        <!-- No Media Message -->
+        <div *ngIf="!mediaLoading && selectedTopicId && mediaItems.length === 0" class="text-center py-12">
+          <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 mb-4">
+            <span class="text-3xl">🎬</span>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">No Media Files</h3>
+          <p class="text-gray-500">No media files available for this topic</p>
+        </div>
+
+        <!-- Media Grid -->
+        <div *ngIf="!mediaLoading && selectedTopicId && mediaItems.length > 0" class="space-y-6">
+          <!-- Search Bar -->
+          <div class="bg-white rounded-lg border border-gray-200 p-4">
+            <div class="flex flex-col sm:flex-row gap-3">
+              <div class="flex-1">
+                <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="filterMedia()"
+                  placeholder="Search media by title, filename, or type..."
+                  class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+              </div>
+              <div class="w-32">
+                <select [(ngModel)]="searchType" (ngModelChange)="filterMedia()"
+                  class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                  <option value="all">All Fields</option>
+                  <option value="title">Title</option>
+                  <option value="filename">Filename</option>
+                  <option value="type">Type</option>
+                </select>
+              </div>
+              <button *ngIf="searchTerm" (click)="clearSearch()" class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                Clear
+              </button>
+              <button (click)="exportMediaList()"
+                class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                Export CSV
+              </button>
+            </div>
+            <div class="mt-2 text-xs text-gray-500">
+              Showing {{ filteredMediaItems.length }} of {{ mediaItems.length }} media files
+            </div>
+          </div>
+
+          <!-- Media Cards Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div *ngFor="let media of filteredMediaItems"
+              class="bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden group">
+              <!-- Media Preview -->
+              <div
+                class="relative h-40 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center cursor-pointer"
+                (click)="openPreviewModal(media)">
+                <div class="text-5xl">
+                  {{ getMediaTypeIcon(media.media_type) }}
+                </div>
+                <div class="absolute top-2 right-2">
+                  <span class="text-xs bg-black/50 text-white px-2 py-1 rounded-full">
+                    {{ getFileExtension(media.file_name) }}
+                  </span>
+                </div>
+                <div
+                  class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                  <span class="opacity-0 group-hover:opacity-100 text-white bg-black/50 px-3 py-1 rounded-full text-sm">
+                    Click to preview
+                  </span>
+                </div>
+              </div>
+
+              <!-- Media Info -->
+              <div class="p-4">
+                <div class="flex items-start justify-between mb-2">
+                  <h3 class="text-sm font-semibold text-gray-900 flex-1 line-clamp-2">
+                    {{ truncateText(media.title, 50) }}
+                  </h3>
+                  <div class="flex space-x-1 ml-2">
+                    <button (click)="openEditModal(media)"
+                      class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
+                      ✏️
+                    </button>
+                    <button (click)="openDeleteModal(media)"
+                      class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+
+                <div class="space-y-1 text-xs text-gray-500">
+                  <div class="flex items-center justify-between">
+                    <span class="font-medium">File:</span>
+                    <span class="text-gray-700 truncate ml-2">{{ media.file_name || 'N/A' }}</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="font-medium">Size:</span>
+                    <span class="text-gray-700">{{ formatFileSize(media.file_size) }}</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="font-medium">Type:</span>
+                    <span class="text-gray-700">{{ media.media_type || 'N/A' }}</span>
+                  </div>
+                 
+                </div>
+
+                <!-- Download Button -->
+                <!-- Media Card Download Button -->
+                <button *ngIf="media.file_url" (click)="openFileUrl(getFullFileUrl(media.file_url))"
+                  class="mt-3 w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+
+                  📥 Download / View
+                </button>
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div *ngIf="showEditModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-2xl shadow-xl max-w-md w-full animate-fade-in">
+    <div class="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-4 rounded-t-2xl">
+      <h3 class="text-xl font-bold text-white">Edit Media</h3>
+      <p class="text-purple-100 text-sm mt-1">Update media information</p>
+    </div>
+
+    <div class="p-6">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Title <span class="text-red-500">*</span>
+          </label>
+          <input type="text" [(ngModel)]="editForm.title"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            placeholder="Enter media title" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Description
+          </label>
+          <textarea [(ngModel)]="editForm.description" rows="4"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            placeholder="Enter media description"></textarea>
+        </div>
+
+        <div *ngIf="updateError" class="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-sm">
+          {{ updateError }}
+        </div>
+      </div>
+    </div>
+
+    <div class="px-6 py-4 bg-gray-50 rounded-b-2xl flex justify-end space-x-3">
+      <button (click)="closeEditModal()"
+        class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+        [disabled]="updateLoading">
+        Cancel
+      </button>
+      <button (click)="updateMedia()"
+        class="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-colors flex items-center"
+        [disabled]="updateLoading">
+        <span *ngIf="updateLoading"
+          class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
+        {{ updateLoading ? 'Updating...' : 'Update Media' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div *ngIf="showDeleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-2xl shadow-xl max-w-md w-full animate-fade-in">
+    <div class="bg-gradient-to-r from-red-600 to-red-700 px-6 py-4 rounded-t-2xl">
+      <h3 class="text-xl font-bold text-white">Delete Media</h3>
+      <p class="text-red-100 text-sm mt-1">This action cannot be undone</p>
+    </div>
+
+    <div class="p-6">
+      <p class="text-gray-700 mb-4">
+        Are you sure you want to delete "<strong>{{ deletingMedia?.title }}</strong>"?
+      </p>
+      <p class="text-sm text-gray-500">
+        This will permanently remove this media item from the system.
+      </p>
+
+      <div *ngIf="deleteError" class="mt-4 bg-red-50 text-red-600 px-4 py-2 rounded-lg text-sm">
+        {{ deleteError }}
+      </div>
+    </div>
+
+    <div class="px-6 py-4 bg-gray-50 rounded-b-2xl flex justify-end space-x-3">
+      <button (click)="closeDeleteModal()"
+        class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+        [disabled]="deleteLoading">
+        Cancel
+      </button>
+      <button (click)="confirmDelete()"
+        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center"
+        [disabled]="deleteLoading">
+        <span *ngIf="deleteLoading"
+          class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
+        {{ deleteLoading ? 'Deleting...' : 'Delete Media' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Preview Modal -->
+<div *ngIf="showPreviewModal && previewMedia"
+  class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
+    <div class="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-4 rounded-t-2xl flex justify-between items-center">
+      <div>
+        <h3 class="text-xl font-bold text-white">Media Preview</h3>
+        <p class="text-purple-100 text-sm">{{ previewMedia.title }}</p>
+      </div>
+      <button (click)="closePreviewModal()" class="text-white hover:text-gray-200 text-2xl">
+        ✕
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-6">
+      <div class="space-y-4">
+        <!-- Video Preview -->
+        <div *ngIf="previewMedia.media_type === 'video'" class="aspect-video bg-black rounded-lg overflow-hidden">
+          <video controls class="w-full h-full">
+            <source [src]="getFullFileUrl(previewMedia.file_url)" [type]="previewMedia.mime_type">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+
+        <!-- Audio Preview -->
+        <div *ngIf="previewMedia.media_type === 'audio'" class="bg-gray-100 rounded-lg p-8 text-center">
+          <div class="text-6xl mb-4">🎵</div>
+          <audio controls class="w-full">
+            <source [src]="getFullFileUrl(previewMedia.file_url)" [type]="previewMedia.mime_type">
+            Your browser does not support the audio tag.
+          </audio>
+        </div>
+
+        <!-- Image Preview -->
+        <div *ngIf="previewMedia.media_type === 'image'" class="flex justify-center bg-gray-100 rounded-lg p-4">
+          <img [src]="getFullFileUrl(previewMedia.file_url)" [alt]="previewMedia.title"
+            class="max-w-full max-h-[60vh] object-contain">
+        </div>
+
+        <!-- PDF Preview -->
+        <div *ngIf="previewMedia.media_type === 'pdf'" class="h-[70vh]">
+          <iframe [src]="getFullFileUrl(previewMedia.file_url)" class="w-full h-full rounded-lg border-0"></iframe>
+        </div>
+
+        <!-- Other File Types -->
+        <div *ngIf="!['video', 'audio', 'image', 'pdf'].includes(previewMedia.media_type)" class="text-center py-12">
+          <div class="text-6xl mb-4">{{ getMediaTypeIcon(previewMedia.media_type) }}</div>
+          <p class="text-gray-600 mb-4">Preview not available for this file type</p>
+          <a [href]="getFullFileUrl(previewMedia.file_url)" download
+            class="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+            📥 Download File
+          </a>
+        </div>
+
+        <!-- File Details -->
+        <div class="bg-gray-50 rounded-lg p-4 mt-4">
+          <h4 class="font-semibold text-gray-900 mb-2">File Details</h4>
+          <div class="grid grid-cols-2 gap-2 text-sm">
+            <div class="text-gray-600">Filename:</div>
+            <div class="text-gray-900">{{ previewMedia.file_name }}</div>
+            <div class="text-gray-600">File Size:</div>
+            <div class="text-gray-900">{{ formatFileSize(previewMedia.file_size) }}</div>
+            <div class="text-gray-600">MIME Type:</div>
+            <div class="text-gray-900">{{ previewMedia.mime_type }}</div>
+            <div class="text-gray-600">Created:</div>
+            <div class="text-gray-900">{{ formatDate(previewMedia.created_at) }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="px-6 py-4 bg-gray-50 rounded-b-2xl flex justify-end">
+      <a [href]="getFullFileUrl(previewMedia.file_url)" download
+        class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+        Download File
+      </a>
+    </div>
+  </div>
+</div>
