@@ -632,30 +632,6 @@
             </a>
           </div>
 
-          <!-- BATCH MASTER -->
-          <div class="menu-item-wrapper">
-            <button type="button" class="nav-link accordion-button w-full flex items-center justify-between"
-              [ngClass]="{ active: activeDropdown.includes('batch') }" (click)="toggleAccordion('batch')">
-              <div class="flex items-center gap-3">
-                <icon-menu-users />
-                <span>Batch Master</span>
-              </div>
-              <icon-caret-down />
-            </button>
-
-            <div [@slideDownUp]="!activeDropdown.includes('batch')" class="accordion-content">
-              <ul class="sub-menu">
-                <li><a routerLink="/create-batch" routerLinkActive="active">Create Batch</a></li>
-                <li><a routerLink="/class-schedule" routerLinkActive="active">Class Schedule</a></li>
-                <li><a routerLink="/class-schedule-list" routerLinkActive="active">Class Schedule List</a></li>
-                <li><a routerLink="/add-topic" routerLinkActive="active">Add Topic</a></li>
-                <li><a routerLink="/add-media" routerLinkActive="active">Add Topic Media</a></li>
-                <li><a routerLink="/topic-media-list" routerLinkActive="active">Topic Media List</a></li>
-                <li><a routerLink="/assign-topic" routerLinkActive="active">Assign Topic & Media</a></li>
-              </ul>
-            </div>
-          </div>
-
 
           <div class="menu-item-wrapper">
             <button type="button" class="nav-link accordion-button w-full flex items-center justify-between"
@@ -679,7 +655,37 @@
             </div>
           </div>
 
-             <!-- MEDIA MASTER -->
+
+          <!-- BATCH MASTER -->
+          <div class="menu-item-wrapper">
+            <button type="button" class="nav-link accordion-button w-full flex items-center justify-between"
+              [ngClass]="{ active: activeDropdown.includes('batch') }" (click)="toggleAccordion('batch')">
+              <div class="flex items-center gap-3">
+                <icon-menu-users />
+                <span>Batch Master</span>
+              </div>
+              <icon-caret-down />
+            </button>
+
+            <div [@slideDownUp]="!activeDropdown.includes('batch')" class="accordion-content">
+              <ul class="sub-menu">
+                <li><a routerLink="/create-batch" routerLinkActive="active">Create Batch</a></li>
+                <li><a routerLink="/class-schedule" routerLinkActive="active">Class Schedule</a></li>
+                <li><a routerLink="/class-schedule-list" routerLinkActive="active">Class Schedule List</a></li>
+                <li>
+                  <a routerLink="/manage-class-slots" routerLinkActive="active">Manage Class Slots</a>
+                </li>
+                <li><a routerLink="/add-topic" routerLinkActive="active">Add Topic</a></li>
+                <li><a routerLink="/add-media" routerLinkActive="active">Add Topic Media</a></li>
+                <li><a routerLink="/topic-media-list" routerLinkActive="active">Topic Media List</a></li>
+                <li><a routerLink="/assign-topic" routerLinkActive="active">Assign Topic & Media</a></li>
+              </ul>
+            </div>
+          </div>
+
+
+
+          <!-- MEDIA MASTER -->
           <div class="menu-item-wrapper">
             <button type="button" class="nav-link accordion-button w-full flex items-center justify-between"
               [ngClass]="{ active: activeDropdown.includes('media-master') }" (click)="toggleAccordion('media-master')">
@@ -702,7 +708,7 @@
             </div>
           </div>
 
-          
+
           <!-- SCHEDULE MASTER -->
           <div class="menu-item-wrapper">
             <button type="button" class="nav-link accordion-button w-full flex items-center justify-between"
@@ -722,9 +728,7 @@
                 <li>
                   <a routerLink="/close-slots" routerLinkActive="active">Close Slots</a>
                 </li>
-                <li>
-                  <a routerLink="/manage-class-slots" routerLinkActive="active">Manage Class Slots</a>
-                </li>
+
                 <li>
                   <a routerLink="/reshedul-appointment" routerLinkActive="active">Reschedule Appointment</a>
                 </li>
@@ -732,7 +736,7 @@
             </div>
           </div>
 
-       
+
 
           <!-- APPOINTMENT -->
           <div class="menu-item-wrapper">

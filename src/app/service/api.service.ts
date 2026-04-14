@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: "root",
@@ -1026,6 +1026,53 @@ getTopicsByStandard(standardId: number): Observable<any> {
     { headers: this.getJsonHeaders() }
   );
 }
+
+// ======================================
+// 📅 CLASS SCHEDULE → DELETE WITH SLOTS
+// ======================================
+
+deleteClassScheduleWithSlots(scheduleId: number): Observable<{ success: boolean; message: string; }> {
+  if (!scheduleId) {
+    console.error('deleteClassScheduleWithSlots called with invalid scheduleId:', scheduleId);
+    return new Observable(observer => {
+      observer.error({ success: false, message: 'Invalid schedule ID' });
+    });
+  }
+
+  const payload = { schedule_id: scheduleId };
+  console.log('Deleting schedule with payload:', payload); // Debug log
+
+  return this.http.post<{ success: boolean; message: string; }>(
+    `${this.baseUrl}/deleteClassScheduleWithSlots`,
+    payload,
+    { headers: this.getJsonHeaders() }
+  );
+}
+
+
+// ======================================
+// 📚 ASSIGNED DATA (TOPIC + MEDIA + LINK)
+// ======================================
+
+getAssignedDataByBatch(batchCode: string): Observable<{
+  success: boolean;
+  data: any[];
+}> {
+  return this.http.post<{
+    success: boolean;
+    data: any[];
+  }>(
+    `${this.baseUrl}/media/getAssignedDataByBatch`,
+    {
+      batch_code: batchCode,
+    },
+    {
+      headers: this.getJsonHeaders(),
+    }
+  );
+}
+
+
 
   // ======================================
   // 🧰 HELPERS
