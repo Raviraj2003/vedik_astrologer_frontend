@@ -11,12 +11,9 @@ import { ApiService } from "../service/api.service";
   styleUrls: ["./assign-topic.component.css"]
 })
 export class AssignTopicComponent implements OnInit, OnDestroy {
-  /* ================= MASTER ================= */
   standards: any[] = [];
   batches: any[] = [];
   topics: any[] = [];
-
-  /* ================= CLASS GROUPS ================= */
   classes: any[] = [];
 
   selectedStandardId: number | "" = "";
@@ -28,12 +25,8 @@ export class AssignTopicComponent implements OnInit, OnDestroy {
 
   errorMsg = "";
 
-  /* ================= SUCCESS MODAL ================= */
   showSuccessModal = false;
   private modalTimeout: any;
-
-  /* ================= STORAGE KEYS ================= */
-  private readonly STORAGE_KEY = 'assigned_topics';
 
   constructor(private api: ApiService) {}
 
@@ -43,20 +36,14 @@ export class AssignTopicComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.modalTimeout) {
-      clearTimeout(this.modalTimeout);
-    }
+    if (this.modalTimeout) clearTimeout(this.modalTimeout);
   }
 
   /* ================= LOAD STANDARDS ================= */
   loadStandards(): void {
     this.api.getStandards().subscribe({
-      next: (res: any) => {
-        this.standards = res?.data || [];
-      },
-      error: () => {
-        this.showError("❌ Failed to load standards");
-      },
+      next: (res: any) => (this.standards = res?.data || []),
+      error: () => this.showError("❌ Failed to load standards"),
     });
   }
 
@@ -69,24 +56,16 @@ export class AssignTopicComponent implements OnInit, OnDestroy {
     if (!this.selectedStandardId) return;
 
     this.api.getBatchesByStandard(Number(this.selectedStandardId)).subscribe({
-      next: (res: any) => {
-        this.batches = res?.data || [];
-      },
-      error: () => {
-        this.showError("❌ Failed to load batches");
-      },
+      next: (res: any) => (this.batches = res?.data || []),
+      error: () => this.showError("❌ Failed to load batches"),
     });
   }
 
   /* ================= LOAD TOPICS ================= */
   loadTopics(): void {
     this.api.getTopicList().subscribe({
-      next: (res: any) => {
-        this.topics = res?.data || [];
-      },
-      error: () => {
-        this.showError("❌ Failed to load topics");
-      },
+      next: (res: any) => (this.topics = res?.data || []),
+      error: () => this.showError("❌ Failed to load topics"),
     });
   }
 
@@ -111,14 +90,11 @@ export class AssignTopicComponent implements OnInit, OnDestroy {
             grouped[key] = {
               class_id: key,
               class_date: row.class_date,
-              display_date: new Date(row.class_date).toLocaleDateString(
-                "en-IN",
-                {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                },
-              ),
+              display_date: new Date(row.class_date).toLocaleDateString("en-IN", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              }),
               day_name: row.day_name,
               schedule_id: row.schedule_id,
               slot_ids: [],
@@ -130,7 +106,7 @@ export class AssignTopicComponent implements OnInit, OnDestroy {
               loadingMedia: false,
               isUpdatingLink: false,
               editingLinkSlotId: null,
-              assignmentStatus: null, // Track when assignment was made
+              assignmentStatus: null,
             };
           }
 
@@ -140,10 +116,10 @@ export class AssignTopicComponent implements OnInit, OnDestroy {
         }
 
         this.classes = Object.values(grouped);
-        
-        // Restore any previously assigned topics for this batch
-        this.restoreAssignedTopics();
-        
+
+        // ✅ LOAD ASSIGNED DATA FROM API
+        this.loadAssignedData();
+
         this.isLoading = false;
       },
       error: () => {
@@ -153,83 +129,51 @@ export class AssignTopicComponent implements OnInit, OnDestroy {
     });
   }
 
-  /* ================= RESTORE ASSIGNED TOPICS ================= */
-  private restoreAssignedTopics(): void {
-    try {
-      const stored = localStorage.getItem(this.STORAGE_KEY);
-      if (stored) {
-        const assignments = JSON.parse(stored);
-        const batchKey = this.selectedBatchCode;
-        
-        if (assignments[batchKey]) {
-          const batchAssignments = assignments[batchKey];
-          
-          this.classes.forEach((slot: any) => {
-            const slotKey = `${slot.class_date}_${slot.schedule_id}`;
-            if (batchAssignments[slotKey]) {
-              const assignment = batchAssignments[slotKey];
-              slot.selectedTopicId = assignment.topicId;
-              slot.assignmentStatus = assignment.timestamp;
-              
-              // If topic is selected, load its media
-              if (slot.selectedTopicId) {
-                this.loadTopicMediaForSlot(slot, assignment.selectedMediaIds);
-              }
-            }
-          });
-        }
-      }
-    } catch (e) {
-      console.error('Error restoring assignments:', e);
-    }
-  }
+  /* ================= LOAD ASSIGNED DATA ================= */
+  private loadAssignedData(): void {
+    if (!this.selectedBatchCode) return;
 
-  /* ================= SAVE ASSIGNED TOPICS ================= */
-  private saveAssignedTopics(slot: any, topicId: number, mediaIds: number[]): void {
-    try {
-      const stored = localStorage.getItem(this.STORAGE_KEY);
-      const assignments = stored ? JSON.parse(stored) : {};
-      
-      const batchKey = this.selectedBatchCode;
-      if (!assignments[batchKey]) {
-        assignments[batchKey] = {};
-      }
-      
-      const slotKey = `${slot.class_date}_${slot.schedule_id}`;
-      assignments[batchKey][slotKey] = {
-        topicId: topicId,
-        selectedMediaIds: mediaIds,
-        timestamp: new Date().toLocaleString()
-      };
-      
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(assignments));
-    } catch (e) {
-      console.error('Error saving assignments:', e);
-    }
-  }
-
-  /* ================= LOAD TOPIC MEDIA FOR SLOT ================= */
-  private loadTopicMediaForSlot(slot: any, preselectedMediaIds: number[] = []): void {
-    if (!slot.selectedTopicId) return;
-    
-    slot.loadingMedia = true;
-    
-    this.api.getTopicMedia(slot.selectedTopicId).subscribe({
+    this.api.getAssignedDataByBatch(this.selectedBatchCode).subscribe({
       next: (res: any) => {
-        slot.topicMedia = (res?.data || []).map((m: any) => ({
-          ...m,
-          selected: preselectedMediaIds.includes(Number(m.id))
-        }));
-        slot.loadingMedia = false;
+        const assignedData = res.data || [];
+
+        this.classes.forEach((slot: any) => {
+          const matchedSlots = assignedData.filter((a: any) =>
+            slot.slot_ids.includes(a.slot_id)
+          );
+
+          if (matchedSlots.length > 0) {
+            const first = matchedSlots[0];
+
+            // ✅ Restore topic
+            slot.selectedTopicId = first.topic_id;
+
+            // ✅ Restore class links
+            matchedSlots.forEach((m: any) => {
+              slot.class_links[m.slot_id] = m.class_link || "";
+            });
+
+            // ✅ Restore media selection
+            if (first.topic_id) {
+              this.api.getTopicMedia(first.topic_id).subscribe({
+                next: (mediaRes: any) => {
+                  slot.topicMedia = (mediaRes.data || []).map((m: any) => ({
+                    ...m,
+                    selected: matchedSlots.some((ms: any) =>
+                      ms.media.some((mm: any) => mm.media_id === m.id)
+                    ),
+                  }));
+                },
+              });
+            }
+          }
+        });
       },
-      error: () => {
-        this.showError("❌ Failed to load topic media");
-        slot.loadingMedia = false;
-      },
+      error: () => console.error("Failed to load assigned data"),
     });
   }
 
-  /* ================= TOPIC CHANGE PER SLOT ================= */
+  /* ================= TOPIC CHANGE ================= */
   onSlotTopicChange(slot: any): void {
     slot.topicMedia = [];
     slot.loadingMedia = true;
@@ -254,19 +198,15 @@ export class AssignTopicComponent implements OnInit, OnDestroy {
     });
   }
 
-  /* ================= CLASS LINK METHODS ================= */
-
-  // Start editing a specific slot's class link
+  /* ================= CLASS LINK ================= */
   startEditLink(slot: any, slotId: number): void {
     slot.editingLinkSlotId = slotId;
   }
 
-  // Cancel editing
   cancelEditLink(slot: any): void {
     slot.editingLinkSlotId = null;
   }
 
-  // Save class link for a specific slot
   saveClassLink(slot: any, slotId: number): void {
     const classLink = slot.class_links[slotId]?.trim();
 
@@ -277,102 +217,62 @@ export class AssignTopicComponent implements OnInit, OnDestroy {
 
     slot.isUpdatingLink = true;
 
-    const payload = {
+    this.api.updateClassLinkBySlotId({
       slot_id: slotId,
       class_link: classLink,
       updated_by: "instructor",
-    };
-
-    this.api.updateClassLinkBySlotId(payload).subscribe({
-      next: (res: any) => {
+    }).subscribe({
+      next: () => {
         this.showModernSuccessModal();
         slot.editingLinkSlotId = null;
       },
-      error: (err: any) => {
-        console.error("Class link update error:", err);
-        const errorMessage =
-          err.error?.message || "❌ Failed to update class link";
-        this.showError(errorMessage);
-      },
-      complete: () => {
-        slot.isUpdatingLink = false;
-      },
+      error: () => this.showError("❌ Failed to update class link"),
+      complete: () => (slot.isUpdatingLink = false),
     });
   }
 
-  // Get display text for class link
   getClassLinkDisplayText(link: string): string {
     if (!link) return "No link added";
-
     try {
       const url = new URL(link);
-      return `${url.hostname}${url.pathname.substring(0, 30)}${url.pathname.length > 30 ? "..." : ""}`;
+      return `${url.hostname}${url.pathname.substring(0, 30)}`;
     } catch {
-      return link.length > 40 ? link.substring(0, 40) + "..." : link;
+      return link;
     }
   }
 
-  /* ================= HELPER METHODS ================= */
-
+  /* ================= HELPERS ================= */
   getSelectedMediaCount(slot: any): number {
-    if (!slot.topicMedia || !Array.isArray(slot.topicMedia)) {
-      return 0;
-    }
-    return slot.topicMedia.filter((media: any) => media.selected).length;
+    return slot.topicMedia?.filter((m: any) => m.selected).length || 0;
   }
 
   toggleMediaSelection(media: any): void {
-    if (this.isAssigning || media.disabled) return;
+    if (this.isAssigning) return;
     media.selected = !media.selected;
   }
 
-  getTopicName(topicId: string): string {
-    if (!topicId) return "";
-    const topic = this.topics.find((t) => (t.topic_id || t.id) === topicId);
-    return topic?.topic_name || "Unknown Topic";
-  }
-
-  /* ================= SHOW MESSAGES ================= */
-
+  /* ================= ERROR ================= */
   showError(message: string): void {
     this.errorMsg = message;
-
-    setTimeout(() => {
-      if (this.errorMsg === message) {
-        this.errorMsg = "";
-      }
-    }, 5000);
+    setTimeout(() => (this.errorMsg = ""), 5000);
   }
 
-  clearMessages(): void {
-    this.errorMsg = "";
-  }
-
-  /* ================= MODERN SUCCESS MODAL ================= */
-  
+  /* ================= SUCCESS ================= */
   showModernSuccessModal(): void {
-    // Clear any existing timeout
-    if (this.modalTimeout) {
-      clearTimeout(this.modalTimeout);
-    }
-
-    // Show modal
+    if (this.modalTimeout) clearTimeout(this.modalTimeout);
     this.showSuccessModal = true;
-
-    // Auto close after 1.5 seconds
     this.modalTimeout = setTimeout(() => {
       this.showSuccessModal = false;
     }, 1500);
   }
 
-  /* ================= ASSIGN TOPIC + MEDIA ================= */
+  /* ================= ASSIGN ================= */
   assignTopicAndMedia(slot: any): void {
     if (!slot.selectedTopicId) {
       this.showError("⚠️ Please select a topic first");
       return;
     }
 
-    // Get selected media IDs
     const mediaIds = (slot.topicMedia || [])
       .filter((m: any) => m.selected)
       .map((m: any) => Number(m.id));
@@ -384,45 +284,22 @@ export class AssignTopicComponent implements OnInit, OnDestroy {
       media_ids: mediaIds,
     };
 
-    // Set loading states
     slot.isAssigning = true;
     this.isAssigning = true;
-    this.assigningSlotId = slot.class_id;
 
     this.api.assignTopicAndMediaToSlot(payload).subscribe({
-      next: (res: any) => {
-        // Set assignment status
+      next: () => {
         slot.assignmentStatus = new Date().toLocaleString();
-        
-        // Save to localStorage to persist after refresh
-        this.saveAssignedTopics(slot, Number(slot.selectedTopicId), mediaIds);
-        
-        // Show modern success modal with just the tick
         this.showModernSuccessModal();
-        
-        // Keep all selections - NO RESET, NO REFRESH
       },
-      error: (err: any) => {
-        console.error("Assignment error:", err);
-        const errorMessage =
-          err.error?.message || "❌ Failed to assign topic & media";
-        this.showError(errorMessage);
-      },
+      error: () => this.showError("❌ Failed to assign topic & media"),
       complete: () => {
-        // Reset loading states but KEEP ALL SELECTIONS
         slot.isAssigning = false;
         this.isAssigning = false;
-        this.assigningSlotId = null;
       },
     });
   }
 
-  /* ================= CHECK IF SLOT IS BEING ASSIGNED ================= */
-  isSlotAssigning(slot: any): boolean {
-    return this.isAssigning && this.assigningSlotId === slot.class_id;
-  }
-
-  /* ================= DISABLE CONTROLS CHECK ================= */
   isDisabled(): boolean {
     return this.isAssigning || this.isLoading;
   }

@@ -32,6 +32,17 @@ export class ClassScheduleListComponent implements OnInit {
   // Search
   searchTerm: string = '';
 
+  // Delete tracking
+  deleteInProgress: number | null = null;
+  showDeleteModal = false;
+  deleteCandidate: any = null;
+
+  // Alert modal
+  showAlertModal = false;
+  alertTitle = '';
+  alertMessage = '';
+  alertType: 'success' | 'error' = 'success';
+
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
@@ -55,7 +66,6 @@ export class ClassScheduleListComponent implements OnInit {
         this.standardsLoading = false;
       },
       error: (error) => {
-        console.error('Error fetching standards:', error);
         this.standardsError = this.getErrorMessage(error);
         this.standardsLoading = false;
       }
@@ -96,7 +106,6 @@ export class ClassScheduleListComponent implements OnInit {
         this.batchesLoading = false;
       },
       error: (error) => {
-        console.error('Error fetching batches:', error);
         this.batchesError = this.getErrorMessage(error);
         this.batchesLoading = false;
       }
@@ -125,11 +134,9 @@ export class ClassScheduleListComponent implements OnInit {
     this.apiService.getAdminClassSchedule().subscribe({
       next: (response) => {
         if (response.success) {
-          // Filter schedules by selected batch and map batch names
           this.schedules = response.data
             .filter((schedule: any) => schedule.batch_code === batchCode)
             .map((schedule: any) => {
-              // Find the batch name from batches array
               const batch = this.batches.find(b => b.batch_code === schedule.batch_code);
               return {
                 ...schedule,
@@ -143,11 +150,75 @@ export class ClassScheduleListComponent implements OnInit {
         this.schedulesLoading = false;
       },
       error: (error) => {
-        console.error('Error fetching schedules:', error);
         this.schedulesError = this.getErrorMessage(error);
         this.schedulesLoading = false;
       }
     });
+  }
+
+  // ======================================
+  // DELETE MODAL HANDLERS
+  // ======================================
+  openDeleteModal(schedule: any): void {
+    if (!schedule.id) {
+      this.showAlert('Error', 'Schedule ID not found. Cannot delete.', 'error');
+      return;
+    }
+    
+    this.deleteCandidate = schedule;
+    this.showDeleteModal = true;
+  }
+
+  closeDeleteModal(): void {
+    this.showDeleteModal = false;
+    this.deleteCandidate = null;
+  }
+
+  confirmDelete(): void {
+    if (!this.deleteCandidate) return;
+    
+    const scheduleId = this.deleteCandidate.id;
+    
+    if (!scheduleId) {
+      this.showAlert('Error', 'Schedule ID not found', 'error');
+      this.closeDeleteModal();
+      return;
+    }
+    
+    this.deleteInProgress = scheduleId;
+
+    this.apiService.deleteClassScheduleWithSlots(scheduleId).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.schedules = this.schedules.filter(s => s.id !== scheduleId);
+          this.filterSchedules();
+          this.showAlert('Success', 'Schedule deleted successfully!', 'success');
+        } else {
+          this.showAlert('Error', response.message || 'Failed to delete schedule', 'error');
+        }
+        this.deleteInProgress = null;
+        this.closeDeleteModal();
+      },
+      error: (error) => {
+        this.showAlert('Error', this.getErrorMessage(error), 'error');
+        this.deleteInProgress = null;
+        this.closeDeleteModal();
+      }
+    });
+  }
+
+  // ======================================
+  // ALERT MODAL
+  // ======================================
+  showAlert(title: string, message: string, type: 'success' | 'error'): void {
+    this.alertTitle = title;
+    this.alertMessage = message;
+    this.alertType = type;
+    this.showAlertModal = true;
+  }
+
+  closeAlertModal(): void {
+    this.showAlertModal = false;
   }
 
   // ======================================
@@ -178,15 +249,12 @@ export class ClassScheduleListComponent implements OnInit {
     if (!this.selectedStandardId) {
       return 'Select standard first';
     }
-
     if (this.batchesLoading) {
       return 'Loading batches...';
     }
-
     if (!this.batchesLoading && this.batches.length === 0) {
       return 'No batches available for this standard';
     }
-
     return '-- Select Batch --';
   }
 
@@ -223,12 +291,10 @@ export class ClassScheduleListComponent implements OnInit {
 
   formatTime(timeString: string): string {
     if (!timeString) return 'N/A';
-    
     const [hours, minutes] = timeString.split(':');
     const hour = parseInt(hours, 10);
     const ampm = hour >= 12 ? 'PM' : 'AM';
     const hour12 = hour % 12 || 12;
-    
     return `${hour12}:${minutes} ${ampm}`;
   }
 
@@ -296,9 +362,7 @@ export class ClassScheduleListComponent implements OnInit {
 
     const csvContent = [
       headers.join(','),
-      ...csvData.map((row) => 
-        row.map(cell => `"${cell}"`).join(',')
-      )
+      ...csvData.map(row => row.map(cell => `"${cell}"`).join(','))
     ].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
