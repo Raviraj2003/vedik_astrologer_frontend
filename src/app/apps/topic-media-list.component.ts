@@ -442,7 +442,7 @@ export class TopicMediaListComponent implements OnInit {
       return filePath;
     }
     // Construct full URL with base URL
-    return `https://vediknode.vedikastrologer.com${filePath}`;
+    return `http://63.250.47.7:3000/${filePath}`;
   }
 
   // ======================================
