@@ -25,6 +25,7 @@ export class CreateBatchComponent implements OnInit {
   searchText = "";
   loading = false;
   deleteLoading = false;
+  completingLoading: string | null = null; // Track which batch is being completed
   standardsList: any[] = [];
 
   // New properties for edit functionality
@@ -169,6 +170,96 @@ export class CreateBatchComponent implements OnInit {
     }
   }
 
+  /* ================= COMPLETE BATCH ================= */
+  confirmComplete(batch: any): void {
+    const batchCode = batch.batch_code || batch.batch_id;
+
+    if (!batchCode) {
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Batch code not found",
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: "Complete Batch?",
+      text: `Are you sure you want to mark "${batch.batch_name}" as completed? This will change the batch status to COMPLETED.`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#22c55e",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, Complete it!",
+      cancelButtonText: "Cancel",
+      showLoaderOnConfirm: true,
+      preConfirm: () => {
+        return this.completeBatch(batchCode, batch.batch_name);
+      },
+      allowOutsideClick: () => !Swal.isLoading(),
+    });
+  }
+
+  completeBatch(batchCode: string, batchName: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.completingLoading = batchCode;
+
+      this.apiService.completeBatch(batchCode).subscribe({
+        next: (res: any) => {
+          // Update the local batch list
+          const batchIndex = this.batchList.findIndex(
+            (b) => b.batch_code === batchCode || b.batch_id === batchCode,
+          );
+
+          if (batchIndex !== -1) {
+            // Update the batch status to COMPLETED
+            this.batchList[batchIndex].batch_status = "COMPLETED";
+            this.batchList[batchIndex].is_active = "Y"; // Keep it active but show as completed
+          }
+
+          Swal.fire({
+            icon: "success",
+            title: "Completed!",
+            text: res.message || `Batch "${batchName}" has been marked as completed.`,
+            timer: 2000,
+            showConfirmButton: false,
+          });
+          this.completingLoading = null;
+          resolve();
+        },
+        error: (err) => {
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: err?.error?.message || "Failed to complete batch",
+          });
+          this.completingLoading = null;
+          reject(err);
+        },
+      });
+    });
+  }
+
+  /* ================= GET BATCH STATUS CLASS ================= */
+  getBatchStatusClass(status: string): string {
+    const upperStatus = status?.toUpperCase() || "ONGOING";
+    if (upperStatus === "COMPLETED") {
+      return "bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 border-gray-300";
+    } else {
+      return "bg-gradient-to-r from-green-100 to-emerald-100 text-emerald-700 border-green-200";
+    }
+  }
+
+  /* ================= GET BATCH STATUS DOT CLASS ================= */
+  getBatchStatusDotClass(status: string): string {
+    const upperStatus = status?.toUpperCase() || "ONGOING";
+    if (upperStatus === "COMPLETED") {
+      return "bg-gray-500";
+    } else {
+      return "bg-green-500";
+    }
+  }
+
   confirmDelete(batch: any): void {
     // Determine which field contains the batch code/ID
     const batchCode = batch.batch_code || batch.batch_id;
@@ -204,7 +295,6 @@ export class CreateBatchComponent implements OnInit {
       this.apiService.deleteBatch(batchCode).subscribe({
         next: (res: any) => {
           // Update the local batch list to mark as inactive
-          // This provides immediate UI feedback without waiting for the API
           const batchIndex = this.batchList.findIndex(
             (b) => b.batch_code === batchCode || b.batch_id === batchCode,
           );
@@ -213,9 +303,6 @@ export class CreateBatchComponent implements OnInit {
             // Update the batch status to inactive
             this.batchList[batchIndex].is_active = "N";
           }
-
-          // Alternative: Reload all batches from server
-          // this.loadBatches();
 
           Swal.fire({
             icon: "success",

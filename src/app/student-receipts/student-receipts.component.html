@@ -1,123 +1,298 @@
-<div class="p-8 bg-gradient-to-br from-gray-50 to-white min-h-screen">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/40 p-6 sm:p-8">
 
-  <!-- ================= HEADER ================= -->
-  <div class="mb-8">
-    <h2 class="text-2xl font-bold text-gray-800 flex items-center">
-      <span class="mr-3 text-indigo-600">
-        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 10v2m8-6a8 8 0 11-16 0a8 8 0 0116 0z" />
-        </svg>
-      </span>
-      My Payment Receipts
-    </h2>
-    <p class="text-gray-500 mt-1">
-      View and download your payment receipts
-    </p>
-  </div>
+  <!-- ================= HERO HEADER ================= -->
+  <div class="max-w-7xl mx-auto mb-8">
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 px-6 sm:px-10 py-8 shadow-xl shadow-indigo-200/50">
 
-  <!-- ================= LOADING ================= -->
-  <div *ngIf="loading" class="flex flex-col items-center justify-center py-20">
-    <div class="w-16 h-16 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
-    <p class="text-gray-600 font-medium">Loading receipts...</p>
-  </div>
-
-  <!-- ================= ERROR ================= -->
-  <div *ngIf="errorMsg" class="mb-6">
-    <div class="bg-red-50 border-l-4 border-red-500 rounded-r-lg p-4 flex items-center gap-3">
-      <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0a9 9 0 0118 0z" />
+      <!-- decorative watermark -->
+      <svg class="absolute -right-6 -top-10 h-48 w-48 text-white/10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 10v2m8-6a8 8 0 11-16 0a8 8 0 0116 0z" />
       </svg>
-      <p class="text-red-700 font-medium">{{ errorMsg }}</p>
-    </div>
-  </div>
+      <svg class="absolute right-16 bottom-0 h-24 w-24 text-white/10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 10v2m8-6a8 8 0 11-16 0a8 8 0 0116 0z" />
+      </svg>
 
-  <!-- ================= RECEIPT GRID ================= -->
-  <div *ngIf="!loading && receipts.length > 0"
-       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
-    <div *ngFor="let r of receipts"
-         class="bg-white rounded-2xl border border-gray-200 shadow-sm
-                hover:shadow-lg transition-all duration-200">
-
-      <!-- Card Header -->
-      <div class="p-5 border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-white">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center">
-            <svg class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div class="relative flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+        <div class="flex items-start gap-4">
+          <div class="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center flex-shrink-0 ring-1 ring-white/20">
+            <svg class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 10v2m8-6a8 8 0 11-16 0a8 8 0 0116 0z" />
             </svg>
           </div>
           <div>
-            <p class="font-semibold text-gray-800">
-              Receipt No: {{ r.receipt_no }}
-            </p>
-            <p class="text-xs text-gray-500">
-              {{ r.payment_mode }} • ₹{{ r.amount }}
+            <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+              My Payment Receipts
+            </h2>
+            <p class="text-indigo-100 mt-1 text-sm sm:text-base">
+              View and download your payment receipts
             </p>
           </div>
         </div>
-      </div>
 
-      <!-- Card Body -->
-      <div class="p-5 space-y-3 text-sm text-gray-600">
-        <div>
-          <span class="font-medium text-gray-700">Transaction ID:</span>
-          {{ r.transaction_id }}
+        <!-- STAT PILLS -->
+        <div *ngIf="!loading && receipts.length > 0" class="flex flex-wrap gap-3">
+          <div class="bg-white/15 backdrop-blur-sm rounded-2xl px-5 py-3 ring-1 ring-white/20 min-w-[130px]">
+            <p class="text-indigo-100 text-xs font-medium uppercase tracking-wide">Total Receipts</p>
+            <p class="text-white text-xl font-bold mt-0.5">{{ totalReceipts }}</p>
+          </div>
+          <div class="bg-white/15 backdrop-blur-sm rounded-2xl px-5 py-3 ring-1 ring-white/20 min-w-[130px]">
+            <p class="text-indigo-100 text-xs font-medium uppercase tracking-wide">Total Paid</p>
+            <p class="text-white text-xl font-bold mt-0.5">₹{{ totalPaidAmount | number }}</p>
+          </div>
+          <div class="bg-white/15 backdrop-blur-sm rounded-2xl px-5 py-3 ring-1 ring-white/20 min-w-[130px]">
+            <p class="text-indigo-100 text-xs font-medium uppercase tracking-wide">Latest Payment</p>
+            <p class="text-white text-xl font-bold mt-0.5">{{ latestReceiptDate | date:'dd MMM yyyy' }}</p>
+          </div>
         </div>
-
-        <div class="flex items-center">
-          <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          Paid on:
-          <span class="ml-1 font-medium text-gray-700">
-            {{ r.created_at | date:'dd MMM yyyy' }}
-          </span>
-        </div>
-      </div>
-
-      <!-- Card Actions -->
-      <div class="px-5 py-4 border-t border-gray-100 flex justify-between items-center">
-
-        <span class="inline-flex items-center px-3 py-1 rounded-full
-                     text-xs font-semibold bg-blue-100 text-blue-700">
-          ✔ Paid
-        </span>
-
-        <button
-          (click)="viewReceipt(r.file_path)"
-          class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium
-                 bg-indigo-600 text-white hover:bg-indigo-700 transition-all"
-        >
-          <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
-          View PDF
-        </button>
       </div>
     </div>
   </div>
 
-  <!-- ================= EMPTY STATE ================= -->
-  <div *ngIf="!loading && receipts.length === 0"
-       class="text-center py-20">
+  <div class="max-w-7xl mx-auto">
 
-    <svg class="mx-auto h-24 w-24 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 10v2m8-6a8 8 0 11-16 0a8 8 0 0116 0z" />
-    </svg>
+    <!-- ================= LOADING ================= -->
+    <div *ngIf="loading" class="flex flex-col items-center justify-center py-24">
+      <div class="relative w-16 h-16 mb-5">
+        <div class="absolute inset-0 rounded-full border-4 border-indigo-100"></div>
+        <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-indigo-600 animate-spin"></div>
+      </div>
+      <p class="text-slate-500 font-medium">Loading your receipts...</p>
+    </div>
 
-    <h3 class="text-xl font-medium text-gray-700 mt-4">
-      No payment receipts found
-    </h3>
-    <p class="text-gray-500 mt-2 max-w-md mx-auto">
-      Your payment receipts will appear here once they are uploaded and published by the admin.
-    </p>
+    <!-- ================= ERROR ================= -->
+    <div *ngIf="errorMsg" class="mb-6">
+      <div class="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-center gap-3 shadow-sm">
+        <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
+          <svg class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0a9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <p class="text-red-700 font-medium text-sm">{{ errorMsg }}</p>
+      </div>
+    </div>
+
+    <!-- ================= RECEIPT GRID ================= -->
+    <div *ngIf="!loading && receipts.length > 0"
+         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <div *ngFor="let r of receipts"
+           class="group relative bg-white rounded-2xl border border-slate-200/80 shadow-sm
+                  hover:shadow-xl hover:shadow-indigo-100 hover:-translate-y-1 hover:border-indigo-200
+                  transition-all duration-300 overflow-hidden">
+
+        <!-- faint corner watermark -->
+        <span class="pointer-events-none absolute -right-4 -top-4 text-7xl font-black text-indigo-50 select-none">₹</span>
+
+        <!-- Card Header -->
+        <div class="relative p-5 pb-4">
+          <div class="flex items-start gap-3">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center flex-shrink-0 shadow-md shadow-indigo-200">
+              <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 10v2m8-6a8 8 0 11-16 0a8 8 0 0116 0z" />
+              </svg>
+            </div>
+            <div class="min-w-0">
+              <p class="font-semibold text-slate-800 truncate">
+                Receipt No: {{ r.receipt_no }}
+              </p>
+              <p class="text-xs text-slate-500 mt-0.5">
+                {{ r.payment_mode }} • <span class="font-semibold text-indigo-600">₹{{ r.amount }}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="mx-5 border-t border-slate-100"></div>
+
+        <!-- Card Body -->
+        <div class="relative p-5 pt-4 space-y-2.5 text-sm">
+          <div class="flex items-center gap-2 text-slate-500">
+            <svg class="h-4 w-4 flex-shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span class="font-medium text-slate-700">Txn ID:</span>
+            <span class="truncate">{{ r.transaction_id }}</span>
+          </div>
+
+          <div class="flex items-center gap-2 text-slate-500">
+            <svg class="h-4 w-4 flex-shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span class="font-medium text-slate-700">Paid on:</span>
+            <span>{{ r.created_at | date:'dd MMM yyyy' }}</span>
+          </div>
+        </div>
+
+        <!-- Card Actions -->
+        <div class="relative px-5 py-4 border-t border-slate-100 bg-slate-50/60 flex justify-between items-center">
+
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full
+                       text-xs font-semibold bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200">
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+            </svg>
+            Paid
+          </span>
+
+          <button
+            (click)="viewReceipt(r)"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold
+                   bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95
+                   shadow-sm hover:shadow-md shadow-indigo-200 transition-all duration-200"
+          >
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+            View PDF
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= EMPTY STATE ================= -->
+    <div *ngIf="!loading && receipts.length === 0"
+         class="text-center py-24 bg-white rounded-3xl border border-slate-200/80 shadow-sm">
+
+      <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-indigo-50 to-violet-50 mb-5">
+        <svg class="h-12 w-12 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 10v2m8-6a8 8 0 11-16 0a8 8 0 0116 0z" />
+        </svg>
+      </div>
+
+      <h3 class="text-xl font-semibold text-slate-700">
+        No payment receipts found
+      </h3>
+      <p class="text-slate-500 mt-2 max-w-md mx-auto">
+        Your payment receipts will appear here once they are uploaded and published by the admin.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- ================= RECEIPT PDF VIEWER MODAL ================= -->
+  <div
+    *ngIf="showReceiptModal"
+    [class.p-0]="isFullscreen"
+    [class.p-4]="!isFullscreen"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 transition-all duration-300"
+    (click)="closeReceiptModal()"
+  >
+    <div
+      [ngClass]="isFullscreen
+        ? 'w-screen h-screen max-w-none max-h-none rounded-none'
+        : 'max-w-3xl w-full max-h-[92vh] rounded-2xl'"
+      class="bg-white shadow-2xl overflow-hidden animate-slideUp flex flex-col transition-all duration-200"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- MODAL HEADER -->
+      <div class="relative bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-4 flex-shrink-0 overflow-hidden">
+        <svg class="absolute -right-4 -top-6 h-28 w-28 text-white/10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 10v2m8-6a8 8 0 11-16 0a8 8 0 0116 0z" />
+        </svg>
+        <div class="relative flex items-center justify-between">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-9 h-9 rounded-lg bg-white/15 flex items-center justify-center flex-shrink-0">
+              <span class="text-lg">🧾</span>
+            </div>
+            <div class="min-w-0">
+              <h2 class="text-lg font-bold text-white truncate">
+                Receipt No: {{ viewingReceipt?.receipt_no }}
+              </h2>
+              <p class="text-white/85 text-xs mt-0.5 truncate">
+                {{ viewingReceipt?.payment_mode }} • ₹{{ viewingReceipt?.amount }} •
+                {{ viewingReceipt?.created_at | date:'dd MMM yyyy' }}
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1 flex-shrink-0">
+            <!-- FULLSCREEN TOGGLE -->
+            <button
+              (click)="toggleFullscreen()"
+              class="text-white/85 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors"
+              [title]="isFullscreen ? 'Exit full screen' : 'Full screen'"
+            >
+              <svg *ngIf="!isFullscreen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4"></path>
+              </svg>
+              <svg *ngIf="isFullscreen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 4v4a1 1 0 01-1 1H4M20 9h-4a1 1 0 01-1-1V4M15 20v-4a1 1 0 011-1h4M4 15h4a1 1 0 011 1v4"></path>
+              </svg>
+            </button>
+
+            <!-- OPEN IN NEW TAB / DOWNLOAD -->
+            <button
+              (click)="openReceiptExternally()"
+              class="text-white/85 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors"
+              title="Open in new tab"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+              </svg>
+            </button>
+
+            <!-- CLOSE -->
+            <button
+              (click)="closeReceiptModal()"
+              class="text-white/85 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PDF PREVIEW AREA -->
+      <div class="flex-1 overflow-y-auto bg-slate-900 flex items-center justify-center relative min-h-[420px]"
+           [ngClass]="isFullscreen ? 'h-full' : ''">
+
+        <!-- LOADING SPINNER OVER PREVIEW -->
+        <div *ngIf="isReceiptLoading" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 z-10">
+          <div class="relative w-12 h-12 mb-4">
+            <div class="absolute inset-0 rounded-full border-4 border-indigo-900"></div>
+            <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-indigo-400 animate-spin"></div>
+          </div>
+          <p class="text-indigo-200 text-sm">Loading receipt...</p>
+        </div>
+
+        <iframe
+          *ngIf="viewingReceiptUrl"
+          [src]="viewingReceiptUrl"
+          (load)="onReceiptPreviewLoaded()"
+          [ngClass]="isFullscreen ? 'h-full' : 'h-[70vh]'"
+          class="w-full bg-white border-0"
+          title="Receipt PDF preview"
+        ></iframe>
+      </div>
+
+      <!-- MODAL FOOTER -->
+      <div class="border-t border-slate-200 px-6 py-4 bg-slate-50 flex-shrink-0">
+        <div class="flex justify-between items-center gap-4">
+          <div class="text-sm text-slate-600 truncate">
+            <span class="font-medium text-slate-700">Txn ID:</span> {{ viewingReceipt?.transaction_id }}
+          </div>
+          <button
+            (click)="closeReceiptModal()"
+            class="flex-shrink-0 px-6 py-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 rounded-xl font-medium transition-colors duration-200"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
 </div>

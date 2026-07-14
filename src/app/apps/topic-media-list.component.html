@@ -347,16 +347,21 @@
         <h3 class="text-xl font-bold text-white">Media Preview</h3>
         <p class="text-purple-100 text-sm">{{ previewMedia.title }}</p>
       </div>
-      <button (click)="closePreviewModal()" class="text-white hover:text-gray-200 text-2xl">
-        ✕
-      </button>
+      <div class="flex items-center space-x-2">
+        <button (click)="toggleFullscreen()" class="text-white hover:text-gray-200 text-2xl" title="Fullscreen">
+          ⛶
+        </button>
+        <button (click)="closePreviewModal()" class="text-white hover:text-gray-200 text-2xl">
+          ✕
+        </button>
+      </div>
     </div>
 
-    <div class="flex-1 overflow-y-auto p-6">
+    <div class="flex-1 overflow-y-auto p-6" id="previewContent">
       <div class="space-y-4">
         <!-- Video Preview -->
         <div *ngIf="previewMedia.media_type === 'video'" class="aspect-video bg-black rounded-lg overflow-hidden">
-          <video controls class="w-full h-full">
+          <video controls class="w-full h-full" id="videoPlayer">
             <source [src]="getFullFileUrl(previewMedia.file_url)" [type]="previewMedia.mime_type">
             Your browser does not support the video tag.
           </video>
@@ -365,7 +370,7 @@
         <!-- Audio Preview -->
         <div *ngIf="previewMedia.media_type === 'audio'" class="bg-gray-100 rounded-lg p-8 text-center">
           <div class="text-6xl mb-4">🎵</div>
-          <audio controls class="w-full">
+          <audio controls class="w-full" id="audioPlayer">
             <source [src]="getFullFileUrl(previewMedia.file_url)" [type]="previewMedia.mime_type">
             Your browser does not support the audio tag.
           </audio>
@@ -374,12 +379,28 @@
         <!-- Image Preview -->
         <div *ngIf="previewMedia.media_type === 'image'" class="flex justify-center bg-gray-100 rounded-lg p-4">
           <img [src]="getFullFileUrl(previewMedia.file_url)" [alt]="previewMedia.title"
-            class="max-w-full max-h-[60vh] object-contain">
+            class="max-w-full max-h-[60vh] object-contain" id="imagePreview">
         </div>
 
         <!-- PDF Preview -->
         <div *ngIf="previewMedia.media_type === 'pdf'" class="h-[70vh]">
-          <iframe [src]="getFullFileUrl(previewMedia.file_url)" class="w-full h-full rounded-lg border-0"></iframe>
+          <div class="w-full h-full">
+            <iframe 
+              [src]="getSafePdfUrl()" 
+              class="w-full h-full rounded-lg border-0"
+              type="application/pdf"
+              frameborder="0"
+              id="pdfViewer">
+            </iframe>
+          </div>
+          <div *ngIf="pdfLoadError" class="text-center py-12 bg-gray-50 rounded-lg mt-4">
+            <div class="text-6xl mb-4">📄</div>
+            <p class="text-gray-600 mb-4">PDF preview is not available. Please download the file to view it.</p>
+            <a [href]="getFullFileUrl(previewMedia.file_url)" download
+               class="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+              📥 Download PDF
+            </a>
+          </div>
         </div>
 
         <!-- Other File Types -->
@@ -409,10 +430,74 @@
       </div>
     </div>
 
-    <div class="px-6 py-4 bg-gray-50 rounded-b-2xl flex justify-end">
+    <div class="px-6 py-4 bg-gray-50 rounded-b-2xl flex justify-end space-x-3">
+      <button (click)="toggleFullscreen()" 
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+        ⛶ Fullscreen
+      </button>
       <a [href]="getFullFileUrl(previewMedia.file_url)" download
         class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
         Download File
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Fullscreen Modal -->
+<div *ngIf="showFullscreen" class="fixed inset-0 bg-black z-[100] flex items-center justify-center">
+  <button (click)="closeFullscreen()" 
+          class="absolute top-4 right-4 text-white text-3xl hover:text-gray-300 z-10">
+    ✕
+  </button>
+  <button (click)="closeFullscreen()" 
+          class="absolute bottom-4 right-4 text-white bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg z-10">
+    Exit Fullscreen
+  </button>
+  
+  <div class="w-full h-full flex items-center justify-center p-4">
+    <!-- Video Fullscreen -->
+    <div *ngIf="fullscreenMedia?.media_type === 'video'" class="w-full h-full max-w-7xl">
+      <video controls class="w-full h-full" id="fullscreenVideo" autoplay>
+        <source [src]="getFullFileUrl(fullscreenMedia.file_url)" [type]="fullscreenMedia.mime_type">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+
+    <!-- Audio Fullscreen -->
+    <div *ngIf="fullscreenMedia?.media_type === 'audio'" class="w-full max-w-2xl bg-gray-900 rounded-2xl p-12 text-center">
+      <div class="text-8xl mb-8">🎵</div>
+      <h3 class="text-2xl font-bold text-white mb-4">{{ fullscreenMedia.title }}</h3>
+      <p class="text-gray-400 mb-8">{{ fullscreenMedia.file_name }}</p>
+      <audio controls class="w-full" id="fullscreenAudio" autoplay>
+        <source [src]="getFullFileUrl(fullscreenMedia.file_url)" [type]="fullscreenMedia.mime_type">
+        Your browser does not support the audio tag.
+      </audio>
+    </div>
+
+    <!-- Image Fullscreen -->
+    <div *ngIf="fullscreenMedia?.media_type === 'image'" class="w-full h-full flex items-center justify-center">
+      <img [src]="getFullFileUrl(fullscreenMedia.file_url)" 
+           [alt]="fullscreenMedia.title"
+           class="max-w-full max-h-full object-contain">
+    </div>
+
+    <!-- PDF Fullscreen -->
+    <div *ngIf="fullscreenMedia?.media_type === 'pdf'" class="w-full h-full">
+      <iframe [src]="getSafePdfUrl()" 
+              class="w-full h-full"
+              frameborder="0">
+      </iframe>
+    </div>
+
+    <!-- Other File Types Fullscreen -->
+    <div *ngIf="!['video', 'audio', 'image', 'pdf'].includes(fullscreenMedia?.media_type || '')" 
+         class="text-center text-white">
+      <div class="text-8xl mb-8">{{ getMediaTypeIcon(fullscreenMedia?.media_type || '') }}</div>
+      <h3 class="text-2xl font-bold mb-4">{{ fullscreenMedia?.title }}</h3>
+      <p class="text-gray-400 mb-8">Preview not available for this file type</p>
+      <a [href]="getFullFileUrl(fullscreenMedia?.file_url)" download
+         class="inline-flex items-center px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+        📥 Download File
       </a>
     </div>
   </div>

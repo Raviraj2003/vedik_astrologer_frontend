@@ -38,7 +38,7 @@ export class ApiService {
   login(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/auth/login`, data);
   }
-
+  
   register(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/auth/register`, data);
   }
@@ -1072,6 +1072,89 @@ getAssignedDataByBatch(batchCode: string): Observable<{
   );
 }
 
+getStudentBatchAssignments(): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/student/getStudentBatchAssignments`,
+    {},
+    {
+      headers: this.getJsonHeaders(),
+    }
+  );
+}
+
+toggleAttendanceStatus(
+  stuRefCode: string,
+  slotId: number
+): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/toggleAttendanceStatus`,
+    {
+      stu_ref_code: stuRefCode,
+      slot_id: slotId,
+    },
+    {
+      headers: this.getJsonHeaders(),
+    }
+  );
+}
+
+completeBatch(batchCode: string): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/batches/completeBatch`,
+    {
+      batch_code: batchCode,
+    },
+    {
+      headers: this.getJsonHeaders(),
+    }
+  );
+}
+
+
+// ======================================
+// 📊 BATCH SUMMARY
+// ======================================
+
+getBatchSummary(): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/batches/getBatchSummary`,
+    {},
+    {
+      headers: this.getJsonHeaders(),
+    }
+  );
+}
+
+// ======================================
+// 🎓 PASSED STUDENTS BY BATCH
+// ======================================
+
+getPassedStudentsByBatch(batchCode: string): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/batches/getPassedStudentsByBatch`,
+    {
+      batch_code: batchCode,
+    },
+    {
+      headers: this.getJsonHeaders(),
+    }
+  );
+}
+
+
+// ======================================
+// 👨‍💼 ADMIN → GET ALL PAYMENT RECEIPTS
+// ======================================
+
+getAllPaymentReceipts(): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/media/getAllPaymentReceipts`,
+    {}, // Empty body
+    {
+      headers: this.getJsonHeaders(),
+    }
+  );
+}
 
 
   // ======================================

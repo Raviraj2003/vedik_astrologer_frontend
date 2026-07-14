@@ -571,49 +571,176 @@
   <!-- STUDY MATERIALS MODAL -->
   <div
     *ngIf="showMaterialModal"
-    class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-all duration-300"
+    [class.p-0]="isFullscreen"
+    [class.p-4]="!isFullscreen"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 transition-all duration-300"
     (click)="closeModal()"
   >
     <div
-      class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden animate-slideUp"
+      [ngClass]="isFullscreen
+        ? 'w-screen h-screen max-w-none max-h-none rounded-none'
+        : 'max-w-3xl w-full max-h-[92vh] rounded-2xl'"
+      class="bg-white shadow-2xl overflow-hidden animate-slideUp flex flex-col transition-all duration-200"
       (click)="$event.stopPropagation()"
     >
       <!-- MODAL HEADER -->
-      <div class="bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-4">
+      <div class="bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-4 flex-shrink-0">
         <div class="flex items-center justify-between">
-          <div>
-            <h2 class="text-xl font-bold text-white flex items-center">
-              <span class="mr-3">📚</span>
-              Study Materials
-            </h2>
-            <p class="text-white/90 text-sm mt-1">
-              {{ selectedSlot?.subject_name || "General" }} •
-              {{ selectedSlot?.class_date | date: "EEEE, MMMM d, yyyy" }}
-            </p>
-          </div>
-          <button
-            (click)="closeModal()"
-            class="text-white/80 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors"
-          >
-            <svg
-              class="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          <div class="flex items-center gap-3 min-w-0">
+            <!-- BACK BUTTON (only visible while viewing a file) -->
+            <button
+              *ngIf="viewingFile"
+              (click)="closeFileViewer()"
+              class="text-white/90 hover:text-white p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors flex-shrink-0"
+              title="Back to materials"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
-          </button>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+              </svg>
+            </button>
+
+            <div class="min-w-0">
+              <h2 class="text-xl font-bold text-white flex items-center truncate">
+                <span class="mr-3">{{ viewingFile ? getFileIcon(viewingFile.mime_type) : '📚' }}</span>
+                <span class="truncate">
+                  {{ viewingFile ? (viewingFile.title || viewingFile.file_name || 'File Preview') : 'Study Materials' }}
+                </span>
+              </h2>
+              <p class="text-white/90 text-sm mt-1 truncate">
+                {{ selectedSlot?.subject_name || "General" }} •
+                {{ selectedSlot?.class_date | date: "EEEE, MMMM d, yyyy" }}
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 flex-shrink-0">
+            <!-- FULLSCREEN TOGGLE -->
+            <button
+              (click)="toggleFullscreen()"
+              class="text-white/80 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors"
+              [title]="isFullscreen ? 'Exit full screen' : 'Full screen'"
+            >
+              <!-- EXPAND ICON -->
+              <svg *ngIf="!isFullscreen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4"></path>
+              </svg>
+              <!-- COMPRESS ICON -->
+              <svg *ngIf="isFullscreen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 4v4a1 1 0 01-1 1H4M20 9h-4a1 1 0 01-1-1V4M15 20v-4a1 1 0 011-1h4M4 15h4a1 1 0 011 1v4"></path>
+              </svg>
+            </button>
+
+            <button
+              (click)="closeModal()"
+              class="text-white/80 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- MODAL CONTENT -->
-      <div class="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+      <!-- ================= FILE VIEWER (shown when a material is selected) ================= -->
+      <div *ngIf="viewingFile" class="flex-1 overflow-y-auto bg-gray-900 flex items-center justify-center relative min-h-[420px]"
+           [ngClass]="isFullscreen ? 'h-full' : ''">
+        <!-- LOADING SPINNER OVER PREVIEW -->
+        <div *ngIf="isFileLoading" class="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 z-10">
+          <div class="inline-block animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-400 mb-4"></div>
+          <p class="text-blue-200 text-sm">Loading preview...</p>
+        </div>
+
+        <!-- IMAGE PREVIEW -->
+        <img
+          *ngIf="viewingFileKind === 'image'"
+          [src]="viewingFileUrl"
+          (load)="onFilePreviewLoaded()"
+          (error)="onFilePreviewLoaded()"
+          [ngClass]="isFullscreen ? 'max-h-[90vh]' : 'max-h-[70vh]'"
+          class="max-w-full object-contain"
+          [alt]="viewingFile.title || viewingFile.file_name || 'Study material image'"
+        />
+
+        <!-- PDF PREVIEW -->
+        <iframe
+          *ngIf="viewingFileKind === 'pdf'"
+          [src]="viewingFileUrl"
+          (load)="onFilePreviewLoaded()"
+          [ngClass]="isFullscreen ? 'h-full' : 'h-[70vh]'"
+          class="w-full bg-white border-0"
+          title="PDF preview"
+        ></iframe>
+
+        <!-- VIDEO PREVIEW -->
+        <video
+          *ngIf="viewingFileKind === 'video'"
+          [src]="viewingFileUrl"
+          (loadeddata)="onFilePreviewLoaded()"
+          controls
+          [ngClass]="isFullscreen ? 'max-h-[90vh]' : 'max-h-[70vh]'"
+          class="max-w-full w-full"
+        ></video>
+
+        <!-- AUDIO PREVIEW -->
+        <div *ngIf="viewingFileKind === 'audio'" class="w-full max-w-md p-8 flex flex-col items-center gap-6">
+          <div class="w-24 h-24 rounded-full bg-blue-500/20 flex items-center justify-center">
+            <span class="text-4xl">🎵</span>
+          </div>
+          <audio
+            [src]="viewingFileUrl"
+            (loadeddata)="onFilePreviewLoaded()"
+            controls
+            class="w-full"
+          ></audio>
+        </div>
+
+        <!-- TEXT PREVIEW -->
+        <iframe
+          *ngIf="viewingFileKind === 'text'"
+          [src]="viewingFileUrl"
+          (load)="onFilePreviewLoaded()"
+          class="w-full h-[70vh] bg-white border-0"
+          title="Text preview"
+        ></iframe>
+
+        <!-- OFFICE / UNSUPPORTED FILE TYPES -->
+        <div *ngIf="viewingFileKind === 'office' || viewingFileKind === 'other'" class="p-10 flex flex-col items-center gap-4 text-center">
+          <div class="w-20 h-20 rounded-2xl bg-blue-500/20 flex items-center justify-center">
+            <span class="text-4xl">{{ getFileIcon(viewingFile.mime_type) }}</span>
+          </div>
+          <div>
+            <p class="text-white font-medium mb-1">{{ viewingFile.title || viewingFile.file_name }}</p>
+            <p class="text-gray-400 text-sm">This file type can't be previewed inline.</p>
+          </div>
+          <button
+            (click)="openFileExternally(viewingFile)"
+            class="mt-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors flex items-center gap-2"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+            </svg>
+            Open File
+          </button>
+          <button
+            *ngIf="isFileLoading"
+            (click)="onFilePreviewLoaded()"
+            class="hidden"
+          ></button>
+        </div>
+      </div>
+
+      <!-- ================= MATERIALS LIST (default view) ================= -->
+      <div *ngIf="!viewingFile" class="p-6 overflow-y-auto">
         <!-- TOPIC SECTION -->
         <div class="mb-6">
           <h3
@@ -659,13 +786,14 @@
             >
               <div
                 *ngFor="let m of getCurrentMedia(); let i = index"
-                class="border border-blue-200 rounded-lg p-4 hover:border-blue-400 hover:shadow-sm transition-all duration-200 bg-blue-50/50"
+                (click)="viewFile(m)"
+                class="border border-blue-200 rounded-lg p-4 hover:border-blue-400 hover:shadow-md transition-all duration-200 bg-blue-50/50 cursor-pointer group"
               >
                 <div class="flex items-center">
                   <!-- FILE ICON -->
                   <div class="mr-4">
                     <div
-                      class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center"
+                      class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors"
                     >
                       <span class="text-2xl text-blue-600">{{
                         getFileIcon(m.mime_type)
@@ -690,9 +818,9 @@
                   <!-- EYE BUTTON -->
                   <div class="ml-4">
                     <button
-                      (click)="openFile(m.file_path)"
-                      class="bg-blue-600 hover:bg-blue-700 text-white p-2.5 rounded-lg transition-colors duration-200 flex items-center justify-center"
-                      title="View file"
+                      (click)="viewFile(m); $event.stopPropagation()"
+                      class="bg-blue-600 group-hover:bg-blue-700 text-white p-2.5 rounded-lg transition-colors duration-200 flex items-center justify-center"
+                      title="Preview file"
                       [disabled]="!m.file_path"
                       [class.opacity-50]="!m.file_path"
                     >
@@ -743,22 +871,36 @@
       </div>
 
       <!-- MODAL FOOTER -->
-      <div class="border-t border-blue-200 px-6 py-4 bg-blue-50">
+      <div class="border-t border-blue-200 px-6 py-4 bg-blue-50 flex-shrink-0">
         <div class="flex justify-between items-center">
           <div class="text-sm text-blue-600">
-            {{ getCurrentMedia().length }} material{{
-              getCurrentMedia().length !== 1 ? "s" : ""
-            }}
-            available
+            <ng-container *ngIf="!viewingFile">
+              {{ getCurrentMedia().length }} material{{
+                getCurrentMedia().length !== 1 ? "s" : ""
+              }}
+              available
+            </ng-container>
+            <ng-container *ngIf="viewingFile">
+              {{ formatFileSize(viewingFile.file_size) }}
+            </ng-container>
           </div>
-          <button
-            (click)="closeModal()"
-            class="px-6 py-2 bg-white border border-blue-300 text-blue-700 hover:bg-blue-50 rounded-lg font-medium transition-colors duration-200"
-          >
-            Close
-          </button>
+          <div class="flex items-center gap-2">
+            <button
+              *ngIf="viewingFile"
+              (click)="closeFileViewer()"
+              class="px-6 py-2 bg-white border border-blue-300 text-blue-700 hover:bg-blue-50 rounded-lg font-medium transition-colors duration-200"
+            >
+              Back to List
+            </button>
+            <button
+              (click)="closeModal()"
+              class="px-6 py-2 bg-white border border-blue-300 text-blue-700 hover:bg-blue-50 rounded-lg font-medium transition-colors duration-200"
+            >
+              Close
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>    
+</div>
