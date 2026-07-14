@@ -91,7 +91,7 @@
             </svg>
             <div class="text-sm">
               <p class="font-semibold text-gray-800">Important Information</p>
-              <p class="text-gray-600 mt-1">This operation will add a new batch to selected students' profiles while preserving all existing batch assignments. Previous batches will remain fully accessible.</p>
+              <p class="text-gray-600 mt-1">This operation will add the new batch to selected students while preserving their existing batch assignments. Previous batch history will remain fully accessible.</p>
             </div>
           </div>
         </div>
@@ -111,8 +111,7 @@
               </svg>
             </div>
             <div>
-              <h3 class="font-bold text-gray-800">Select Students</h3>
-              <p class="text-sm text-gray-500">Choose multiple students to upgrade to the new batch</p>
+              <h3 class="font-bold text-gray-800">Choose multiple students to upgrade</h3>
             </div>
           </div>
           <div class="flex items-center gap-3">
@@ -154,25 +153,28 @@
             [class.to-indigo-50]="isSelected(student.stu_ref_code)"
             (click)="toggleStudentSelection(student.stu_ref_code)"
           >
-            <!-- Checkbox Selection Indicator -->
-            <div class="absolute top-3 right-3">
-              <div class="w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all bg-white"
-                   [class.border-blue-500]="isSelected(student.stu_ref_code)"
-                   [class.border-gray-300]="!isSelected(student.stu_ref_code)"
-                   [class.bg-blue-500]="isSelected(student.stu_ref_code)">
-                <svg *ngIf="isSelected(student.stu_ref_code)" class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-            </div>
-
             <div class="p-5">
               <!-- Avatar & Name -->
               <div class="flex items-center gap-3 mb-4">
-                <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center shadow-sm">
-                  <span class="font-bold text-blue-700 text-lg">
+                <div class="relative w-14 h-14 rounded-xl flex items-center justify-center shadow-sm"
+                     [class.bg-gradient-to-br]="isSelected(student.stu_ref_code)"
+                     [class.from-green-400]="isSelected(student.stu_ref_code)"
+                     [class.to-emerald-500]="isSelected(student.stu_ref_code)"
+                     [class.bg-gradient-to-br]="!isSelected(student.stu_ref_code)"
+                     [class.from-blue-100]="!isSelected(student.stu_ref_code)"
+                     [class.to-indigo-100]="!isSelected(student.stu_ref_code)">
+                  <span class="font-bold text-lg"
+                        [class.text-white]="isSelected(student.stu_ref_code)"
+                        [class.text-blue-700]="!isSelected(student.stu_ref_code)">
                     {{ student.first_name?.charAt(0) }}{{ student.last_name?.charAt(0) }}
                   </span>
+                  <!-- Tick mark overlay when selected -->
+                  <div *ngIf="isSelected(student.stu_ref_code)" 
+                       class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center shadow-md border-2 border-white">
+                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
                 </div>
                 <div class="flex-1">
                   <h4 class="font-bold text-gray-900">{{ student.first_name }} {{ student.last_name }}</h4>
@@ -236,7 +238,8 @@
                   {{ selectedStudentCodes.length > 0 && selectedBatchCode ? 'Ready to Upgrade' : 'Complete Selection' }}
                 </p>
                 <p class="text-sm text-gray-500">
-                  <ng-container *ngIf="!selectedBatchCode">Select a batch first</ng-container>
+                  <ng-container *ngIf="!selectedStandardId">Select a standard first</ng-container>
+                  <ng-container *ngIf="selectedStandardId && !selectedBatchCode">Select a batch first</ng-container>
                   <ng-container *ngIf="selectedBatchCode && selectedStudentCodes.length === 0">Select at least one student</ng-container>
                   <ng-container *ngIf="selectedBatchCode && selectedStudentCodes.length > 0">{{ selectedStudentCodes.length }} student(s) selected for upgrade</ng-container>
                 </p>
@@ -246,7 +249,7 @@
             <!-- Upgrade Button -->
             <button
               (click)="upgradeBatch()"
-              [disabled]="loading || selectedStudentCodes.length === 0 || !selectedBatchCode"
+              [disabled]="loading || selectedStudentCodes.length === 0 || !selectedBatchCode || !selectedStandardId"
               class="px-8 py-3 rounded-xl font-semibold transition-all duration-200 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-md flex items-center justify-center gap-2 min-w-[180px]"
             >
               <svg *ngIf="loading" class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">

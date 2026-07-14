@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../service/api.service';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+
 @Component({
   selector: 'app-topic-media-list',
   standalone: true,
@@ -52,8 +54,13 @@ export class TopicMediaListComponent implements OnInit {
   // Preview modal
   showPreviewModal = false;
   previewMedia: any = null;
+  pdfLoadError = false;
 
-  constructor(private apiService: ApiService) {}
+  // Fullscreen
+  showFullscreen = false;
+  fullscreenMedia: any = null;
+
+  constructor(private apiService: ApiService, private sanitizer: DomSanitizer) {}
 
   ngOnInit(): void {
     this.fetchStandards();
@@ -355,12 +362,92 @@ export class TopicMediaListComponent implements OnInit {
   // ======================================
   openPreviewModal(media: any): void {
     this.previewMedia = media;
+    this.pdfLoadError = false;
     this.showPreviewModal = true;
   }
 
   closePreviewModal(): void {
     this.showPreviewModal = false;
     this.previewMedia = null;
+    this.pdfLoadError = false;
+  }
+
+  // ======================================
+  // FULLSCREEN FUNCTIONS
+  // ======================================
+  toggleFullscreen(): void {
+    if (this.showFullscreen) {
+      this.closeFullscreen();
+    } else {
+      this.openFullscreen();
+    }
+  }
+
+  openFullscreen(): void {
+    if (this.previewMedia) {
+      this.fullscreenMedia = this.previewMedia;
+      this.showFullscreen = true;
+      // Close preview modal when going fullscreen
+      this.showPreviewModal = false;
+      
+      // Auto-play video/audio when fullscreen opens
+      setTimeout(() => {
+        if (this.fullscreenMedia?.media_type === 'video') {
+          const video = document.getElementById('fullscreenVideo') as HTMLVideoElement;
+          if (video) video.play();
+        }
+        if (this.fullscreenMedia?.media_type === 'audio') {
+          const audio = document.getElementById('fullscreenAudio') as HTMLAudioElement;
+          if (audio) audio.play();
+        }
+      }, 100);
+    }
+  }
+
+  closeFullscreen(): void {
+    // Stop any playing media
+    const video = document.getElementById('fullscreenVideo') as HTMLVideoElement;
+    if (video) video.pause();
+    const audio = document.getElementById('fullscreenAudio') as HTMLAudioElement;
+    if (audio) audio.pause();
+    
+    this.showFullscreen = false;
+    this.fullscreenMedia = null;
+    
+    // Re-open preview modal if we have media
+    if (this.previewMedia) {
+      this.showPreviewModal = true;
+    }
+  }
+
+  // ======================================
+  // PDF HELPER METHODS
+  // ======================================
+  getSafePdfUrl(): SafeResourceUrl {
+    if (!this.previewMedia?.file_url) {
+      return this.sanitizer.bypassSecurityTrustResourceUrl('');
+    }
+    
+    const fileUrl = this.getFullFileUrl(this.previewMedia.file_url);
+    return this.sanitizer.bypassSecurityTrustResourceUrl(fileUrl);
+  }
+
+  getGoogleDocsViewerUrl(): SafeResourceUrl {
+    if (!this.previewMedia?.file_url) {
+      return this.sanitizer.bypassSecurityTrustResourceUrl('');
+    }
+    
+    const fileUrl = this.getFullFileUrl(this.previewMedia.file_url);
+    const encodedUrl = encodeURIComponent(fileUrl);
+    
+    return this.sanitizer.bypassSecurityTrustResourceUrl(
+      `https://docs.google.com/viewer?url=${encodedUrl}&embedded=true`
+    );
+  }
+
+  onPdfError(event: any): void {
+    console.error('PDF failed to load:', event);
+    this.pdfLoadError = true;
   }
 
   // ======================================
@@ -469,10 +556,9 @@ export class TopicMediaListComponent implements OnInit {
     }
   }
 
-  // Add this method to handle opening URLs
-openFileUrl(url: string): void {
-  window.open(url, '_blank');
-}
+  openFileUrl(url: string): void {
+    window.open(url, '_blank');
+  }
 
   exportMediaList(): void {
     if (this.filteredMediaItems.length === 0) return;

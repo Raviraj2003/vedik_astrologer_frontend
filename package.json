@@ -50,6 +50,7 @@
         "ngx-scrollbar": "^15.1.2",
         "ngx-tippy-wrapper": "^6.1.0",
         "nouislider": "^15.7.1",
+        "pdfjs-dist": "^6.1.200",
         "quill": "^2.0.2",
         "rxjs": "~7.8.0",
         "sortablejs": "^1.15.0",

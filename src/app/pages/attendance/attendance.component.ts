@@ -24,6 +24,7 @@ export class AttendanceComponent implements OnInit {
   attendanceList: any[] = [];
   filteredAttendanceList: any[] = []; // Filtered list based on date
   loading = false;
+  togglingAttendanceId: number | null = null; // Track which attendance is being toggled
 
   constructor(private api: ApiService) {}
 
@@ -100,6 +101,80 @@ export class AttendanceComponent implements OnInit {
     });
   }
 
+  /* ================= TOGGLE ATTENDANCE STATUS ================= */
+  toggleAttendance(record: any): void {
+    if (!record.stu_ref_code || !record.slot_id) {
+      console.error("Missing required fields for toggling attendance");
+      return;
+    }
+
+    this.togglingAttendanceId = record.id;
+
+    this.api.toggleAttendanceStatus(record.stu_ref_code, record.slot_id).subscribe({
+      next: (response: any) => {
+        if (response?.success) {
+          // Update the status in the local array
+          const updatedStatus = response.data.attendance_status;
+          
+          // Find and update the record in attendanceList
+          const listRecord = this.attendanceList.find((item) => item.id === record.id);
+          if (listRecord) {
+            listRecord.attendance_status = updatedStatus;
+          }
+
+          // Find and update the record in filteredAttendanceList
+          const filteredRecord = this.filteredAttendanceList.find((item) => item.id === record.id);
+          if (filteredRecord) {
+            filteredRecord.attendance_status = updatedStatus;
+          }
+
+          // Show success message (optional - can be replaced with toast notification)
+          console.log(`Attendance updated to ${updatedStatus} successfully`);
+        } else {
+          console.error("Failed to update attendance:", response?.message);
+        }
+        this.togglingAttendanceId = null;
+      },
+      error: (err) => {
+        console.error("Error toggling attendance:", err);
+        this.togglingAttendanceId = null;
+        // Optionally show error message to user
+        alert("Failed to update attendance. Please try again.");
+      },
+    });
+  }
+
+  /* ================= GET OPPOSITE STATUS ================= */
+  getOppositeStatus(currentStatus: string): string {
+    return currentStatus?.toUpperCase() === "PRESENT" ? "ABSENT" : "PRESENT";
+  }
+
+  /* ================= GET STATUS CLASS - DARKER HIGHLIGHTERS ================= */
+  getStatusClass(status: string): string {
+    const upperStatus = status?.toUpperCase() || "PRESENT";
+    if (upperStatus === "PRESENT") {
+      return "bg-gradient-to-r from-green-200 to-emerald-200 text-green-900 border-green-300";
+    } else {
+      return "bg-gradient-to-r from-red-200 to-rose-200 text-red-900 border-red-300";
+    }
+  }
+
+  /* ================= GET STATUS DOT CLASS - DARKER DOTS ================= */
+  getStatusDotClass(status: string): string {
+    const upperStatus = status?.toUpperCase() || "PRESENT";
+    return upperStatus === "PRESENT" ? "bg-green-600" : "bg-red-600";
+  }
+
+  /* ================= GET TOGGLE BUTTON CLASS ================= */
+  getToggleButtonClass(status: string): string {
+    const upperStatus = status?.toUpperCase() || "PRESENT";
+    if (upperStatus === "PRESENT") {
+      return "bg-red-100 text-red-800 hover:bg-red-200 border border-red-300";
+    } else {
+      return "bg-green-100 text-green-800 hover:bg-green-200 border border-green-300";
+    }
+  }
+
   /* ================= DATE FILTER ================= */
   onDateChange(): void {
     this.applyDateFilter();
@@ -148,6 +223,22 @@ export class AttendanceComponent implements OnInit {
       month: "short",
       day: "numeric",
     });
+  }
+
+  /* ================= NEW: FORMAT DATE TO DD/MM/YYYY ================= */
+  formatDateToDDMMYYYY(dateString: string): string {
+    if (!dateString) return "N/A";
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return "N/A";
+      
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    } catch {
+      return "N/A";
+    }
   }
 
   formatTime(dateString: string): string {

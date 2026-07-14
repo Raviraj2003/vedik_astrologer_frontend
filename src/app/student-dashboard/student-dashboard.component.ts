@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import {
   FormBuilder,
   FormGroup,
@@ -40,6 +41,9 @@ interface TopicObject {
   [key: string]: any;
 }
 
+// File type classification used to decide how the viewer renders the file
+type FileKind = "image" | "pdf" | "video" | "audio" | "text" | "office" | "other";
+
 @Component({
   selector: "app-student-dashboard",
   standalone: true,
@@ -74,13 +78,23 @@ export class StudentDashboardComponent implements OnInit {
   studyTopicBySlot: { [slotId: number]: string } = {};
   isMaterialLoading = false;
 
+  /* ================= IN-MODAL FILE VIEWER ================= */
+  viewingFile: StudyMaterial | null = null;
+  viewingFileUrl: SafeResourceUrl | null = null;
+  viewingFileKind: FileKind = "other";
+  isFileLoading = false;
+  isFullscreen = false;
+
   isLoading = true;
   todayStr = "";
   maxBirthDate: string = "2004-12-31";
 
+  private readonly baseUrl = "https://vediknode.vedikastrologer.com";
+
   constructor(
     private api: ApiService,
     private fb: FormBuilder,
+    private sanitizer: DomSanitizer,
   ) {}
 
   ngOnInit(): void {
@@ -257,6 +271,7 @@ export class StudentDashboardComponent implements OnInit {
 
     this.showMaterialModal = true;
     this.isMaterialLoading = true;
+    this.closeFileViewer(); // always land on the list, not a stale preview
 
     delete this.studyMediaBySlot[slotId];
     delete this.studyTopicBySlot[slotId];
@@ -334,19 +349,77 @@ export class StudentDashboardComponent implements OnInit {
   closeModal(): void {
     this.showMaterialModal = false;
     this.selectedSlot = null;
+    this.isFullscreen = false;
+    this.closeFileViewer();
   }
 
-  /* ================= OPEN FILE ================= */
-  openFile(path: string | undefined): void {
-    if (!path) {
+  /* ================= TOGGLE FULLSCREEN MODAL ================= */
+  toggleFullscreen(): void {
+    this.isFullscreen = !this.isFullscreen;
+  }
+
+  /* ================= RESOLVE FULL FILE URL ================= */
+  private resolveFileUrl(path: string | undefined): string | null {
+    if (!path) return null;
+    return path.startsWith("http") ? path : this.baseUrl + path;
+  }
+
+  /* ================= CLASSIFY FILE TYPE ================= */
+  private classifyFile(mimeType: string | undefined, path: string | undefined): FileKind {
+    const mime = (mimeType || "").toLowerCase();
+    const ext = (path || "").split(".").pop()?.toLowerCase() || "";
+
+    if (mime.includes("pdf") || ext === "pdf") return "pdf";
+    if (mime.includes("image") || ["png", "jpg", "jpeg", "gif", "webp", "svg", "bmp"].includes(ext)) return "image";
+    if (mime.includes("video") || ["mp4", "webm", "ogg", "mov"].includes(ext)) return "video";
+    if (mime.includes("audio") || ["mp3", "wav", "m4a"].includes(ext)) return "audio";
+    if (mime.includes("text") || ["txt", "md"].includes(ext)) return "text";
+    if (
+      mime.includes("word") ||
+      mime.includes("excel") ||
+      mime.includes("sheet") ||
+      mime.includes("powerpoint") ||
+      mime.includes("ppt") ||
+      ["doc", "docx", "xls", "xlsx", "ppt", "pptx"].includes(ext)
+    ) {
+      return "office";
+    }
+    return "other";
+  }
+
+  /* ================= OPEN FILE (NOW OPENS INSIDE THE MODAL) ================= */
+  viewFile(material: StudyMaterial): void {
+    const fullUrl = this.resolveFileUrl(material.file_path);
+
+    if (!fullUrl) {
       console.warn("No file path provided");
       return;
     }
 
-    const baseUrl = "https://vediknode.vedikastrologer.com";
-    const fullUrl = path.startsWith("http") ? path : baseUrl + path;
+    this.isFileLoading = true;
+    this.viewingFile = material;
+    this.viewingFileKind = this.classifyFile(material.mime_type, material.file_path);
+    this.viewingFileUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullUrl);
+  }
 
-    window.open(fullUrl, "_blank");
+  /* ================= BACK TO MATERIALS LIST ================= */
+  closeFileViewer(): void {
+    this.viewingFile = null;
+    this.viewingFileUrl = null;
+    this.viewingFileKind = "other";
+    this.isFileLoading = false;
+  }
+
+  onFilePreviewLoaded(): void {
+    this.isFileLoading = false;
+  }
+
+  /* ================= DOWNLOAD / OPEN IN NEW TAB (fallback for office/other files) ================= */
+  openFileExternally(material: StudyMaterial | null): void {
+    const fullUrl = this.resolveFileUrl(material?.file_path);
+    if (fullUrl) {
+      window.open(fullUrl, "_blank");
+    }
   }
 
   /* ================= TAB HANDLERS ================= */
